@@ -8,54 +8,54 @@ const config = {
   },
   meta: {
     developer: 'ChatUnity',
-    icon: 'https://i.imgur.com/example.png', // Valid image URL
+    icon: 'https://i.imgur.com/example.png', // URL immagine valido
     channel: 'https://example.com'
   }
 };
 
 let handler = async (m, { conn, text }) => {
-  if (!text) return conn.reply(m.chat, '🚩 Enter a Pokémon name', m);
+  if (!text) return conn.reply(m.chat, '🚩 Inserisci il nome di un Pokémon', m);
 
   try {
-    // Search feedback
+    // Reazione durante la ricerca
     await m.react(config.emoji.waiting);
     
-    // Modified to avoid problematic externalAdReply
+    // Messaggio di ricerca (modificato per evitare problemi con externalAdReply)
     await conn.sendMessage(m.chat, { 
-      text: `🔍 Searching for ${text}...`,
+      text: `🔍 Sto cercando ${text}...`,
       contextInfo: {
         mentionedJid: [m.sender]
       }
     });
 
-    // API request
+    // Richiesta API
     const url = `https://some-random-api.com/pokemon/pokedex?pokemon=${encodeURIComponent(text)}`;
     const response = await fetch(url);
     
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error('API non disponibile');
 
     const pokemon = await response.json();
-    if (!pokemon?.name) throw new Error('Pokémon not found');
+    if (!pokemon?.name) throw new Error('Pokémon non trovato');
 
-    // Response formatting
+    // Formattazione risposta
     const pokemonInfo = `
 🎌 *Pokédex - ${pokemon.name}*
 
-🔹 *Name:* ${pokemon.name}
+🔹 *Nome:* ${pokemon.name}
 🔹 *ID:* ${pokemon.id}
-🔹 *Type:* ${Array.isArray(pokemon.type) ? pokemon.type.join(', ') : pokemon.type}
-🔹 *Abilities:* ${Array.isArray(pokemon.abilities) ? pokemon.abilities.join(', ') : pokemon.abilities}
-🔹 *Height:* ${pokemon.height}
-🔹 *Weight:* ${pokemon.weight}
+🔹 *Tipo:* ${Array.isArray(pokemon.type) ? pokemon.type.join(', ') : pokemon.type}
+🔹 *Abilità:* ${Array.isArray(pokemon.abilities) ? pokemon.abilities.join(', ') : pokemon.abilities}
+🔹 *Altezza:* ${pokemon.height}
+🔹 *Peso:* ${pokemon.weight}
 
-📝 *Description:*
-${pokemon.description || 'No description available'}
+📝 *Descrizione:*
+${pokemon.description || 'Nessuna descrizione disponibile'}
 
-🌐 *More info:*
-https://www.pokemon.com/us/pokedex/${encodeURIComponent(pokemon.name.toLowerCase())}
+🌐 *Maggiori info:*
+https://www.pokemon.com/it/pokedex/${encodeURIComponent(pokemon.name.toLowerCase())}
     `.trim();
 
-    // Send simplified message
+    // Invio messaggio con info Pokémon
     await conn.sendMessage(m.chat, { 
       text: pokemonInfo,
       mentions: [m.sender]
@@ -64,10 +64,10 @@ https://www.pokemon.com/us/pokedex/${encodeURIComponent(pokemon.name.toLowerCase
     await m.react(config.emoji.completed);
 
   } catch (error) {
-    console.error('Pokémon search error:', error);
+    console.error('Errore ricerca Pokémon:', error);
     await m.react(config.emoji.error);
     await conn.sendMessage(m.chat, { 
-      text: '⚠️ Error searching for Pokémon',
+      text: '⚠️ Errore nella ricerca del Pokémon',
       mentions: [m.sender]
     });
   }
