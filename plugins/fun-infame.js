@@ -1,25 +1,25 @@
 const handler = async (msg, { client, conn }) => {
     const percent = Math.floor(Math.random() * 101);
     
-    if (!conn?.sendMessage) throw new Error("Bro, manca il conn 😒");
+    if (!conn?.sendMessage) throw new Error("Bro, missing connection 😒");
 
-    // Frasi da social media (no cringe boomer) 🔥
+    // Social media style reactions (no cringe) 🔥
     const savageReactions = [
-        `🧢 *"Nah, sei pulito"* (ma sotto il ${percent}% sei un po' sospetto...)`,  
-        `👀 *"Fra, ma sei la pecora nera della chat?"*`,  
-        `💀 *"Sei il motivo per cui le nonne nascondono il portafoglio"*`,  
-        `🤡 *"Se l'infamia fosse un TikTok, saresti virale"*`,  
-        `🚓 *"Polizia locale? No, DITTATORIALE con sto livello"*`,  
-        `🤑 *"Se rubassi come infami, saresti Jeff Bezos"*`,  
-        `📸 *"Sei lo screenshot che non dovevi fare"*`,  
-        `🔥 *"Hai più scheletri nell'armadio che followers"*`
+        `🧢 *"Nah, you're clean"* (but under ${percent}% you're kinda sus...)`,  
+        `👀 *"Bro, are you the black sheep of the chat?"*`,  
+        `💀 *"You're the reason grandmas hide their wallets"*`,  
+        `🤡 *"If infamy was a TikTok, you'd be viral"*`,  
+        `🚓 *"Local police? More like DICTATORIAL with this level"*`,  
+        `🤑 *"If you stole like you're infamous, you'd be Jeff Bezos"*`,  
+        `📸 *"You're the screenshot that shouldn't have been taken"*`,  
+        `🔥 *"You got more skeletons in the closet than followers"*`
     ];
     
     const randomSavage = savageReactions[Math.floor(Math.random() * savageReactions.length)];
     
-    let response = `📊 *TEST INFAME-Z* 📊\n\n` +
-                  `👤 *Il tuo livello di infame:* **${percent}%**\n` +
-                  `${percent > 80 ? "🚨 *SEI L'ADMIN DEGLI SBIRRI!* 🚨" : percent > 50 ? "😎 *Sei nella zona pericolosa...*" : "🧼 *Pulito... forse.*"}\n\n` +
+    let response = `📊 *INFAMY TEST* 📊\n\n` +
+                  `👤 *Your infamy level:* **${percent}%**\n` +
+                  `${percent > 80 ? "🚨 *YOU'RE THE SNITCH ADMIN!* 🚨" : percent > 50 ? "😎 *You're in the danger zone...*" : "🧼 *Clean... maybe.*"}\n\n` +
                   `${randomSavage}`;
 
     await conn.sendMessage(
@@ -31,9 +31,9 @@ const handler = async (msg, { client, conn }) => {
                 forwardingScore: 999,
                 isForwarded: true,
                 externalAdReply: {
-                    title: "⚠️ Sei stato GIOBATO ⚠️",
-                    body: "Risultati ufficiali (e inappellabili)",
-                    thumbnail: Buffer.alloc(0) // Puoi aggiungere un'immagine qui
+                    title: "⚠️ You've been EXPOSED ⚠️",
+                    body: "Official results (and non-appealable)",
+                    thumbnail: Buffer.alloc(0) // You can add an image here
                 }
             }
         }, 
@@ -41,7 +41,7 @@ const handler = async (msg, { client, conn }) => {
     );
 };
 
-handler.command = ['infame', 'quantosbirro', 'sbirrocheck'];
+handler.command = ['infamy', 'snitchcheck', 'expose'];
 handler.tags = ['social'];
-handler.help = ['infame @user', 'quantosbirro (scopri quanto sei infame)'];
+handler.help = ['infamy @user', 'snitchcheck (discover your infamy level)'];
 export default handler;
