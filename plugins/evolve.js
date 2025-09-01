@@ -1,10 +1,10 @@
 import fetch from 'node-fetch'
 
 const rarityCosts = {
-  'Comune': 100,
-  'Non Comune': 1000,
-  'Raro': 10000,
-  'Leggendario': 100000
+  'Common': 100,
+  'Uncommon': 1000,
+  'Rare': 10000,
+  'Legendary': 100000
 }
 
 function sleep(ms) {
@@ -37,7 +37,7 @@ async function getEvolution(name) {
     const nextEvo = findNextEvolution(evoData.chain)
     return nextEvo
   } catch (err) {
-    console.error('Errore durante il recupero dell\'evoluzione:', err)
+    console.error('Error while retrieving evolution:', err)
     return null
   }
 }
@@ -51,26 +51,26 @@ let handler = async (m, { conn, args }) => {
   data.pokemons = data.pokemons || []
 
   const name = args.join(' ')
-  if (!name) return m.reply('📛 Specifica il nome del Pokémon da evolvere.\nEsempio: *.evolvi Charmander*')
+  if (!name) return m.reply('📛 Specify the name of the Pokémon to evolve.\nExample: *.evolve Charmander*')
 
   const baseCard = data.pokemons.find(p => p.name.toLowerCase() === name.toLowerCase())
-  if (!baseCard) return m.reply(`❌ Non possiedi *${name}*`)
+  if (!baseCard) return m.reply(`❌ You don't own *${name}*`)
 
   const cost = rarityCosts[baseCard.rarity]
   if (data.mattecash < cost) {
-    return m.reply(`⛔ Non hai abbastanza Mattecash!\n💰 Hai: *${data.mattecash}*\n💸 Richiesti: *${cost}*`)
+    return m.reply(`⛔ You don't have enough Mattecash!\n💰 You have: *${data.mattecash}*\n💸 Required: *${cost}*`)
   }
 
   const nextForm = await getEvolution(baseCard.name)
-  if (!nextForm) return m.reply(`⛔ *${baseCard.name}* non può evolversi ulteriormente.`)
+  if (!nextForm) return m.reply(`⛔ *${baseCard.name}* cannot evolve further.`)
 
   data.mattecash -= cost
 
-  await conn.sendMessage(m.chat, { text: `✨ *${baseCard.name}* sta evolvendo...`, mentions: [user] }, { quoted: m })
+  await conn.sendMessage(m.chat, { text: `✨ *${baseCard.name}* is evolving...`, mentions: [user] }, { quoted: m })
   await sleep(1000)
-  await conn.sendMessage(m.chat, { text: '🔄 Evoluzione in corso...', mentions: [user] }, { quoted: m })
+  await conn.sendMessage(m.chat, { text: '🔄 Evolution in progress...', mentions: [user] }, { quoted: m })
   await sleep(1000)
-  await conn.sendMessage(m.chat, { text: `🎉 *${baseCard.name}* si è evoluto in *${nextForm}*!`, mentions: [user] }, { quoted: m })
+  await conn.sendMessage(m.chat, { text: `🎉 *${baseCard.name}* evolved into *${nextForm}*!`, mentions: [user] }, { quoted: m })
 
   const index = data.pokemons.indexOf(baseCard)
   if (index > -1) {
@@ -83,11 +83,11 @@ let handler = async (m, { conn, args }) => {
     type: baseCard.type
   })
 
-  return m.reply(`✅ Evoluzione completata!\n💰 Mattecash rimasti: *${data.mattecash}*`)
+  return m.reply(`✅ Evolution completed!\n💰 Remaining Mattecash: *${data.mattecash}*`)
 }
 
-handler.help = ['evolvi <nome>']
+handler.help = ['evolve <name>']
 handler.tags = ['pokemon']
-handler.command = /^evolvi$/i
+handler.command = /^evolve$/i
 
 export default handler
