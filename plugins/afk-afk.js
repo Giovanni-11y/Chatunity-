@@ -1,17 +1,17 @@
 let handler = async (m, { conn, text }) => {
-    // Inizializza struttura dati se non esiste
+    // Initialize data structure if it doesn't exist
     if (!global.db.data.users) global.db.data.users = {}
     if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
     
-    // Imposta stato AFK
+    // Set AFK status
     global.db.data.users[m.sender].afk = {
         time: new Date(),
-        reason: text || 'Nessun motivo'
+        reason: text || 'No reason provided'
     }
     
-    // Conferma attivazione
+    // Confirm activation
     await conn.sendMessage(m.chat, {
-        text: `⏸️ *Modalità AFK attivata*\nUtente: @${m.sender.split('@')[0]}\nMotivo: ${text || 'Nessun motivo'}`,
+        text: `⏸️ *AFK mode activated*\nUser: @${m.sender.split('@')[0]}\nReason: ${text || 'No reason provided'}`,
         mentions: [m.sender]
     }, { quoted: m })
 }
