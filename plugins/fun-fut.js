@@ -4,7 +4,7 @@ import Canvas from 'canvas';
 const players = JSON.parse(fs.readFileSync('./plugins/fifaPlayers_packs.json', 'utf8'));
 
 let handler = async (m, { conn, command, args }) => {
-  // Normalizza il comando rimuovendo eventuale punto iniziale
+  // Normalize command by removing any initial dot
   command = command.replace(/^\./, '').toLowerCase();
 
   const user = m.sender;
@@ -13,7 +13,7 @@ let handler = async (m, { conn, command, args }) => {
   data.fifaInventory = data.fifaInventory || { bronze: 0, silver: 0, gold: 0 };
   data.fifaPlayers = data.fifaPlayers || [];
 
-  // COLLEGA IL SALDO AL PORTAFOGLIO (user.limit) USATO DA rpg-coin.js
+  // LINK BALANCE TO WALLET (user.limit) USED BY rpg-coin.js
   if (typeof data.limit === 'number') {
     data.money = data.limit;
   } else {
@@ -25,10 +25,10 @@ let handler = async (m, { conn, command, args }) => {
 
   if (command === 'fut') {
     const txt =
-      `💼 *Inventario FUT:*\n` +
+      `💼 *FUT Inventory:*\n` +
       `🥉 Bronze: ${data.fifaInventory.bronze} • 🥈 Silver: ${data.fifaInventory.silver} • 🥇 Gold: ${data.fifaInventory.gold}\n\n` +
-      `💸 UnityCoin: ${data.limit}\n\n` + // mostra sempre il saldo reale
-      `🎁 Scegli pacchetto da aprire 👇`;
+      `💸 UnityCoins: ${data.limit}\n\n` + // always show real balance
+      `🎁 Choose pack to open 👇`;
 
     const buttons = [];
     for (let type of ['bronze', 'silver', 'gold']) {
@@ -36,7 +36,7 @@ let handler = async (m, { conn, command, args }) => {
         const emoji = type === 'bronze' ? '🥉' : type === 'silver' ? '🥈' : '🥇';
         buttons.push({
           buttonId: `.open ${type}`,
-          buttonText: { displayText: `${emoji} Apri ${type}` },
+          buttonText: { displayText: `${emoji} Open ${type}` },
           type: 1
         });
       }
@@ -45,14 +45,14 @@ let handler = async (m, { conn, command, args }) => {
     if (buttons.length === 0) {
       buttons.push({
         buttonId: '.futstore',
-        buttonText: { displayText: '🛒 Compra pacchetti' },
+        buttonText: { displayText: '🛒 Buy packs' },
         type: 1
       });
     }
 
     return conn.sendMessage(m.chat, {
       text: txt,
-      footer: 'Holly FUT Bot ⚽',
+      footer: 'FUT Bot ⚽',
       buttons,
       headerType: 1
     }, { quoted: m });
@@ -64,11 +64,11 @@ let handler = async (m, { conn, command, args }) => {
       `🥉 Bronze: ${prices.bronze} 💸\n` +
       `🥈 Silver: ${prices.silver} 💸\n` +
       `🥇 Gold: ${prices.gold} 💸\n\n` +
-      `💸 Saldo attuale: ${data.limit}`; // mostra sempre il saldo reale
+      `💸 Current balance: ${data.limit}`; // always show real balance
 
     return conn.sendMessage(m.chat, {
       text: txt,
-      footer: 'Compra pacchetti con Holly Cash',
+      footer: 'Buy packs with UnityCoins',
       buttons: ['bronze', 'silver', 'gold'].map(type => ({
         buttonId: `.futbuy ${type}`,
         buttonText: { displayText: `${type}` },
@@ -80,25 +80,25 @@ let handler = async (m, { conn, command, args }) => {
 
   if (command === 'futbuy') {
     const type = args[0]?.toLowerCase();
-    if (!prices[type]) return m.reply('❌ Usa: .futbuy bronze/silver/gold');
+    if (!prices[type]) return m.reply('❌ Use: .futbuy bronze/silver/gold');
 
-    if (data.limit < prices[type]) { // usa sempre il saldo reale
-      return m.reply(`❌ Ti servono ${prices[type]} UnityCoin 💸 per un pacchetto ${type}`);
+    if (data.limit < prices[type]) { // always use real balance
+      return m.reply(`❌ You need ${prices[type]} UnityCoins 💸 for a ${type} pack`);
     }
 
     data.limit -= prices[type];
-    data.money = data.limit; // sincronizza sempre dopo ogni acquisto
+    data.money = data.limit; // always sync after purchase
     data.fifaInventory[type]++;
-    return m.reply(`✅ Acquistato un pacchetto *${type}*! Ne hai ora: ${data.fifaInventory[type]}`);
+    return m.reply(`✅ Purchased a *${type}* pack! You now have: ${data.fifaInventory[type]}`);
   }
 
   if (command === 'open') {
     const type = args[0]?.toLowerCase();
-    if (!['bronze', 'silver', 'gold'].includes(type)) return m.reply('❌ Specifica il pacchetto da aprire.');
-    if (data.fifaInventory[type] <= 0) return m.reply(`❌ Nessun pacchetto ${type} da aprire.`);
+    if (!['bronze', 'silver', 'gold'].includes(type)) return m.reply('❌ Specify which pack to open.');
+    if (data.fifaInventory[type] <= 0) return m.reply(`❌ No ${type} packs to open.`);
 
     data.fifaInventory[type]--;
-    await conn.sendMessage(m.chat, { text: `🎉 Aprendo pacchetto *${type}*...` }, { quoted: m });
+    await conn.sendMessage(m.chat, { text: `🎉 Opening *${type}* pack...` }, { quoted: m });
 
     const pool = players.filter(p => p.pack === type);
     const cards = Array.from({ length: 3 }, () => pool[Math.floor(Math.random() * pool.length)]);
@@ -121,7 +121,7 @@ let handler = async (m, { conn, command, args }) => {
   }
 
   if (command === 'futrosa') {
-    if (!data.fifaPlayers.length) return m.reply('📭 Nessun giocatore in rosa.');
+    if (!data.fifaPlayers.length) return m.reply('📭 No players in squad.');
 
     const top = data.fifaPlayers.sort((a, b) => b.rating - a.rating).slice(0, 6);
     const canvas = Canvas.createCanvas(900, 600);
@@ -143,5 +143,5 @@ let handler = async (m, { conn, command, args }) => {
 
 handler.command = /^\.?(fut|futstore|futbuy|open|futrosa)$/i;
 handler.tags = ['fifa'];
-handler.help = ['fut', 'futstore', 'futbuy <tipo>', 'open <tipo>', 'futrosa'];
+handler.help = ['fut', 'futstore', 'futbuy <type>', 'open <type>', 'futrosa'];
 export default handler;
