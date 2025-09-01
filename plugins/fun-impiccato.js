@@ -23,28 +23,28 @@ class HangmanGame {
 
     getWordList() {
         return [
-            'COMPUTER', 'TELEFONO', 'ALBERO', 'SOLE', 'LUNA', 'STELLA',
-            'MARE', 'MONTAGNA', 'FIORE', 'ANIMALE', 'LIBRO', 'SCUOLA',
-            'AMICO', 'FAMIGLIA', 'CITTA', 'PAESE', 'MACCHINA', 'BICICLETTA',
-            'VIAGGIO', 'MUSICA', 'ARTE', 'SPORT', 'GIOCO', 'LAVORO',
-            'CASA', 'CUCINA', 'CAMERA', 'GIARDINO', 'TEMPO', 'CIELO',
-            'NUVOLA', 'PIOGGIA', 'NEVE', 'VENTO', 'FUOCO', 'ACQUA',
-            'TERRA', 'ARIA', 'SOGGIORNO', 'BAGNO', 'LETTO', 'TAVOLO',
-            'SEDIA', 'FINESTRA', 'PORTA', 'SPECCHIO', 'QUADRO', 'SCARPALE',
-            'VESTITO', 'MAGLIA', 'PANTALONI', 'SCARPE', 'CAPPELLO', 'GUANTI',
-            'SCIARPA', 'OROLOGIO', 'OCCHIALI', 'GIOIELLO', 'ANELLO', 'BRACCIALETTO',
-            'COLLANA', 'ORECCHINI', 'BORSA', 'ZAINO', 'VALIGIA', 'CARTELLA',
-            'PENNA', 'MATITA', 'QUADERNO', 'FOGLIO', 'LIBRO', 'RIVISTA',
-            'GIORNALE', 'TELEVISIONE', 'RADIO', 'INTERNET', 'TELEFONO', 'TABLET',
-            'APP', 'SOCIAL', 'EMAIL', 'MESSAGGIO', 'CHIAMATA', 'VIDEO',
-            'FOTO', 'CAMERA', 'MICROFONO', 'CASSA', 'CUFFIE', 'TASTIERA',
-            'MOUSE', 'MONITOR', 'STAMPANTE', 'SCANNER', 'ROUTER', 'CAVO'
+            'COMPUTER', 'PHONE', 'TREE', 'SUN', 'MOON', 'STAR',
+            'SEA', 'MOUNTAIN', 'FLOWER', 'ANIMAL', 'BOOK', 'SCHOOL',
+            'FRIEND', 'FAMILY', 'CITY', 'TOWN', 'CAR', 'BICYCLE',
+            'TRAVEL', 'MUSIC', 'ART', 'SPORT', 'GAME', 'WORK',
+            'HOUSE', 'KITCHEN', 'ROOM', 'GARDEN', 'TIME', 'SKY',
+            'CLOUD', 'RAIN', 'SNOW', 'WIND', 'FIRE', 'WATER',
+            'EARTH', 'AIR', 'LIVINGROOM', 'BATHROOM', 'BED', 'TABLE',
+            'CHAIR', 'WINDOW', 'DOOR', 'MIRROR', 'PAINTING', 'SHOES',
+            'CLOTHES', 'SHIRT', 'PANTS', 'SHOES', 'HAT', 'GLOVES',
+            'SCARF', 'WATCH', 'GLASSES', 'JEWELRY', 'RING', 'BRACELET',
+            'NECKLACE', 'EARRINGS', 'BAG', 'BACKPACK', 'SUITCASE', 'BRIEFCASE',
+            'PEN', 'PENCIL', 'NOTEBOOK', 'PAPER', 'BOOK', 'MAGAZINE',
+            'NEWSPAPER', 'TELEVISION', 'RADIO', 'INTERNET', 'PHONE', 'TABLET',
+            'APP', 'SOCIAL', 'EMAIL', 'MESSAGE', 'CALL', 'VIDEO',
+            'PHOTO', 'CAMERA', 'MICROPHONE', 'SPEAKER', 'HEADPHONES', 'KEYBOARD',
+            'MOUSE', 'MONITOR', 'PRINTER', 'SCANNER', 'ROUTER', 'CABLE'
         ];
     }
 
     startGame(betAmount) {
-        if (this.gameState === 'playing') return { error: "⚠️ Partita già in corso!" };
-        if (betAmount > this.userData.limit) return { error: "💰 Fondi insufficienti!" };
+        if (this.gameState === 'playing') return { error: "⚠️ Game already in progress!" };
+        if (betAmount > this.userData.limit) return { error: "💰 Insufficient funds!" };
 
         this.betAmount = betAmount;
         this.userData.limit -= betAmount;
@@ -63,9 +63,9 @@ class HangmanGame {
     }
 
     guessLetter(letter) {
-        if (this.gameState !== 'playing') return { error: "❌ Nessuna partita in corso!" };
+        if (this.gameState !== 'playing') return { error: "❌ No game in progress!" };
         if (this.guessedLetters.includes(letter) || this.wrongLetters.includes(letter)) {
-            return { error: "❌ Lettera già provata!" };
+            return { error: "❌ Letter already tried!" };
         }
 
         letter = letter.toUpperCase();
@@ -73,7 +73,7 @@ class HangmanGame {
         if (this.currentWord.includes(letter)) {
             this.guessedLetters.push(letter);
             
-            // Controlla se ha vinto
+            // Check if won
             const hasWon = this.currentWord.split('').every(char => 
                 char === ' ' || this.guessedLetters.includes(char)
             );
@@ -113,7 +113,7 @@ class HangmanGame {
         const totalLetters = new Set(this.currentWord.replace(/ /g, '')).size;
         const accuracy = lettersGuessed / totalLetters;
         
-        // Moltiplicatore basato sulla precisione e tentativi rimasti
+        // Multiplier based on accuracy and remaining attempts
         this.prizeMultiplier = 2 + (accuracy * 3) + (this.attemptsLeft * 0.5);
         this.userData.limit += this.betAmount * this.prizeMultiplier;
     }
@@ -128,56 +128,56 @@ class HangmanGame {
         const canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         const ctx = canvas.getContext('2d');
 
-        // Sfondo
+        // Background
         const gradient = ctx.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         gradient.addColorStop(0, '#2c3e50');
         gradient.addColorStop(1, '#34495e');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        // Titolo
+        // Title
         ctx.fillStyle = '#ecf0f1';
         ctx.font = 'bold 28px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('🎯 IMPICCATO', CANVAS_WIDTH / 2, 40);
+        ctx.fillText('🎯 HANGMAN', CANVAS_WIDTH / 2, 40);
 
-        // Disegna la forca
+        // Draw gallows
         this.drawGallows(ctx);
 
-        // Disegna l'impiccato in base agli errori
+        // Draw hangman based on errors
         this.drawHangman(ctx);
 
-        // Parola da indovinare
+        // Word to guess
         const displayWord = this.getDisplayWord();
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 24px Arial';
         ctx.fillText(displayWord, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 120);
 
-        // Lettere sbagliate
+        // Wrong letters
         if (this.wrongLetters.length > 0) {
             ctx.fillStyle = '#e74c3c';
             ctx.font = '18px Arial';
-            ctx.fillText(`Lettere sbagliate: ${this.wrongLetters.join(', ')}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 90);
+            ctx.fillText(`Wrong letters: ${this.wrongLetters.join(', ')}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 90);
         }
 
-        // Tentativi rimasti
+        // Attempts left
         ctx.fillStyle = this.attemptsLeft <= 2 ? '#e74c3c' : '#f39c12';
         ctx.font = 'bold 20px Arial';
-        ctx.fillText(`Tentativi: ${this.attemptsLeft}/${this.maxAttempts}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 60);
+        ctx.fillText(`Attempts: ${this.attemptsLeft}/${this.maxAttempts}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 60);
 
-        // Info gioco
+        // Game info
         ctx.fillStyle = '#bdc3c7';
         ctx.font = '14px Arial';
-        ctx.fillText(`💶 Puntata: ${this.formatNumber(this.betAmount)} UC`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 30);
+        ctx.fillText(`💶 Bet: ${this.formatNumber(this.betAmount)} UC`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 30);
 
         if (this.gameState === 'won') {
             ctx.fillStyle = '#27ae60';
             ctx.font = 'bold 18px Arial';
-            ctx.fillText(`🎉 VINTO: ${this.formatNumber(this.betAmount * this.prizeMultiplier)} UC!`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 150);
+            ctx.fillText(`🎉 WON: ${this.formatNumber(this.betAmount * this.prizeMultiplier)} UC!`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 150);
         } else if (this.gameState === 'lost') {
             ctx.fillStyle = '#e74c3c';
             ctx.font = 'bold 18px Arial';
-            ctx.fillText(`💀 Parola: ${this.currentWord}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 150);
+            ctx.fillText(`💀 Word: ${this.currentWord}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 150);
         }
 
         return canvas.toBuffer('image/png');
@@ -200,19 +200,19 @@ class HangmanGame {
         ctx.lineTo(gallowsRight, gallowsBottom);
         ctx.stroke();
 
-        // Palo verticale
+        // Vertical pole
         ctx.beginPath();
         ctx.moveTo(centerX, gallowsBottom);
         ctx.lineTo(centerX, gallowsTop);
         ctx.stroke();
 
-        // Trave orizzontale
+        // Horizontal beam
         ctx.beginPath();
         ctx.moveTo(centerX, gallowsTop);
         ctx.lineTo(centerX + 80, gallowsTop);
         ctx.stroke();
 
-        // Corda
+        // Rope
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -231,14 +231,14 @@ class HangmanGame {
         ctx.lineCap = 'round';
 
         if (errors >= 1) {
-            // Testa
+            // Head
             ctx.beginPath();
             ctx.arc(headX, headY, 20, 0, Math.PI * 2);
             ctx.stroke();
         }
 
         if (errors >= 2) {
-            // Corpo
+            // Body
             ctx.beginPath();
             ctx.moveTo(headX, headY + 20);
             ctx.lineTo(headX, headY + 80);
@@ -246,7 +246,7 @@ class HangmanGame {
         }
 
         if (errors >= 3) {
-            // Braccio sinistro
+            // Left arm
             ctx.beginPath();
             ctx.moveTo(headX, headY + 40);
             ctx.lineTo(headX - 30, headY + 20);
@@ -254,7 +254,7 @@ class HangmanGame {
         }
 
         if (errors >= 4) {
-            // Braccio destro
+            // Right arm
             ctx.beginPath();
             ctx.moveTo(headX, headY + 40);
             ctx.lineTo(headX + 30, headY + 20);
@@ -262,7 +262,7 @@ class HangmanGame {
         }
 
         if (errors >= 5) {
-            // Gamba sinistra
+            // Left leg
             ctx.beginPath();
             ctx.moveTo(headX, headY + 80);
             ctx.lineTo(headX - 25, headY + 120);
@@ -270,26 +270,26 @@ class HangmanGame {
         }
 
         if (errors >= 6) {
-            // Gamba destra
+            // Right leg
             ctx.beginPath();
             ctx.moveTo(headX, headY + 80);
             ctx.lineTo(headX + 25, headY + 120);
             ctx.stroke();
 
-            // Faccia triste
+            // Sad face
             ctx.beginPath();
-            ctx.arc(headX - 8, headY - 5, 3, 0, Math.PI * 2); // Occhio sinistro
-            ctx.arc(headX + 8, headY - 5, 3, 0, Math.PI * 2); // Occhio destro
+            ctx.arc(headX - 8, headY - 5, 3, 0, Math.PI * 2); // Left eye
+            ctx.arc(headX + 8, headY - 5, 3, 0, Math.PI * 2); // Right eye
             ctx.stroke();
             
             ctx.beginPath();
-            ctx.arc(headX, headY + 5, 8, 0.2 * Math.PI, 0.8 * Math.PI); // Bocca triste
+            ctx.arc(headX, headY + 5, 8, 0.2 * Math.PI, 0.8 * Math.PI); // Sad mouth
             ctx.stroke();
         }
     }
 
     formatNumber(num) {
-        return new Intl.NumberFormat('it-IT').format(num);
+        return new Intl.NumberFormat('en-US').format(num);
     }
 }
 
@@ -301,9 +301,9 @@ let handler = async (m, { conn, usedPrefix, text }) => {
     const userId = m.sender;
     const user = global.db.data.users[userId];
 
-    if (!user) return conn.reply(m.chat, '❌ Utente non trovato nel database!', m);
+    if (!user) return conn.reply(m.chat, '❌ User not found in database!', m);
 
-    // Gestione comandi
+    // Command handling
     const args = text.trim().split(' ');
     const command = args[0]?.toUpperCase();
 
@@ -313,12 +313,12 @@ let handler = async (m, { conn, usedPrefix, text }) => {
 
     const game = global.hangmanGames[userId];
 
-    if (command === 'START' || command === 'INIZIA') {
+    if (command === 'START' || command === 'BEGIN') {
         const betAmount = parseInt(args[1]) || 100;
         
         if (cooldowns[userId] && Date.now() - cooldowns[userId] < 5000) {
             const remaining = Math.ceil((cooldowns[userId] + 5000 - Date.now()) / 1000);
-            return conn.reply(m.chat, `⏰ Aspetta ${remaining} secondi prima di iniziare una nuova partita!`, m);
+            return conn.reply(m.chat, `⏰ Wait ${remaining} seconds before starting a new game!`, m);
         }
 
         const result = game.startGame(betAmount);
@@ -327,103 +327,103 @@ let handler = async (m, { conn, usedPrefix, text }) => {
         cooldowns[userId] = Date.now();
 
         const image = await game.generateHangmanImage();
-        const caption = `🎯 *IMPICCATO - PARTITA INIZIATA!*\n\n` +
-                       `📏 Parola da ${result.wordLength} lettere\n` +
-                       `💶 Puntata: ${game.formatNumber(betAmount)} UC\n` +
-                       `❤️ Tentativi: ${result.attempts}\n\n` +
-                       `💡 Inviami una lettera per indovinare!\n` +
-                       `⚡ Esempio: ${usedPrefix}hangman A`;
+        const caption = `🎯 *HANGMAN - GAME STARTED!*\n\n` +
+                       `📏 Word of ${result.wordLength} letters\n` +
+                       `💶 Bet: ${game.formatNumber(betAmount)} UC\n` +
+                       `❤️ Attempts: ${result.attempts}\n\n` +
+                       `💡 Send me a letter to guess!\n` +
+                       `⚡ Example: ${usedPrefix}hangman A`;
 
         await conn.sendMessage(chat, {
             image: image,
             caption: caption,
-            footer: 'Impiccato 🎯'
+            footer: 'Hangman 🎯'
         }, { quoted: m });
 
     } else if (/^[A-Z]$/i.test(command)) {
-        // Indovina una lettera
+        // Guess a letter
         if (game.gameState !== 'playing') {
-            return conn.reply(m.chat, '❌ Nessuna partita in corso! Usa .hangman start', m);
+            return conn.reply(m.chat, '❌ No game in progress! Use .hangman start', m);
         }
 
         const result = game.guessLetter(command);
         if (result.error) return conn.reply(m.chat, result.error, m);
 
         const image = await game.generateHangmanImage();
-        let caption = `🎯 *IMPICCATO*\n\n`;
+        let caption = `🎯 *HANGMAN*\n\n`;
 
         if (result.won) {
-            caption += `🎉 *HAI VINTO!*\n` +
-                      `💰 Vincita: ${game.formatNumber(result.prize)} UC\n` +
-                      `✨ Moltiplicatore: x${game.prizeMultiplier.toFixed(1)}\n` +
-                      `🏆 Parola: ${game.currentWord}`;
+            caption += `🎉 *YOU WON!*\n` +
+                      `💰 Prize: ${game.formatNumber(result.prize)} UC\n` +
+                      `✨ Multiplier: x${game.prizeMultiplier.toFixed(1)}\n` +
+                      `🏆 Word: ${game.currentWord}`;
         } else if (result.lost) {
-            caption += `💀 *HAI PERSO!*\n` +
-                      `📝 Parola: ${result.word}\n` +
-                      `😔 Ritenta!`;
+            caption += `💀 *YOU LOST!*\n` +
+                      `📝 Word: ${result.word}\n` +
+                      `😔 Try again!`;
         } else {
             caption += `📝 ${game.getDisplayWord()}\n` +
-                      `❤️ Tentativi: ${game.attemptsLeft}/${game.maxAttempts}\n` +
-                      `❌ Errori: ${game.wrongLetters.join(', ') || 'Nessuno'}\n\n` +
-                      `💡 ${result.correct ? '✅ Lettera corretta!' : '❌ Lettera sbagliata!'}`;
+                      `❤️ Attempts: ${game.attemptsLeft}/${game.maxAttempts}\n` +
+                      `❌ Errors: ${game.wrongLetters.join(', ') || 'None'}\n\n` +
+                      `💡 ${result.correct ? '✅ Correct letter!' : '❌ Wrong letter!'}`;
         }
 
-        caption += `\n💶 Puntata: ${game.formatNumber(game.betAmount)} UC`;
+        caption += `\n💶 Bet: ${game.formatNumber(game.betAmount)} UC`;
 
         const buttons = [
-            { buttonId: `${usedPrefix}hangman start 100`, buttonText: { displayText: "🎯 Nuova Partita" }, type: 1 }
+            { buttonId: `${usedPrefix}hangman start 100`, buttonText: { displayText: "🎯 New Game" }, type: 1 }
         ];
 
         await conn.sendMessage(chat, {
             image: image,
             caption: caption,
-            footer: 'Impiccato 🎯',
+            footer: 'Hangman 🎯',
             buttons: game.gameState !== 'playing' ? buttons : undefined
         }, { quoted: m });
 
-    } else if (command === 'SVELA' || command === 'RIVELA') {
+    } else if (command === 'REVEAL' || command === 'GIVEUP') {
         if (game.gameState !== 'playing') {
-            return conn.reply(m.chat, '❌ Nessuna partita in corso!', m);
+            return conn.reply(m.chat, '❌ No game in progress!', m);
         }
 
         game.gameState = 'lost';
         const image = await game.generateHangmanImage();
         
-        const caption = `🎯 *IMPICCATO - PARTITA CONCLUSA*\n\n` +
-                       `💀 Hai abbandonato!\n` +
-                       `📝 La parola era: ${game.currentWord}\n` +
-                       `💶 Puntata persa: ${game.formatNumber(game.betAmount)} UC`;
+        const caption = `🎯 *HANGMAN - GAME ENDED*\n\n` +
+                       `💀 You gave up!\n` +
+                       `📝 The word was: ${game.currentWord}\n` +
+                       `💶 Lost bet: ${game.formatNumber(game.betAmount)} UC`;
 
         const buttons = [
-            { buttonId: `${usedPrefix}hangman start 100`, buttonText: { displayText: "🎯 Nuova Partita" }, type: 1 }
+            { buttonId: `${usedPrefix}hangman start 100`, buttonText: { displayText: "🎯 New Game" }, type: 1 }
         ];
 
         await conn.sendMessage(chat, {
             image: image,
             caption: caption,
-            footer: 'Impiccato 🎯',
+            footer: 'Hangman 🎯',
             buttons: buttons
         }, { quoted: m });
 
     } else {
         // Help
-        const helpText = `🎯 *IMPICCATO - COMANDI*\n\n` +
-                        `🔄 ${usedPrefix}hangman start [puntata] - Inizia nuova partita\n` +
-                        `🔤 ${usedPrefix}hangman [lettera] - Indovina una lettera\n` +
-                        `🏳️ ${usedPrefix}hangman svela - Abbandona la partita\n\n` +
-                        `💡 Esempi:\n` +
+        const helpText = `🎯 *HANGMAN - COMMANDS*\n\n` +
+                        `🔄 ${usedPrefix}hangman start [bet] - Start new game\n` +
+                        `🔤 ${usedPrefix}hangman [letter] - Guess a letter\n` +
+                        `🏳️ ${usedPrefix}hangman reveal - Give up game\n\n` +
+                        `💡 Examples:\n` +
                         `${usedPrefix}hangman start 500\n` +
                         `${usedPrefix}hangman A\n` +
-                        `${usedPrefix}hangman svela`;
+                        `${usedPrefix}hangman reveal`;
 
         await conn.sendMessage(chat, {
             text: helpText,
-            footer: 'Impiccato 🎯'
+            footer: 'Hangman 🎯'
         }, { quoted: m });
     }
 };
 
-handler.help = ['hangman [start/lettera/svela]'];
+handler.help = ['hangman [start/letter/reveal]'];
 handler.tags = ['games'];
 handler.command = /^hangman$/i;
 handler.group = true;
