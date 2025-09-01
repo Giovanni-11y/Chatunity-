@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-// Funzione cmd locale (semplificata per uso diretto nel plugin)
+// Local cmd function (simplified for direct use in plugin)
 function cmd(info, func) {
     return func;
 }
 
-// Config locale solo per ALIVE_IMG
+// Local config only for ALIVE_IMG
 const ALIVE_IMG = process.env.ALIVE_IMG || "https://i.imgur.com/PEZ5QL2.jpeg";
 
 cmd({
