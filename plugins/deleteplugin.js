@@ -1,4 +1,4 @@
-//Plugins By Gabs
+// Plugins By Gabs
 import { tmpdir } from 'os';
 import path, { join } from 'path';
 import { readdirSync, statSync, unlinkSync, existsSync, readFileSync, watch } from 'fs';
@@ -176,17 +176,17 @@ let handler = async (m, { text, usedPrefix, command, __dirname, conn }) => {
   
   if (!text) {
     const helpMessage = `
-╭━━━━━『 🗑️ 𝐃𝐄𝐋𝐄𝐓𝐄 𝐏𝐋𝐔𝐆𝐈𝐍 』━━━━━╮
+╭━━━━━『 🗑️ PLUGIN DELETE 』━━━━━╮
 ┃
-┃ 📌 *Uso del comando:*
-┃ \`${usedPrefix}deleteplugin <nome>\`
+┃ 📌 *Command usage:*
+┃ \`${usedPrefix}deleteplugin <name>\`
 ┃
-┃ ✨ *Esempio:*
-┃ \`${usedPrefix}deleteplugin menu-official\`
+┃ ✨ *Example:*
+┃ \`${usedPrefix}deleteplugin main-menu\`
 ┃
-┃ 📋 *Plugin disponibili:*
+┃ 📋 *Available plugins:*
 ${pluginNames.slice(0, 15).map((name, i) => `┃ ${i + 1}. ${name}`).join('\n')}
-${pluginNames.length > 15 ? `┃ ... e altri ${pluginNames.length - 15} plugin` : ''}
+${pluginNames.length > 15 ? `┃ ... and ${pluginNames.length - 15} more plugins` : ''}
 ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
     `.trim();
@@ -195,7 +195,7 @@ ${pluginNames.length > 15 ? `┃ ... e altri ${pluginNames.length - 15} plugin` 
       delete global.deletePluginData;
     }
     
-    const info = `📁 *Plugin Manager*\n\n${helpMessage}\n\n❓ Seleziona un plugin da eliminare:`
+    const info = `📁 *Plugin Manager*\n\n${helpMessage}\n\n❓ Select a plugin to delete:`
     
     return conn.reply(m.chat, info, m);
   }
@@ -208,7 +208,7 @@ ${pluginNames.length > 15 ? `┃ ... e altri ${pluginNames.length - 15} plugin` 
     if (index >= 0 && index < pluginNames.length) {
       targetPlugin = pluginNames[index];
     } else {
-      throw `❌ Numero non valido! Range: 1-${pluginNames.length}`;
+      throw `❌ Invalid number! Range: 1-${pluginNames.length}`;
     }
   } else {
     const exactMatch = pluginNames.find(name => name === input);
@@ -225,7 +225,7 @@ ${pluginNames.length > 15 ? `┃ ... e altri ${pluginNames.length - 15} plugin` 
       const matches = findBestMatches(input, allFiles);
       
       if (matches.length === 0) {
-        throw `❌ Nessun plugin simile a "${input}" trovato`;
+        throw `❌ No plugin similar to "${input}" found`;
       }
       
       if (matches.length === 1 && matches[0].score > 0.7) {
@@ -237,7 +237,7 @@ ${pluginNames.length > 15 ? `┃ ... e altri ${pluginNames.length - 15} plugin` 
           autoConfirm: true
         };
 
-        return m.reply(`✨ 𝐓𝐫𝐨𝐯𝐚𝐭𝐨 "${matches[0].filename}" (${Math.round(matches[0].score * 100)}%)\n🗑️ 𝐕𝐮𝐨𝐢 𝐞𝐥𝐢𝐦𝐢𝐧𝐚𝐫𝐥𝐨?\n\n📝 si/no`);
+        return m.reply(`✨ Found "${matches[0].filename}" (${Math.round(matches[0].score * 100)}%)\n🗑️ Do you want to delete it?\n\n📝 yes/no`);
       }
 
       global.deletePluginData = {
@@ -252,7 +252,7 @@ ${pluginNames.length > 15 ? `┃ ... e altri ${pluginNames.length - 15} plugin` 
         `${index + 1}. ${item.filename} (${Math.round(item.score * 100)}%)`
       ).join('\n');
 
-      return m.reply(`🔍 𝐑𝐢𝐬𝐮𝐥𝐭𝐚𝐭𝐢 𝐩𝐞𝐫 "${input}":\n\n${optionsText}\n\n📝 𝐒𝐜𝐞𝐠𝐥𝐢 𝐢𝐥 𝐧𝐮𝐦𝐞𝐫𝐨 𝐨 "no" 𝐩𝐞𝐫 𝐚𝐧𝐧𝐮𝐥𝐥𝐚𝐫𝐞`);
+      return m.reply(`🔍 Results for "${input}":\n\n${optionsText}\n\n📝 Select a number or "no" to cancel`);
     }
   }
 
@@ -265,11 +265,11 @@ async function deletePlugin(pluginName, __dirname, m, conn) {
     
     if (!existsSync(pluginPath)) {
       return conn.reply(m.chat, `
-╭━━━━━『 ⚠️ 𝐀𝐓𝐓𝐄𝐍𝐙𝐈𝐎𝐍𝐄 』━━━━━╮
+╭━━━━━『 ⚠️ WARNING 』━━━━━╮
 ┃
-┃ 📁 *File non trovato nel filesystem*
+┃ 📁 *File not found in filesystem*
 ┃
-┃ 🔍 *Percorso cercato:*
+┃ 🔍 *Path searched:*
 ┃ \`${pluginPath}\`
 ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
@@ -279,20 +279,20 @@ async function deletePlugin(pluginName, __dirname, m, conn) {
     unlinkSync(pluginPath);
     
     const successMessage = `
-╭━━━━━『 ✅ 𝐏𝐋𝐔𝐆𝐈𝐍 𝐄𝐋𝐈𝐌𝐈𝐍𝐀𝐓𝐎 』━━━━━╮
+╭━━━━━『 ✅ PLUGIN DELETED 』━━━━━╮
 ┃
-┃ 🗑️ *Plugin eliminato con successo!*
+┃ 🗑️ *Plugin deleted successfully!*
 ┃
-┃ 📝 *Nome:* \`${pluginName}.js\`
-┃ 👤 *Eliminato da:* @${m.sender.split('@')[0]}
-┃ 🕐 *Ora:* ${new Date().toLocaleString('it-IT')}
+┃ 📝 *Name:* \`${pluginName}.js\`
+┃ 👤 *Deleted by:* @${m.sender.split('@')[0]}
+┃ 🕐 *Time:* ${new Date().toLocaleString('en-US')}
 ┃
-┃ ⚠️ *Nota:* Il bot potrebbe richiedere
-┃ un riavvio per applicare le modifiche
+┃ ⚠️ *Note:* The bot may require
+┃ a restart to apply changes
 ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 
-🎯 *Operazione completata!*
+🎯 *Operation completed!*
     `.trim();
     
     const fakeMessage = {
@@ -303,7 +303,7 @@ async function deletePlugin(pluginName, __dirname, m, conn) {
       },
       message: {
         locationMessage: {
-          name: '🗑️ Plugin Eliminato Correttamente',
+          name: '🗑️ Plugin Successfully Deleted',
           jpegThumbnail: await (await fetch('https://telegra.ph/file/6d491d5823b5778921229.png')).buffer(),
           vcard: `BEGIN:VCARD
 VERSION:3.0
@@ -326,20 +326,20 @@ END:VCARD`
     });
     
   } catch (error) {
-    console.error('Errore durante l\'eliminazione del plugin:', error);
+    console.error('Error deleting plugin:', error);
     
     const errorMessage = `
-╭━━━━━『 💥 𝐄𝐑𝐑𝐎𝐑𝐄 𝐒𝐈𝐒𝐓𝐄𝐌𝐀 』━━━━━╮
+╭━━━━━『 💥 SYSTEM ERROR 』━━━━━╮
 ┃
-┃ ❌ *Impossibile eliminare il plugin*
+┃ ❌ *Unable to delete plugin*
 ┃
-┃ 🔍 *Dettagli errore:*
+┃ 🔍 *Error details:*
 ┃ \`${error.message}\`
 ┃
-┃ 💡 *Possibili soluzioni:*
-┃ • Controlla i permessi del file
-┃ • Verifica che il plugin non sia in uso
-┃ • Riprova tra qualche secondo
+┃ 💡 *Possible solutions:*
+┃ • Check file permissions
+┃ • Verify plugin is not in use
+┃ • Try again in a few seconds
 ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
     `.trim();
@@ -365,14 +365,14 @@ handler.before = async (m, { conn }) => {
         delete global.deletePluginData;
         return true;
       } catch (error) {
-        m.reply(`❌ 𝐄𝐫𝐫𝐨𝐫𝐞: ${error.message}`);
+        m.reply(`❌ Error: ${error.message}`);
         delete global.deletePluginData;
         return true;
       }
     }
     
     if (response === 'no') {
-      m.reply('❌ 𝐎𝐩𝐞𝐫𝐚𝐳𝐢𝐨𝐧𝐞 𝐚𝐧𝐧𝐮𝐥𝐥𝐚𝐭𝐚');
+      m.reply('❌ Operation cancelled');
       delete global.deletePluginData;
       return true;
     }
@@ -380,21 +380,21 @@ handler.before = async (m, { conn }) => {
     return;
   }
   
-  if (response === 'si' || response === 'sì') {
+  if (response === 'yes' || response === 'y') {
     try {
       const pluginName = global.deletePluginData.filename.replace('.js', '');
       await deletePlugin(pluginName, global.deletePluginData.dirname, m, conn);
       delete global.deletePluginData;
       return true;
     } catch (error) {
-      m.reply(`❌ 𝐄𝐫𝐫𝐨𝐫𝐞: ${error.message}`);
+      m.reply(`❌ Error: ${error.message}`);
       delete global.deletePluginData;
       return true;
     }
   }
   
   if (response === 'no') {
-    m.reply('❌ 𝐎𝐩𝐞𝐫𝐚𝐳𝐢𝐨𝐧𝐞 𝐚𝐧𝐧𝐮𝐥𝐥𝐚𝐭𝐚');
+    m.reply('❌ Operation cancelled');
     delete global.deletePluginData;
     return true;
   }
@@ -402,7 +402,7 @@ handler.before = async (m, { conn }) => {
 
 handler.help = ['deleteplugin'];
 handler.tags = ['owner'];
-handler.command = /^(deleteplugin|dp|deleteplu|rimuoviplugin|eliminaplugin)$/i;
+handler.command = /^(deleteplugin|dp|deleteplu|removeplugin|deleteplugin)$/i;
 handler.owner = true;
 
 export default handler;
