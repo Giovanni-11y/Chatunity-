@@ -1,4 +1,4 @@
-// Codice di _antispam.js
+// Code for _antispam.js
 
 let userSpamCounters = {};  // Start
 const STICKER_LIMIT = 6;  // Start
@@ -58,11 +58,11 @@ export async function before(m, { isAdmin, isBotAdmin, conn }) {
         if (isStickerSpam || isPhotoVideoSpam || isTagSpam) {
             if (isBotAdmin && bot.restrict) {
                 try {
-                    console.log('Spam rilevato! Modificando le impostazioni del gruppo...');
+                    console.log('Spam detected! Modifying group settings...');
 
                     // Start
                     await conn.groupSettingUpdate(m.chat, 'announcement');
-                    console.log('Solo gli amministratori possono inviare messaggi.');
+                    console.log('Only administrators can send messages.');
 
                     // Start
                     if (!isAdmin) {
@@ -70,51 +70,51 @@ export async function before(m, { isAdmin, isBotAdmin, conn }) {
                         console.log(`Participant removal response: ${JSON.stringify(responseb)}`);
 
                         if (responseb[0].status === "404") {
-                            console.log('Utente non trovato o già rimosso.');
+                            console.log('User not found or already removed.');
                         }
                     } else {
-                        console.log('L\'utente è un amministratore e non verrà rimosso.');
+                        console.log('The user is an administrator and will not be removed.');
                     }
 
                     // Start
                     for (const messageId of counter.messageIds) {
                         await conn.sendMessage(m.chat, { delete: { remoteJid: m.chat, fromMe: false, id: messageId, participant: delet } });
-                        console.log(`Messaggio con ID ${messageId} eliminato.`);
+                        console.log(`Message with ID ${messageId} deleted.`);
                     }
-                    console.log('Tutti i messaggi di spam sono stati eliminati.');
+                    console.log('All spam messages have been deleted.');
 
                     // Start
                     await conn.groupSettingUpdate(m.chat, 'not_announcement');
-                    console.log('Chat riattivata per tutti i membri.');
+                    console.log('Chat reactivated for all members.');
 
                     // Start
                     await conn.sendMessage(m.chat, { text: '*antispam by Origin detected*' });
-                    console.log('Messaggio di notifica antispam inviato.');
+                    console.log('Antispam notification message sent.');
 
                     // Start
                     delete userSpamCounters[m.chat][sender];
-                    console.log('Contatore di spam per l\'utente resettato.');
+                    console.log('Spam counter for the user has been reset.');
 
                 } catch (error) {
-                    console.error('Errore durante la gestione dello spam:', error);
+                    console.error('Error while handling spam:', error);
                 }
             } else {
-                console.log('Bot non è amministratore o la restrizione è disattivata. Non posso eseguire l\'operazione.');
+                console.log('Bot is not an administrator or restriction is disabled. Cannot perform the operation.');
             }
         } else {
             // Start
             counter.timer = setTimeout(() => {
                 delete userSpamCounters[m.chat][sender];
-                console.log('Contatore di spam per l\'utente resettato dopo il timeout.');
+                console.log('Spam counter for the user reset after timeout.');
             }, RESET_TIMEOUT);
         }
     } else {
         // Start
         if (currentTime - counter.lastMessageTime > RESET_TIMEOUT && (counter.stickerCount > 0 || counter.photoVideoCount > 0 || counter.tagCount > 0)) {
-            console.log('Timeout scaduto. Reset del contatore di spam per l\'utente.');
+            console.log('Timeout expired. Resetting user spam counter.');
             delete userSpamCounters[m.chat][sender];
         }
     }
 
     return true;
-}
+                }
