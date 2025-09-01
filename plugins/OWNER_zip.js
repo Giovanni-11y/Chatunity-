@@ -2,19 +2,19 @@ import fs from 'fs';
 import archiver from 'archiver';
 
 let handler = async (m, { text, conn, usedPrefix, command, __dirname }) => {
-  if (!text) return m.reply(`⚠️ Usa: ${usedPrefix + command} <nome_archivio>`);
+  if (!text) return m.reply(`⚠️ Use: ${usedPrefix + command} <archive_name>`);
 
   let archiveName = text.trim();
   let archivePath = `./${archiveName}.zip`;
 
-  await m.reply(`🔄 Creazione del backup in corso...`);
+  await m.reply(`🔄 Creating backup...`);
 
   const output = fs.createWriteStream(archivePath);
   const archive = archiver('zip', { zlib: { level: 9 } });
 
   output.on('close', async () => {
-    console.log(`Archivio creato: ${archive.pointer()} bytes`);
-    await m.reply(`✅ Backup ${archiveName}.zip creato. Inviando...`);
+    console.log(`Archive created: ${archive.pointer()} bytes`);
+    await m.reply(`✅ Backup ${archiveName}.zip created. Sending...`);
 
     let fileData = fs.readFileSync(archivePath);
     await conn.sendMessage(m.chat, {
@@ -28,12 +28,12 @@ let handler = async (m, { text, conn, usedPrefix, command, __dirname }) => {
 
   archive.on('error', (err) => {
     console.error(err);
-    m.reply(`❌ Errore durante la compressione: ${err.message}`);
+    m.reply(`❌ Error during compression: ${err.message}`);
   });
 
   archive.pipe(output);
 
-  // Usa glob per includere tutti i file e cartelle tranne "node_modules" e "333BotSession"
+  // Use glob to include all files and folders except "node_modules" and "333BotSession"
   archive.glob('**/*', {
     ignore: ['node_modules/**', '333BotSession/**']
   });
