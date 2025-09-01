@@ -30,45 +30,45 @@ function _0x2086() {
         'dpDgl',
         '┃◈┃',
         '296204EFDlZs',
-        '🔧\x20Funzioni',
-        'risposte',
+        '🔧 Features',
+        'responses',
         'toLowerCase',
         '8AmFcok',
         'djLvO',
         'chats',
-        '\x0a┃◈┃\x0a┃◈└───────────┈⊷\x0a┃◈┃•\x20*𝑽𝑬𝑹𝑺𝑰𝑶𝑵𝑬:*\x20',
+        '\x0a┃◈┃\x0a┃◈└───────────┈⊷\x0a┃◈┃• *VERSION:* ',
         'Antibot',
-        'Attiva/Disattiva\x20',
+        'Enable/Disable ',
         'map',
         'gaMZg',
         '35018139ZImehH',
         'Antilink',
-        '⚙\x20Impostazioni\x20',
+        '⚙ Bot Settings ',
         '55UiXbDr',
         'sendMessage',
-        'SoloPrivato',
+        'PrivateOnly',
         'undefined',
         'https://telegra.ph/file/00edd0958c94359540a8f.png',
         '354222vLvczL',
         'JlbkW',
         'wbEqG',
         'antiSpam',
-        'chatbotPrivato',
+        'privateChatbot',
         'FSEpo',
         'GGnlF',
-        'antispamcomandi',
+        'commandAntispam',
         'Antilinkhard',
         'Antimedia',
         'antiinsta',
         'getName',
         'tags',
         '5gXewNh',
-        './plugins/cornuto.js',
-        'Benvenuto',
+        './plugins/cheat.js',
+        'Welcome',
         '\x0a╰━━━━━━━━━━━━━┈·๏\x0a',
         'group',
         'BEGIN:VCARD...',
-        'Questo\x20comando\x20è\x20disponibile\x20solo\x20con\x20la\x20base\x20di\x20ChatUnity.',
+        'This command is only available with ChatUnity base.',
         'uZcFO',
         'PVeQS',
         'help',
@@ -80,25 +80,25 @@ function _0x2086() {
         'antiviewonce',
         'nVkda',
         'kXUxn',
-        '📋\x20Lista\x20Comandi',
+        '📋 Command List',
         'WaezD',
-        'Impostazioni\x20Bot',
+        'Bot Settings',
         'data',
-        'Antibestemmie',
+        'AntiSwearing',
         'isBanned',
         'antibot',
         'PghWq',
         'FMnGU',
         'XwuqN',
-        '\x0a╭〔\x20*🔧\x20𝑴𝑬𝑺𝑺𝑨𝑮𝑮𝑖𝑶\x20𝑺𝑻𝑨𝑻𝑶*\x20〕┈⊷\x0a┃\x20𝐅𝐮𝐧𝐳𝐢𝐨𝐧𝐞\x20*',
+        '\x0a╭〔 *🔧 FUNCTION STATUS* 〕┈⊷\x0a┃ Function *',
         'key',
         'gpt',
         'antiporno',
         'privateChatbot',
         'find',
         'AntiCall',
-        '❌\x20Puoi\x20attivare/disattivare\x20la\x20funzione\x20*ChatbotPrivato*\x20solo\x20in\x20chat\x20privata.',
-        '𝐚𝐭𝐭𝐢𝐯𝐚𝐭𝐚',
+        '❌ You can only enable/disable *PrivateChatbot* in private chat.',
+        'enabled',
         'sender',
         'oVnxM',
         'FSeIv',
@@ -107,17 +107,17 @@ function _0x2086() {
         '936000KEroqX',
         'Autosticker',
         '9TmeJGh',
-        'AntispamComandi',
+        'AntispamCommands',
         'EfjpW',
-        'attiva\x20',
+        'enable ',
         'ziqsp',
         'antitiktok',
         'RtFgi',
         'access',
         'antiArab',
-        'disabilita\x20<feature>',
+        'disable <feature>',
         'TiFTp',
-        'SoloGruppo',
+        'GroupOnly',
         'ownerOnly',
         '1389059rbpFfq',
         'test',
@@ -129,10 +129,10 @@ function _0x2086() {
         'antivoip',
         'Antitrava',
         'Antispam',
-        '\x0a┃◈┃•\x20\x20𝐂𝐎𝐋𝐋𝐀𝐁:\x20𝐎𝐍𝐄\x20𝐏𝐈𝐄𝐂𝐄\x0a┃◈┃•\x20*𝐒𝐔𝐏𝐏𝐎𝐑𝐓𝐎:*\x20(.supporto)\x0a╰━━━━━━━━━━━━━┈·๏\x0a',
+        '\x0a┃◈┃•  COLLAB: ONE PIECE\x0a┃◈┃• *SUPPORT:* (.support)\x0a╰━━━━━━━━━━━━━┈·๏\x0a',
         'Antisondaggi',
         'aJFnT',
-        '\x20(Owner)',
+        ' (Owner)',
         '553310iPTWaJ',
         '12kUfTSm',
         'Antivirus',
@@ -141,14 +141,14 @@ function _0x2086() {
         './CODE_OF_CONDUCT.md',
         'aMtSt',
         'admin',
-        '\x0a╭〔\x20*🔧\x20𝑴𝑬𝑵𝑼\x20𝑺𝑰𝑪𝑼𝑹𝑬𝑿\x20𝑩𝑶𝑻\x20🔧\x20〕┈⊷\x0a┃◈╭─────────────·๏\x0a┃◈┃•\x20*𝐀𝐓𝐓𝐈𝐕𝐀/𝐃𝐈𝐒𝐀𝐁𝐈𝐋𝐈𝐓𝐀\x0a┃◈┃\x0a┃◈┃•\x20*ℹ\x20𝐂𝐎𝐌𝐄\x20𝐒𝐈\x20𝐔𝐒𝐀*\x0a┃◈┃•\x20🟢\x20attiva\x20[funzione]\x0a┃◈┃•\x20🔴\x20disabilita\x20[funzione]\x0a┃◈┃•\x20🔴\x20disattiva\x20[funzione]\x0a┃◈┃\x0a',
+        '\x0a╭〔 *🔧 SECUREX BOT MENU 🔧* 〕┈⊷\x0a┃◈╭─────────────·๏\x0a┃◈┃• *ENABLE/DISABLE\x0a┃◈┃\x0a┃◈┃• *ℹ HOW TO USE*\x0a┃◈┃• 🟢 enable [feature]\x0a┃◈┃• 🔴 disable [feature]\x0a┃◈┃\x0a',
         '3UGgkEc',
         '0@s.whatsapp.net',
         'JadiBot',
         'SdyqP',
         'command',
         'BsEgE',
-        '𝐝𝐢𝐬𝐚𝐭𝐭𝐢𝐯𝐚𝐭𝐚',
+        'disabled',
         'leijO',
         'Antiporno',
         'antitrava',
@@ -210,7 +210,7 @@ const features = [
     },
     {
         'key': _0x1fa325(0x242),
-        'label': 'Risposte'
+        'label': 'Responses'
     },
     {
         'key': _0x1fa325(0x22b),
@@ -238,7 +238,7 @@ const features = [
     },
     {
         'key': _0x1fa325(0x1e8),
-        'label': 'BanGruppo'
+        'label': 'BanGroup'
     },
     {
         'key': _0x1fa325(0x1f0),
@@ -314,7 +314,7 @@ let handler = async (_0x36ca14, {
             'msPzx': function (_0x1dfd24, _0x1e5772) {
                 return _0x1dfd24 === _0x1e5772;
             },
-            'uZcFO': '❌\x20Solo\x20il\x20proprietario\x20può\x20attivare/disattivare\x20questa\x20funzione.',
+            'uZcFO': '❌ Only the owner can enable/disable this feature.',
             'djLvO': _0x163928(0x21d),
             'FSeIv': './bal.png',
             'cZuEs': _0x163928(0x1d2),
@@ -380,17 +380,17 @@ let handler = async (_0x36ca14, {
                     if (_0x3aa3b5[_0x596870(0x1fa)](_0x3aa3b5[_0x596870(0x228)], _0x3aa3b5['leijO']))
                         _0x5d6202 = _0x14da0b[_0x5b922[_0x596870(0x1ee)]];
                     else
-                        return _0x4b612f['reply']('Questo\x20comando\x20è\x20disponibile\x20solo\x20con\x20la\x20base\x20di\x20ChatUnity.');
+                        return _0x4b612f['reply']('This command is only available with ChatUnity base.');
                 }
             }
             let _0x4575ba = _0x5d6202 ? '🟢' : '🔴', _0x24f57e = _0x5b922[_0x596870(0x209)] ? _0x3aa3b5['vDiZd'] : '';
-            return _0x596870(0x23f) + _0x4575ba + '\x20*' + _0x5b922['label'] + '*' + _0x24f57e;
+            return _0x596870(0x23f) + _0x4575ba + ' *' + _0x5b922['label'] + '*' + _0x24f57e;
         })['join']('\x0a');
     const _0x5625fd = (_0x163928(0x220) + _0x1818e6 + _0x163928(0x247) + (_0x3aa3b5['CUUbf'](typeof vs, _0x3aa3b5[_0x163928(0x255)]) ? vs : '') + _0x163928(0x214))[_0x163928(0x235)]();
     let _0x394388 = _0x3aa3b5[_0x163928(0x23c)](_0x3aa3b5[_0x163928(0x1d9)], _0x57b646);
     const _0x51a900 = {
         'text': _0x5625fd,
-        'footer': 'Seleziona\x20una\x20funzione\x20da\x20attivare/disattivare',
+        'footer': 'Select a feature to enable/disable',
         'title': _0x394388,
         'buttonText': _0x3aa3b5['MVmIH'],
         'sections': [{
@@ -427,7 +427,7 @@ let handler = async (_0x36ca14, {
     }
     if (_0x1eb1c0['ownerOnly'] && !_0x3aa3b5[_0x163928(0x236)](_0x3d599a, _0x425085))
         return _0x3cf210[_0x163928(0x210)](_0x36ca14[_0x163928(0x20f)], _0x3aa3b5[_0x163928(0x1d8)], _0x36ca14);
-    let _0x27f953 = /attiva|enable|on|1|true/i[_0x163928(0x20b)](_0x33d3ca[_0x163928(0x243)]()), _0x57eadd = /disabilita|disattiva|disable|off|0|false/i[_0x163928(0x20b)](_0x33d3ca[_0x163928(0x243)]());
+    let _0x27f953 = /enable|on|1|true/i[_0x163928(0x20b)](_0x33d3ca[_0x163928(0x243)]()), _0x57eadd = /disable|off|0|false/i[_0x163928(0x20b)](_0x33d3ca[_0x163928(0x243)]());
     if (_0x57eadd)
         _0x27f953 = ![];
     if (_0x3aa3b5[_0x163928(0x1fa)](_0x1eb1c0[_0x163928(0x1ee)], _0x3aa3b5['hvYha']))
@@ -451,8 +451,8 @@ let handler = async (_0x36ca14, {
                     _0x31bced = _0x6611cf['privateChatbot'][_0x43f292[_0x163928(0x1f6)]] || ![];
                 else
                     _0x5a1de0[_0x163928(0x1ee)] === _0x3aa3b5[_0x163928(0x22c)] ? _0x31bced = _0x2fd113['db'][_0x163928(0x1e6)]['chats'][_0xbe99f5['chat']]?.[_0x163928(0x211)] || ![] : _0x31bced = _0x599612[_0x26a3af['key']];
-                let _0x4128aa = _0x31bced ? '🟢' : '🔴', _0x352a17 = _0x214bb6['ownerOnly'] ? '\x20(Owner)' : '';
-                return _0x163928(0x23f) + _0x4128aa + '\x20*' + _0x366f4d[_0x163928(0x20c)] + '*' + _0x352a17;
+                let _0x4128aa = _0x31bced ? '🟢' : '🔴', _0x352a17 = _0x214bb6['ownerOnly'] ? ' (Owner)' : '';
+                return _0x163928(0x23f) + _0x4128aa + ' *' + _0x366f4d[_0x163928(0x20c)] + '*' + _0x352a17;
             }
         } else {
             if (_0x1eb1c0[_0x163928(0x1ee)] in _0x14da0b)
@@ -465,7 +465,7 @@ let handler = async (_0x36ca14, {
             }
         }
     }
-    let _0x5709f9 = _0x3aa3b5[_0x163928(0x24b)](_0x1eb1c0[_0x163928(0x1ee)], _0x3aa3b5[_0x163928(0x224)]) ? global[_0x163928(0x1f1)][_0x36ca14['sender']] ? '🟢' : '🔴' : _0x14da0b[_0x1eb1c0[_0x163928(0x1ee)]] ? '🟢' : '🔴', _0x4e30bb = _0x27f953 ? _0x3aa3b5['tfXFW'] : _0x3aa3b5['yxPvx'], _0x481cec = (_0x163928(0x1ed) + _0x1eb1c0[_0x163928(0x20c)] + '*\x20' + _0x4e30bb + _0x163928(0x1d4))[_0x163928(0x235)]();
+    let _0x5709f9 = _0x3aa3b5[_0x163928(0x24b)](_0x1eb1c0[_0x163928(0x1ee)], _0x3aa3b5[_0x163928(0x224)]) ? global[_0x163928(0x1f1)][_0x36ca14['sender']] ? '🟢' : '🔴' : _0x14da0b[_0x1eb1c0[_0x163928(0x1ee)]] ? '🟢' : '🔴', _0x4e30bb = _0x27f953 ? _0x3aa3b5['tfXFW'] : _0x3aa3b5['yxPvx'], _0x481cec = (_0x163928(0x1ed) + _0x1eb1c0[_0x163928(0x20c)] + '* ' + _0x4e30bb + _0x163928(0x1d4))[_0x163928(0x235)]();
     const _0x3c7d68 = _0x27f953 ? _0x3aa3b5[_0x163928(0x1e1)] : _0x3aa3b5[_0x163928(0x201)];
     let _0x15c33d = {
         'key': {
@@ -485,11 +485,11 @@ let handler = async (_0x36ca14, {
     await _0x3cf210[_0x163928(0x210)](_0x36ca14[_0x163928(0x20f)], _0x481cec, null, { 'quoted': _0x15c33d });
 };
 handler[_0x1fa325(0x1da)] = [
-    'attiva\x20<feature>',
+    'enable <feature>',
     _0x1fa325(0x206),
-    'disattiva\x20<feature>'
+    'disable <feature>'
 ], handler[_0x1fa325(0x1d0)] = [
     _0x1fa325(0x1d5),
     'owner'
-], handler[_0x1fa325(0x225)] = /^(attiva|disabilita|disattiva|enable|disable)/i, handler['group'] = !![], handler[_0x1fa325(0x21f)] = !![];
+], handler[_0x1fa325(0x225)] = /^(enable|disable)/i, handler['group'] = !![], handler[_0x1fa325(0x21f)] = !![];
 export default handler;
