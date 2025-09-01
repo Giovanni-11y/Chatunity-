@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Gestore per ottenere numeri temporanei
 const tempNumHandler = async (conn, mek, m, { from, args, reply }) => {
     try {
         if (!args || args.length < 1) {
@@ -8,6 +9,7 @@ const tempNumHandler = async (conn, mek, m, { from, args, reply }) => {
 
         const countryCode = args[0].toLowerCase();
         
+        // Chiamata API per ottenere la lista dei numeri temporanei per il codice paese
         const { data } = await axios.get(
             `https://api.vreden.my.id/api/tools/fakenumber/listnumber?id=${countryCode}`,
             { 
@@ -29,6 +31,7 @@ const tempNumHandler = async (conn, mek, m, { from, args, reply }) => {
             `${String(i+1).padStart(2, ' ')}. ${num.number}`
         ).join("\n");
 
+        // Risposta con la lista dei numeri temporanei
         await reply(
             `╭──「 📱 NUMERI TEMPORANEI 」\n` +
             `│\n` +
@@ -41,6 +44,7 @@ const tempNumHandler = async (conn, mek, m, { from, args, reply }) => {
         );
 
     } catch (err) {
+        // Gestione degli errori
         const errorMessage = err.code === "ECONNABORTED" ? 
             `⏳ *Timeout*: L'API ha impiegato troppo tempo\nProva con codici paese più piccoli come 'it', 'us'` :
             `⚠ *Errore*: ${err.message}\nFormato: .tempnum <codice-paese>`;
@@ -49,6 +53,7 @@ const tempNumHandler = async (conn, mek, m, { from, args, reply }) => {
     }
 };
 
+// Gestore per ottenere la lista dei paesi
 const tempListHandler = async (conn, m, { reply }) => {
     try {
         const { data } = await axios.get("https://api.vreden.my.id/api/tools/fakenumber/country");
@@ -57,12 +62,14 @@ const tempListHandler = async (conn, m, { reply }) => {
 
         const countries = data.result.map((c, i) => `*${i + 1}.* ${c.title} \`(${c.id})\``).join("\n");
 
+        // Risposta con la lista dei paesi
         await reply(`🌍 *Paesi Disponibili:* ${data.result.length}\n\n${countries}`);
     } catch (e) {
         reply("❌ Errore nel recupero della lista dei paesi per numeri temporanei.");
     }
 };
 
+// Gestore per controllare gli OTP per un numero
 const otpBoxHandler = async (conn, mek, m, { from, args, reply }) => {
     try {
         if (!args[0] || !args[0].startsWith("+")) {
@@ -71,6 +78,7 @@ const otpBoxHandler = async (conn, mek, m, { from, args, reply }) => {
 
         const phoneNumber = args[0].trim();
         
+        // Chiamata API per ottenere i messaggi OTP per il numero
         const { data } = await axios.get(
             `https://api.vreden.my.id/api/tools/fakenumber/message?nomor=${encodeURIComponent(phoneNumber)}`,
             { 
@@ -93,6 +101,7 @@ const otpBoxHandler = async (conn, mek, m, { from, args, reply }) => {
 └ *Messaggio:* ${msg.content.substring(0, 50)}${msg.content.length > 50 ? "..." : ""}`;
         }).join("\n\n");
 
+        // Risposta con i messaggi OTP trovati
         await reply(
             `╭──「 🔑 MESSAGGI OTP 」\n` +
             `│ Numero: ${phoneNumber}\n` +
@@ -103,6 +112,7 @@ const otpBoxHandler = async (conn, mek, m, { from, args, reply }) => {
         );
 
     } catch (err) {
+        // Gestione degli errori
         const errorMsg = err.code === "ECONNABORTED" ?
             "⌛ Tempo scaduto per il controllo OTP. Riprova più tardi" :
             `⚠ Errore: ${err.response?.data?.error || err.message}`;
@@ -111,7 +121,7 @@ const otpBoxHandler = async (conn, mek, m, { from, args, reply }) => {
     }
 };
 
-// Handler principale che gestisce tutti i comandi
+// Gestore principale che gestisce tutti i comandi
 export const handler = async (m, conn, { command, args, reply }) => {
     switch(command) {
         case 'tempnum':
