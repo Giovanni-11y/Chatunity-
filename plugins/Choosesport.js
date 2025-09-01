@@ -1,4 +1,4 @@
-// Fix: Crea il file rss_sources.json se non esiste (workaround per errori di altri moduli che lo richiedono)
+// Fix: Create the rss_sources.json file if it doesn't exist (workaround for errors from other modules that require it)
 import fs from 'fs'
 const rssPath = './rss_sources.json'
 if (!fs.existsSync(rssPath)) {
@@ -9,12 +9,12 @@ let handler = async (m, { conn }) => {
   global.db.data.users[m.sender] = global.db.data.users[m.sender] || {};
 
   const sports = [
-    { name: '⚽ Calcio', id: 'calcio' },
-    { name: '🏀 Basket', id: 'basket' },
+    { name: '⚽ Football', id: 'calcio' },
+    { name: '🏀 Basketball', id: 'basket' },
     { name: '🎾 Tennis', id: 'tennis' },
     { name: '🏎️ Formula 1', id: 'formula1' },
     { name: '🥊 MMA', id: 'mma' },
-    { name: '🚴‍♂️ Ciclismo', id: 'ciclismo' }
+    { name: '🚴‍♂️ Cycling', id: 'ciclismo' }
   ];
 
   const buttons = sports.map(sport => ({
@@ -24,8 +24,8 @@ let handler = async (m, { conn }) => {
   }));
 
   return await conn.sendMessage(m.chat, {
-    text: '📌 *Scegli lo sport che vuoi seguire per ricevere le notizie personalizzate:*',
-    footer: '💡 Puoi cambiarlo in qualsiasi momento',
+    text: '📌 *Choose the sport you want to follow to receive personalized news:*',
+    footer: '💡 You can change it at any time',
     buttons,
     headerType: 1
   }, { quoted: m });
