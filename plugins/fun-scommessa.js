@@ -1,17 +1,18 @@
 let cooldowns = {};
 
-const rcanal = "default_value"; // Replace "default_value" with the appropriate value
+const rcanal = "valore_predefinito"; // Sostituisci "valore_predefinito" con il valore appropriato
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-    let points = 300;
-    let waitTime = 5 * 1000;
-    let user = global.db.data.users[m.sender];
+    let punti = 300;
+    let tempoAttesa = 5 * 1000; // 5 secondi
+    let utente = global.db.data.users[m.sender];
 
-    if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < waitTime) {
-        let timeLeft = secondsToHMS(Math.ceil((cooldowns[m.sender] + waitTime - Date.now()) / 1000));
+    // Controllo del cooldown
+    if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < tempoAttesa) {
+        let tempoRimanente = secondiInMinutiSecondi(Math.ceil((cooldowns[m.sender] + tempoAttesa - Date.now()) / 1000));
         return conn.reply(
             m.chat,
-            `[ ✰ ] You already started a game recently, wait *⏱ ${timeLeft}* to play again.`,
+            `[ ✰ ] Hai già iniziato una partita di recente, aspetta *⏱ ${tempoRimanente}* per giocare di nuovo.`,
             m,
             rcanal
         );
@@ -19,54 +20,56 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     cooldowns[m.sender] = Date.now();
 
+    // Se non è stato fornito un testo/opzione
     if (!text) {
         return conn.sendMessage(m.chat, {
-            text: `[ ✰ ] Choose an option to start the game:`,
+            text: `[ ✰ ] Scegli un'opzione per iniziare il gioco:`,
             buttons: [
-                { buttonId: `${usedPrefix + command} rock`, buttonText: { displayText: "🪨 Rock" }, type: 1 },
-                { buttonId: `${usedPrefix + command} paper`, buttonText: { displayText: "📄 Paper" }, type: 1 },
-                { buttonId: `${usedPrefix + command} scissors`, buttonText: { displayText: "✂️ Scissors" }, type: 1 }
+                { buttonId: `${usedPrefix + command} rock`, buttonText: { displayText: "🪨 Sasso" }, type: 1 },
+                { buttonId: `${usedPrefix + command} paper`, buttonText: { displayText: "📄 Carta" }, type: 1 },
+                { buttonId: `${usedPrefix + command} scissors`, buttonText: { displayText: "✂️ Forbici" }, type: 1 }
             ]
         }, { quoted: m });
     }
 
-    let options = ['rock', 'paper', 'scissors'];
-    let botChoice = options[Math.floor(Math.random() * options.length)];
+    let opzioni = ['rock', 'paper', 'scissors'];
+    let sceltaBot = opzioni[Math.floor(Math.random() * opzioni.length)];
 
-    if (!options.includes(text)) {
+    if (!opzioni.includes(text)) {
         return conn.sendMessage(m.chat, {
-            text: `[ ✰ ] Choose a valid option (rock/paper/scissors) to start the game:`,
+            text: `[ ✰ ] Scegli un'opzione valida (rock/paper/scissors) per iniziare il gioco:`,
             buttons: [
-                { buttonId: `${usedPrefix + command} rock`, buttonText: { displayText: "🪨 Rock" }, type: 1 },
-                { buttonId: `${usedPrefix + command} paper`, buttonText: { displayText: "📄 Paper" }, type: 1 },
-                { buttonId: `${usedPrefix + command} scissors`, buttonText: { displayText: "✂️ Scissors" }, type: 1 }
+                { buttonId: `${usedPrefix + command} rock`, buttonText: { displayText: "🪨 Sasso" }, type: 1 },
+                { buttonId: `${usedPrefix + command} paper`, buttonText: { displayText: "📄 Carta" }, type: 1 },
+                { buttonId: `${usedPrefix + command} scissors`, buttonText: { displayText: "✂️ Forbici" }, type: 1 }
             ]
         }, { quoted: m });
     }
 
-    let result = '';
-    let pointsEarned = 0;
+    let risultato = '';
+    let puntiGuadagnati = 0;
 
-    if (text === botChoice) {
-        result = `[ ✿ ] It's a tie!! You receive *100 🪙 UnityCoins* as a reward.`;
-        pointsEarned = 100;
+    if (text === sceltaBot) {
+        risultato = `[ ✿ ] È un pareggio!! Ricevi *100 🪙 UnityCoins* come premio.`;
+        puntiGuadagnati = 100;
     } else if (
-        (text === 'rock' && botChoice === 'scissors') ||
-        (text === 'scissors' && botChoice === 'paper') ||
-        (text === 'paper' && botChoice === 'rock')
+        (text === 'rock' && sceltaBot === 'scissors') ||
+        (text === 'scissors' && sceltaBot === 'paper') ||
+        (text === 'paper' && sceltaBot === 'rock')
     ) {
-        result = `[ ✰ ] YOU WON!! You just earned *300 🪙 UnityCoins*.`;
-        pointsEarned = points;
+        risultato = `[ ✰ ] HAI VINTO!! Hai guadagnato *300 🪙 UnityCoins*.`;
+        puntiGuadagnati = punti;
     } else {
-        result = `[ ✿ ] YOU LOST!! You just lost *300 🪙 UnityCoins*.`;
-        pointsEarned = -points;
+        risultato = `[ ✿ ] HAI PERSO!! Hai perso *300 🪙 UnityCoins*.`;
+        puntiGuadagnati = -punti;
     }
 
-    user.limit += pointsEarned;
+    utente.limit += puntiGuadagnati;
+
     conn.sendMessage(m.chat, {
-        text: result,
+        text: risultato,
         buttons: [
-            { buttonId: `${usedPrefix + command}`, buttonText: { displayText: "🔄 Try Again" }, type: 1 }
+            { buttonId: `${usedPrefix + command}`, buttonText: { displayText: "🔄 Riprova" }, type: 1 }
         ]
     }, { quoted: m });
 };
@@ -79,8 +82,9 @@ handler.register = true;
 
 export default handler;
 
-function secondsToHMS(seconds) {
-    let minutes = Math.floor(seconds / 60);
-    let secondsLeft = seconds % 60;
-    return `${minutes}m ${secondsLeft}s`;
+// Funzione per convertire secondi in formato minuti e secondi
+function secondiInMinutiSecondi(secondi) {
+    let minuti = Math.floor(secondi / 60);
+    let secondiRestanti = secondi % 60;
+    return `${minuti}m ${secondiRestanti}s`;
 }
