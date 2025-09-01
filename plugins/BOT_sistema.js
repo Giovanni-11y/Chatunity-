@@ -16,7 +16,7 @@ const getDiskSpace = () => {
         const [ , size, used, available, usePercent ] = stdout.split(/\s+/);
         return { size, used, available, usePercent };
     } catch (error) {
-        console.error('❌ Errore nel recupero dello spazio su disco:', error);
+        console.error('❌ Error retrieving disk space:', error);
         return null;
     }
 };
@@ -33,38 +33,37 @@ const handler = async (m, { conn }) => {
     const nodeUsage = process.memoryUsage();
     const diskSpace = getDiskSpace();
 
-    const message = `✅ *STATO DEL SISTEMA*
+    const message = `✅ *SYSTEM STATUS*
 
 🚩 *Host ⪼* ${hostname}
-🏆 *Sistema Operativo ⪼* ${platform}
-💫 *Architettura ⪼* ${arch}
-🥷 *RAM Totale ⪼* ${formatBytes(totalMem)}
-🚀 *RAM Libera ⪼* ${formatBytes(freeMem)}
-⌛ *RAM Usata ⪼* ${formatBytes(usedMem)}
+🏆 *Operating System ⪼* ${platform}
+💫 *Architecture ⪼* ${arch}
+🥷 *Total RAM ⪼* ${formatBytes(totalMem)}
+🚀 *Free RAM ⪼* ${formatBytes(freeMem)}
+⌛ *Used RAM ⪼* ${formatBytes(usedMem)}
 🕒 *Uptime ⪼* ${muptime}
 
-🪴 *Memoria Node.js:* 
+🪴 *Node.js Memory:* 
 → RSS: ${formatBytes(nodeUsage.rss)}
-→ Heap Totale: ${formatBytes(nodeUsage.heapTotal)}
-→ Heap Usata: ${formatBytes(nodeUsage.heapUsed)}
-→ Externa: ${formatBytes(nodeUsage.external)}
+→ Heap Total: ${formatBytes(nodeUsage.heapTotal)}
+→ Heap Used: ${formatBytes(nodeUsage.heapUsed)}
+→ External: ${formatBytes(nodeUsage.external)}
 → ArrayBuffer: ${formatBytes(nodeUsage.arrayBuffers)}
 ${diskSpace ? `
 
-☁️ *Spazio su Disco:*
-→ Totale: ${diskSpace.size}
-→ Usato: ${diskSpace.used}
-→ Disponibile: ${diskSpace.available}
-→ Percentuale di Uso: ${diskSpace.usePercent}` : '❌ Errore nel recupero dello spazio su disco.'}
+☁️ *Disk Space:*
+→ Total: ${diskSpace.size}
+→ Used: ${diskSpace.used}
+→ Available: ${diskSpace.available}
+→ Usage Percentage: ${diskSpace.usePercent}` : '❌ Error retrieving disk space.'}
 `;
 
     await conn.reply(m.chat, message.trim(), m);
 };
 
-handler.help = ['sistema'];
+handler.help = ['system'];
 handler.tags = ['info'];
 handler.command = ['system', 'sistema'];
-
 
 export default handler;
 
@@ -73,4 +72,4 @@ function clockString(ms) {
     let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60;
     let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60;
     return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':');
-}
+           }
