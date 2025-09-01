@@ -10,18 +10,18 @@ let leaderboardHandler = async (m, { conn }) => {
     .slice(0, 10)
 
   if (users.length === 0) {
-    return m.reply('😢 Nessun collezionista trovato.')
+    return m.reply('😢 No collectors found.')
   }
 
-  let rankMsg = `🏆 *Top 10 Collezionisti Pokémon*:\n\n` + users.map((u, i) =>
-    `${i + 1}. ${u.name} - ${u.count} carte`
+  let rankMsg = `🏆 *Top 10 Pokémon Collectors*:\n\n` + users.map((u, i) =>
+    `${i + 1}. ${u.name} - ${u.count} Pokémon`
   ).join('\n')
 
   m.reply(rankMsg)
 }
 
-leaderboardHandler.help = ['classifica']
+leaderboardHandler.help = ['leaderboard']
 leaderboardHandler.tags = ['pokemon']
-leaderboardHandler.command = /^classificapokemon$/i
+leaderboardHandler.command = /^pokedexleaderboard$/i
 
 export default leaderboardHandler
