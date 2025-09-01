@@ -21,14 +21,14 @@ const handler = async (_0x4f7a6d, {
 }) => {
     const _0x298076 = _0x3f94, _0x33e893 = {
             'CHroz': _0x298076(0x1ef),
-            'hJRja': '❗\x20Per\x20usare\x20questo\x20comando\x20usa\x20la\x20base\x20di\x20chatunity',
+            'hJRja': '❗ To use this command, use the chatunity base',
             'SMdFm': _0x298076(0x1df),
             'tiDnQ': function (_0x4e6f7b, _0x4f74c8) {
                 return _0x4e6f7b(_0x4f74c8);
             },
             'dLTBj': _0x298076(0x1e8),
             'brFOR': _0x298076(0x1d3),
-            'BBzdp': 'chatunity\x20✦\x20Downloader'
+            'BBzdp': 'chatunity ✦ Downloader'
         }, _0x5d0a03 = [
             _0x298076(0x1fc),
             _0x298076(0x1e2),
@@ -45,7 +45,7 @@ const handler = async (_0x4f7a6d, {
     const _0x30b304 = _0xc2ba4d[_0x298076(0x1e0)](_0x1257c9 => ({
         'image': { 'url': _0x1257c9[_0x298076(0x1ec)] },
         'title': _0x1257c9['title'],
-        'body': '📺\x20*Durata:*\x20' + _0x1257c9[_0x298076(0x1e6)] + _0x298076(0x1ee) + _0x1257c9[_0x298076(0x1e9)][_0x298076(0x1f2)]() + _0x298076(0x1e1) + _0x1257c9['author']['name'],
+        'body': '📺 *Duration:* ' + _0x1257c9[_0x298076(0x1e6)] + _0x298076(0x1ee) + _0x1257c9[_0x298076(0x1e9)][_0x298076(0x1f2)]() + _0x298076(0x1e1) + _0x1257c9['author']['name'],
         'footer': _0x298076(0x1d4)
     }));
     await _0x108af5[_0x298076(0x1dc)](_0x4ddc92, {
@@ -69,6 +69,7 @@ const handler = async (_0x4f7a6d, {
 handler[_0x28bcce(0x1fb)] = ['ytsearch'], handler[_0x28bcce(0x1d8)] = [_0x28bcce(0x1f0)], handler[_0x28bcce(0x1f7)] = [_0x28bcce(0x1f5)];
 export default handler;
 function _0x3f94(_0x37d826, _0x37571b) {
+    function _0x3f94(_0x37d826, _0x37571b) {
     const _0x4b8da0 = _0x41c4();
     return _0x3f94 = function (_0x4bd980, _0x3efe0d) {
         _0x4bd980 = _0x4bd980 - (0x2b * 0xd4 + 0xe41 * 0x2 + -0x3e4c);
@@ -79,22 +80,22 @@ function _0x3f94(_0x37d826, _0x37571b) {
 function _0x41c4() {
     const _0x566b6e = [
         'timestamp',
-        '🔎\x20YouTube\x20Search',
-        '🎬\x20Ecco\x20i\x20risultati\x20della\x20tua\x20ricerca:',
+        '🔎 YouTube Search',
+        '🎬 Here are the results of your search:',
         'views',
         '78558sriOEE',
         'hJRja',
         'thumbnail',
         'tiDnQ',
-        '\x0a👁\x20*Visualizzazioni:*\x20',
+        '\n👁 *Views:* ',
         './CODE_OF_CONDUCT.md',
-        'ytsearch\x20<titolo>',
+        'ytsearch <title>',
         'ytCache',
         'toLocaleString',
         '590ISpuzh',
         '673788XTOeoC',
         'downloader',
-        '❌\x20Nessun\x20risultato\x20trovato.',
+        '❌ No results found.',
         'tags',
         'chat',
         '2172488swvWbr',
@@ -106,21 +107,21 @@ function _0x41c4() {
         'length',
         '30RlePAa',
         '12pmHxgO',
-        'chatunity✦\x20Downloader',
-        '🎬\x20YouTube\x20Search\x20Result',
+        'chatunity✦ Downloader',
+        '🎬 YouTube Search Result',
         'SMdFm',
-        '.ytformat\x20',
+        '.ytformat ',
         './plugins/OWNER_file.js',
         'help',
-        '🔢\x20Seleziona\x20un\x20video\x20dai\x20risultati\x20sopra\x20per\x20scegliere\x20il\x20formato\x20da\x20scaricare:',
+        '🔢 Select a video from the results above to choose the format to download:',
         'BBzdp',
         'videos',
         'sendMessage',
         'find',
         '5788504hvTNln',
-        '📌\x20Inserisci\x20il\x20nome\x20del\x20video\x20da\x20cercare.\x0aEsempio:\x20.ytsearch\x20mai\x20una\x20gioia\x20compilation',
+        '📌 Enter the name of the video to search for.\nExample: .ytsearch mai una gioia compilation',
         'map',
-        '\x0a👤\x20*Canale:*\x20',
+        '\n👤 *Channel:* ',
         './termini.jpeg',
         'brFOR',
         'dLTBj',
@@ -131,3 +132,4 @@ function _0x41c4() {
     };
     return _0x41c4();
 }
+    
