@@ -1,3 +1,6 @@
+Here's the translated version of your script in English:
+
+```javascript
 let handler = async (m, { conn, args }) => {
   const user = m.sender;
   const type = args[0]?.toLowerCase();
@@ -10,7 +13,7 @@ let handler = async (m, { conn, args }) => {
   };
 
   if (!['base', 'imperium', 'premium'].includes(type)) {
-    return m.reply(`❌ Usa: .buypokemon <base|imperium|premium> <quantità>\nEsempio: .buypokemon base 3`);
+    return m.reply(`❌ Usage: .buypokemon <base|imperium|premium> <quantity>\nExample: .buypokemon base 3`);
   }
 
   global.db.data.users[user] = global.db.data.users[user] || {};
@@ -22,17 +25,20 @@ let handler = async (m, { conn, args }) => {
   const totalCost = prices[type] * quantity;
 
   if (data.limit < totalCost) {
-    return m.reply(`❌ Ti servono *${totalCost}* UnityCoins per acquistare ${quantity} pacchetti ${type.toUpperCase()}.\n💰 Saldo attuale: ${data.limit}`);
+    return m.reply(`❌ You need *${totalCost}* UnityCoins to buy ${quantity} ${type.toUpperCase()} packs.\n💰 Current balance: ${data.limit}`);
   }
 
   data.limit -= totalCost;
   data.packInventory[type] += quantity;
 
-  return m.reply(`✅ Hai comprato *${quantity}* pacchetti ${type.toUpperCase()}!\n📦 Totale ora: ${data.packInventory[type]}\n💸 UnityCoins rimanenti: ${data.limit}`);
+  return m.reply(`✅ You have purchased *${quantity}* ${type.toUpperCase()} packs!\n📦 Total now: ${data.packInventory[type]}\n💸 Remaining UnityCoins: ${data.limit}`);
 };
 
-handler.help = ['buypokemon <tipo> <quantità>'];
+handler.help = ['buypokemon <type> <quantity>'];
 handler.tags = ['pokemon'];
 handler.command = /^buypokemon$/i;
 
 export default handler;
+```
+
+Let me know if you'd like any further modifications!
