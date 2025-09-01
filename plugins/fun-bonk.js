@@ -5,9 +5,9 @@ let handler = async (m, { conn, text }) => {
         let who = m.mentionedJid?.[0] || m.quoted?.sender || m.sender;
         let avatarUrl = await conn.profilePictureUrl(who, 'image').catch(() => null);
 
-        // Verifica se l'utente ha una foto profilo
+        // Check if user has a profile picture
         if (!avatarUrl) {
-            return conn.reply(m.chat, '⚠️ Questo comando non funziona per utenti senza foto profilo.', m);
+            return conn.reply(m.chat, '⚠️ This command does not work for users without a profile picture.', m);
         }
 
         let img = await jimp.read('https://i.imgur.com/nav6WWX.png');
@@ -23,7 +23,7 @@ let handler = async (m, { conn, text }) => {
 
     } catch (error) {
         console.error(error);
-        conn.reply(m.chat, '❌ Si è verificato un errore durante l\'esecuzione del comando.', m);
+        conn.reply(m.chat, '❌ An error occurred while executing the command.', m);
     }
 };
 
