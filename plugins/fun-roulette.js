@@ -1,16 +1,16 @@
-let cooldowns = {}
+let cooldowns = {};
 
-// Definizione di rcanal (sostituisci "default_value" con il valore appropriato)
+// Definition of rcanal (replace "default_value" with the appropriate value)
 const rcanal = "default_value"; 
 
 let handler = async (m, { conn, text, command, usedPrefix }) => {
   let users = global.db.data.users[m.sender];
-  let tempoAttesa = 10;
+  let waitTime = 10; // in seconds
 
-  if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < tempoAttesa * 1000) {
-    let tempoRestante = secondiAHMS(Math.ceil((cooldowns[m.sender] + tempoAttesa * 1000 - Date.now()) / 1000));
+  if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < waitTime * 1000) {
+    let timeLeft = secondsToHMS(Math.ceil((cooldowns[m.sender] + waitTime * 1000 - Date.now()) / 1000));
     await conn.sendMessage(m.chat, { 
-        text: `🚩 Hai già avviato una scommessa di recente, aspetta *⏱ ${tempoRestante}* per scommettere di nuovo`,
+        text: `🚩 You already placed a bet recently. Please wait *⏱ ${timeLeft}* before betting again.`,
         contextInfo: {
             forwardingScore: 99,
             isForwarded: true,
@@ -28,7 +28,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
   if (!text) {
     await conn.sendMessage(m.chat, { 
-        text: `🚩 Devi inserire una quantità di *💶 Unitycoins* e scommettere su un colore, per esempio: *${usedPrefix + command} 20 black o red*`,
+        text: `🚩 You must enter an amount of *💶 Unitycoins* and bet on a color, for example: *${usedPrefix + command} 20 black or red*`,
         contextInfo: {
             forwardingScore: 99,
             isForwarded: true,
@@ -45,7 +45,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
   let args = text.trim().split(" ");
   if (args.length !== 2) {
     await conn.sendMessage(m.chat, { 
-        text: `🚩 Formato errato. Devi inserire una quantità di *💶 Unitycoins* e scommettere su un colore, per esempio: *${usedPrefix + command} 20 black*`,
+        text: `🚩 Invalid format. You must enter an amount of *💶 Unitycoins* and bet on a color, for example: *${usedPrefix + command} 20 black*`,
         contextInfo: {
             forwardingScore: 99,
             isForwarded: true,
@@ -59,12 +59,12 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     return;
   }
 
-  let limit = parseInt(args[0]);
+  let amount = parseInt(args[0]);
   let color = args[1].toLowerCase();
 
-  if (isNaN(limit) || limit <= 0) {
+  if (isNaN(amount) || amount <= 0) {
     await conn.sendMessage(m.chat, { 
-        text: `🚩 Per favore, inserisci una quantità valida per la scommessa.`,
+        text: `🚩 Please enter a valid amount to bet.`,
         contextInfo: {
             forwardingScore: 99,
             isForwarded: true,
@@ -78,9 +78,9 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     return;
   }
 
-  if (limit > 50) {
+  if (amount > 50) {
     await conn.sendMessage(m.chat, { 
-        text: "🚩 La quantità massima di scommessa è di 50 *💶 Unitycoins*.",
+        text: "🚩 The maximum bet amount is 50 *💶 Unitycoins*.",
         contextInfo: {
             forwardingScore: 99,
             isForwarded: true,
@@ -96,7 +96,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
   if (!(color === 'black' || color === 'red')) {
     await conn.sendMessage(m.chat, { 
-        text: "🚩 Devi scommettere su un colore valido: *black* o *red*.",
+        text: "🚩 You must bet on a valid color: *black* or *red*.",
         contextInfo: {
             forwardingScore: 99,
             isForwarded: true,
@@ -110,9 +110,9 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     return;
   }
 
-  if (limit > users.limit) {
+  if (amount > users.limit) {
     await conn.sendMessage(m.chat, { 
-        text: "🚩 Non hai abbastanza *💶 Unitycoins* per effettuare questa scommessa.",
+        text: "🚩 You don't have enough *💶 Unitycoins* to make this bet.",
         contextInfo: {
             forwardingScore: 99,
             isForwarded: true,
@@ -127,7 +127,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
   }
 
   await conn.sendMessage(m.chat, { 
-      text: `🚩 Hai scommesso ${limit} *💶 Unitycoins* sul colore ${color}. Aspetta *⏱ 10 secondi* per conoscere il risultato.`,
+      text: `🚩 You have bet ${amount} *💶 Unitycoins* on the color ${color}. Please wait *⏱ 10 seconds* for the result.`,
       contextInfo: {
           forwardingScore: 99,
           isForwarded: true,
@@ -150,9 +150,9 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     }
     
     if (win) {
-      users.limit += limit;
+      users.limit += amount;
       conn.sendMessage(m.chat, { 
-          text: `🚩 Hai vinto! Hai ottenuto ${limit} *💶 Unitycoins*. Totale: ${users.limit} *💶 Unitycoins*.`,
+          text: `🚩 You won! You gained ${amount} *💶 Unitycoins*. Total: ${users.limit} *💶 Unitycoins*.`,
           contextInfo: {
               forwardingScore: 99,
               isForwarded: true,
@@ -164,9 +164,9 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
           }
       }, { quoted: m });
     } else {
-      users.limit -= limit;
+      users.limit -= amount;
       conn.sendMessage(m.chat, { 
-          text: `🚩 Hai perso. Sono state sottratte ${limit} *💶 Unitycoins*. Totale: ${users.limit} *💶 Unitycoins*.`,
+          text: `🚩 You lost. ${amount} *💶 Unitycoins* have been deducted. Total: ${users.limit} *💶 Unitycoins*.`,
           contextInfo: {
               forwardingScore: 99,
               isForwarded: true,
@@ -182,13 +182,13 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 };
 
 handler.tags = ['game'];
-handler.help = ['ruleta *<quantità> <colore>*'];
-handler.command = ['ruleta', 'roulette', 'rt'];
+handler.help = ['roulette *<amount> <color>*'];
+handler.command = ['roulette', 'ruleta', 'rt'];
 handler.register = true;
 handler.group = true;
 export default handler;
 
-function secondiAHMS(secondi) {
-  let secondiRestanti = secondi % 60;
-  return `${secondiRestanti} secondi`;
+function secondsToHMS(seconds) {
+  let remaining = seconds % 60;
+  return `${remaining} seconds`;
 }
