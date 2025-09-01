@@ -21,21 +21,21 @@ setInterval(async () => {
 
 const handler = async (m, { conn, isAdmin, isBotAdmin, isOwner, command }) => {
   if (!(isAdmin || isOwner)) {
-    throw '*Solo gli admin possono usare questo comando*'
+    throw '*Only admins can use this command*'
   }
   
   if (!isBotAdmin) {
-    throw '*Il bot deve essere admin per usare questa funzione*'
+    throw '*The bot must be admin to use this function*'
   }
 
   let chat = global.db.data.chats[m.chat]
   
   if (chat.accetta39) {
     chat.accetta39 = false
-    await m.reply('*❌ Accettazione automatica numeri italiani disattivata*')
+    await m.reply('*❌ Automatic acceptance of Italian numbers disabled*')
   } else {
     chat.accetta39 = true
-    await m.reply('*✅ Accettazione automatica numeri italiani attivata*\n\nI numeri italiani (39) verranno accettati automaticamente, gli altri rifiutati')
+    await m.reply('*✅ Automatic acceptance of Italian numbers enabled*\n\nItalian numbers (39) will be accepted automatically, others will be rejected')
   }
 }
 
