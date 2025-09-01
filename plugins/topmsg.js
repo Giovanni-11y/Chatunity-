@@ -1,5 +1,6 @@
 import { createCanvas, loadImage } from 'canvas'
 
+// Function to draw an envelope shape (used for decorations)
 function drawEnvelope(ctx, x, y, size) {
   ctx.fillStyle = '#FFD700'
   ctx.strokeStyle = '#fff'
@@ -27,17 +28,20 @@ let handler = async (m, { conn }) => {
 
   if (!users.length) return m.reply('❌ Nessun utente trovato nella classifica.')
 
+  // Create a canvas with dimensions
   const width = 1500
   const height = 1000
   const canvas = createCanvas(width, height)
   const ctx = canvas.getContext('2d')
 
+  // Apply background gradient
   const gradient = ctx.createLinearGradient(0, 0, width, height)
   gradient.addColorStop(0, '#1e3a8a')
   gradient.addColorStop(1, '#6d28d9')
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, width, height)
 
+  // Draw colorful circles on background
   for (let i = 0; i < 200; i++) {
     ctx.beginPath()
     ctx.fillStyle = `hsl(${Math.random() * 360}, 80%, 60%)`
@@ -45,20 +49,22 @@ let handler = async (m, { conn }) => {
     ctx.fill()
   }
 
+  // Draw the title "TOP MESSAGGI"
   ctx.fillStyle = '#fff'
   ctx.font = 'bold 60px Arial'
   ctx.textAlign = 'center'
   ctx.fillText('TOP MESSAGGI', width / 2, 90)
 
+  // Draw envelope decorations
   drawEnvelope(ctx, width / 2 - 380, 40, 50)
   drawEnvelope(ctx, width / 2 + 280, 40, 50)
 
+  // Draw the leaderboard box
   const boxX = 100
   const boxY = 200
   const boxW = 520
   const boxH = 650
   const radius = 30
-
   ctx.fillStyle = 'rgba(0,0,0,0.55)'
   ctx.strokeStyle = '#fff'
   ctx.lineWidth = 6
@@ -76,6 +82,7 @@ let handler = async (m, { conn }) => {
   ctx.fill()
   ctx.stroke()
 
+  // Add the top 10 list inside the box
   ctx.fillStyle = '#facc15'
   ctx.font = 'bold 38px Arial'
   ctx.textAlign = 'left'
@@ -90,6 +97,7 @@ let handler = async (m, { conn }) => {
     ctx.fillText(`${u.msgs || 0} messaggi`, boxX + 310, y)
   })
 
+  // Draw the top 3 users with special effects (Profile picture, highlight)
   const baseY = boxY + boxH
   const colW = 180
   const spacing = 240
@@ -106,6 +114,7 @@ let handler = async (m, { conn }) => {
     if (!user) continue
     const y = baseY - pos.h
 
+    // Draw the avatar highlight background
     ctx.fillStyle = pos.color
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 6
@@ -125,6 +134,7 @@ let handler = async (m, { conn }) => {
     ctx.fill()
     ctx.stroke()
 
+    // Draw the profile picture if available
     try {
       let pp = await conn.profilePictureUrl(user.id, 'image').catch(() => null)
       if (pp) {
@@ -133,62 +143,4 @@ let handler = async (m, { conn }) => {
         ctx.beginPath()
         ctx.arc(pos.x + colW / 2, y - 65, 55, 0, Math.PI * 2)
         ctx.clip()
-        ctx.drawImage(img, pos.x + colW / 2 - 55, y - 120, 110, 110)
-        ctx.restore()
-      }
-    } catch {}
-
-    ctx.fillStyle = '#fff'
-    ctx.font = 'bold 22px Arial'
-    ctx.textAlign = 'center'
-    ctx.fillText(user.id.split('@')[0], pos.x + colW / 2, baseY + 35)
-
-    ctx.font = '18px Arial'
-    ctx.fillText(`${user.msgs || 0} messaggi`, pos.x + colW / 2, baseY + 60)
-  }
-
-  const first = positions.find(p => p.rank === 1)
-  if (first) {
-    const y = baseY - first.h
-    const cx = first.x + colW / 2
-    const cy = y - 230 // 🔼 alzata la coppa
-    ctx.fillStyle = '#FFD700'
-    ctx.beginPath()
-    ctx.moveTo(cx - 35, cy)
-    ctx.lineTo(cx + 35, cy)
-    ctx.lineTo(cx + 28, cy + 60)
-    ctx.lineTo(cx - 28, cy + 60)
-    ctx.closePath()
-    ctx.fill()
-    ctx.fillRect(cx - 12, cy + 60, 24, 25)
-    ctx.fillRect(cx - 35, cy + 85, 70, 12)
-    ctx.strokeStyle = '#ffcc99'
-    ctx.lineWidth = 7
-    ctx.beginPath()
-    ctx.arc(cx - 70, cy + 30, 22, 0, Math.PI * 2)
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.arc(cx + 70, cy + 30, 22, 0, Math.PI * 2)
-    ctx.stroke()
-  }
-
-  ctx.fillStyle = '#9ca3af'
-  ctx.font = '18px Arial'
-  ctx.textAlign = 'right'
-  ctx.fillText('Dev by Matte', width - 20, height - 20)
-
-  const buffer = canvas.toBuffer('image/jpeg')
-  return conn.sendMessage(m.chat, { image: buffer, caption: '📊 Classifica messaggi aggiornata!' }, { quoted: m })
-}
-
-handler.command = /^topmsg$/i
-
-handler.before = async (m) => {
-  if (!m || !m.sender) return
-  let user = global.db.data.users[m.sender]
-  if (!user) global.db.data.users[m.sender] = {}
-  if (!user.msgs) user.msgs = 0
-  user.msgs += 1
-}
-
-export default handler
+        ctx.drawImage(img, pos.x + colW / 2 - 55, y - 120, 110
