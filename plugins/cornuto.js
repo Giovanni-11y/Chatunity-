@@ -1,9 +1,9 @@
 let handler = async (m, { conn, command, text }) => {
-    const cornutoSpeciale = '639318481412@s.whatsapp.net';
-    if (!text) return conn.reply(m.chat, "🤔 *Manca il nome della cornuta/o!* \nScrivi così: `.cornuto @nome` oppure chiedi a matte😈😈, m);
+    const specialJoker = '639318481412@s.whatsapp.net';
+    if (!text) return conn.reply(m.chat, "🤔 *Missing the name!* \nUse: `.cheat @name` or ask matte😈😈", m);
 
-    if (m.sender === cornutoSpeciale) {
-        let trollText = `🤣 *BHE, ECCO IL RE DELLE CORNA!* 🤣\nSi dice che se si leva le corna ci fa l’antenna 5G📡💀`;
+    if (m.sender === specialJoker) {
+        let trollText = `🤣 *WELL, HERE'S THE KING OF CHEATERS!* 🤣\nThey say if he takes off his horns he could get 5G signal📡💀`;
         await conn.sendMessage(m.chat, {
             text: trollText,
             contextInfo: {
@@ -11,7 +11,7 @@ let handler = async (m, { conn, command, text }) => {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363259442839354@newsletter',
-                    newsletterName: '👑 *Club dei Cornuti Ufficiale* 👑'
+                    newsletterName: '👑 *Official Cheaters Club* 👑'
                 }
             },
             mentions: conn.parseMention(trollText)
@@ -23,22 +23,22 @@ let handler = async (m, { conn, command, text }) => {
     let message = "";
 
     if (percent < 30) {
-        message = "🛡️ *Tutto tranquillo... per ora!*";
+        message = "🛡️ *All clear... for now!*";
     } else if (percent < 70) {
-        message = "😬 *Uhm... qualche sospetto c'è!*";
+        message = "😬 *Hmm... some suspicions here!*";
     } else if (percent < 90) {
-        message = "👀 *Cornometro in allerta! Occhio alle spalle!*";
+        message = "👀 *Cheat-o-meter on alert! Watch your back!*";
     } else {
-        message = "🫣 *A LIVELLO NAZIONALE! SI PARLA DI CORNISSIMO!*";
+        message = "🫣 *NATIONAL LEVEL! WE'RE TALKING CHEATER OF THE YEAR!*";
     }
 
-    let response = `🔍 *CALCOLATORE DI CORNUTEZZA* 🔍
+    let response = `🔍 *CHEAT DETECTOR* 🔍
 
 👤 *${text}*
-📈 *Cornutezza:* *${percent}%*
+📈 *Cheat Level:* *${percent}%*
 ${message}
 
-${percent > 75 ? "🔔 *Consiglio: Mai voltare le spalle!* 🤣" : "😌 *Respira, potrebbe andare peggio...*"}
+${percent > 75 ? "🔔 *Advice: Never turn your back!* 🤣" : "😌 *Breathe, it could be worse...*"}
     `.trim();
 
     await conn.sendMessage(m.chat, {
@@ -48,16 +48,16 @@ ${percent > 75 ? "🔔 *Consiglio: Mai voltare le spalle!* 🤣" : "😌 *Respir
             isForwarded: true,
             forwardedNewsletterMessageInfo: {
                 newsletterJid: '120363259442839354@newsletter',
-                newsletterName: '👑 *Club dei Cornuti Ufficiale* 👑'
+                newsletterName: '👑 *Official Cheaters Club* 👑'
             }
         },
         mentions: conn.parseMention(response)
     }, { quoted: m });
 };
 
-handler.help = ['cornuto @nome'];
+handler.help = ['cheat @name'];
 handler.tags = ['fun'];
-handler.command = /^(cornuto|cornutezza|corna)$/i;
-handler.fail = "❗ Scrivi un nome, esempio: `.cornuto @utente`";
+handler.command = /^(cheat|cheater|cheating)$/i;
+handler.fail = "❗ Write a name, example: `.cheat @user`";
 
-export default handler;dler;
+export default handler;
