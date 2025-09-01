@@ -1,6 +1,6 @@
 function handler(m, { text }) {
     if (!text) return conn.sendMessage(m.chat, { 
-        text: `🚩 Enter your name after the command.`,
+        text: `🚩 Inserisci il tuo nome dopo il comando.`,
         contextInfo: {
             forwardingScore: 99,
             isForwarded: true,
@@ -58,7 +58,7 @@ function handler(m, { text }) {
     }, { quoted: m });
 }
 
-handler.help = ['ninjaname *<text>*'];
+handler.help = ['ninjaname *<testo>*'];
 handler.tags = ['fun'];
 handler.command = ['ninjaname'];
 handler.register = true;
