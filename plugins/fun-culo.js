@@ -1,21 +1,21 @@
 let handler = async (m, { conn, usedPrefix }) => {
-    let grandezze = [
-        "🟢 Piccolo come una formica 🐜",
-        "🔵 Normale, niente di speciale 😌",
-        "🟠 Medio, ci passa un dito 🖕",
-        "🔴 Enorme! Ci passa una bottiglia 🍾",
-        "⚫ Distrutto, sembra un tunnel ferroviario 🚇",
-        "💥 Non hai più un buco, è esploso 💣"
+    let sizes = [
+        "🟢 Small as an ant 🐜",
+        "🔵 Normal, nothing special 😌",
+        "🟠 Medium, a finger can pass 🖕",
+        "🔴 Huge! A bottle can pass 🍾",
+        "⚫ Destroyed, looks like a railway tunnel 🚇",
+        "💥 You don't have a hole anymore, it exploded 💣"
     ];
 
-    let grandezzaCasuale = grandezze[Math.floor(Math.random() * grandezze.length)];
-    let messaggio = "*Analizzando il tuo buco...*\n\n📏 *Risultato:* " + grandezzaCasuale;
+    let randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+    let message = "*Analyzing your hole...*\n\n📏 *Result:* " + randomSize;
 
-    let opzioniInoltro = inoltra("ChatUnity");
-    await conn.sendMessage(m.chat, { text: messaggio, ...opzioniInoltro }, { quoted: m });
+    let forwardOptions = forward("ChatUnity");
+    await conn.sendMessage(m.chat, { text: message, ...forwardOptions }, { quoted: m });
 };
 
-const inoltra = (nomeDelBot) => {
+const forward = (botName) => {
     let messageOptions = {
         contextInfo: {
             forwardingScore: 999,
@@ -23,12 +23,12 @@ const inoltra = (nomeDelBot) => {
             forwardedNewsletterMessageInfo: {
                 newsletterJid: '120363259442839354@newsletter',
                 serverMessageId: '',
-                newsletterName: `${nomeDelBot}`
+                newsletterName: `${botName}`
             }
         }
     };
     return messageOptions;
 };
 
-handler.command = ["ano", "culometro"];
+handler.command = ["ass", "holemeter"];
 export default handler;
