@@ -1,24 +1,24 @@
 import { performance } from 'perf_hooks'
 
 let handler = async (m, { conn, text }) => {
-  let nomeDelBot = global.db.data.nomedelbot || `𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲`
+  let botName = global.db.data.nomedelbot || `𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲`
 
-  // Identifica il destinatario: risposto o menzionato
-  let destinatario;
+  // Identify the recipient: replied to or mentioned
+  let recipient;
   if (m.quoted && m.quoted.sender) {
-    destinatario = m.quoted.sender;
+    recipient = m.quoted.sender;
   } else if (m.mentionedJid && m.mentionedJid.length > 0) {
-    destinatario = m.mentionedJid[0];
+    recipient = m.mentionedJid[0];
   } else {
-    return m.reply("Tagga qualcuno o rispondi a un messaggio per segarlo 😏");
+    return m.reply("Tag someone or reply to a message to jerk them off 😏");
   }
 
-  let nomeDestinatario = `@${destinatario.split('@')[0]}`
+  let recipientName = `@${recipient.split('@')[0]}`
 
-  // Messaggio iniziale
+  // Initial message
   let { key } = await conn.sendMessage(m.chat, { 
-    text: `Ora sego ${nomeDestinatario}...`,
-    mentions: [destinatario]
+    text: `Now jerking off ${recipientName}...`,
+    mentions: [recipient]
   }, { quoted: m })
 
   const array = [
@@ -29,20 +29,20 @@ let handler = async (m, { conn, text }) => {
     await conn.sendMessage(m.chat, { 
       text: `${item}`, 
       edit: key,
-      mentions: [destinatario]
+      mentions: [recipient]
     }, { quoted: m })
     await new Promise(resolve => setTimeout(resolve, 20))
   }
 
-  // Messaggio finale
+  // Final message
   return conn.sendMessage(m.chat, { 
-    text: `Oh ${nomeDestinatario} is cumming! 😋💦`,
+    text: `Oh ${recipientName} is cumming! 😋💦`,
     edit: key,
-    mentions: [destinatario]
+    mentions: [recipient]
   }, { quoted: m })
 }
 
-handler.help = ['sega']
+handler.help = ['handjob']
 handler.tags = ['fun']
 handler.command = /^(handjob)$/i
 
