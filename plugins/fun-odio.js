@@ -1,8 +1,8 @@
 let handler = async (m, { conn, command, text }) => {
     let botName = global.db.data.botname || `ChatUnity`
   
-    let hate = `──────────────\nHATE CALCULATOR 😡
-  The hate between ${text} and you: ${Math.floor(Math.random() * 100)}%\n──────────────`.trim()
+    let hate = `──────────────\nCALCOLATORE DELL'ODIO 😡
+  L'odio tra te e ${text}: ${Math.floor(Math.random() * 100)}%\n──────────────`.trim()
   
     await conn.sendMessage(m.chat, {
       text: hate,
