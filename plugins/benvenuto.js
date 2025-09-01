@@ -125,7 +125,7 @@ async function getUserName(conn, jid, pushNameFromStub = '') {
     
     // Last resort: format the phone number nicely
     const phoneNumber = jid.split('@')[0]
-    return `Utente ${phoneNumber}`
+    return `User ${phoneNumber}`
 }
 
 async function getUserProfilePic(conn, jid) {
@@ -156,7 +156,7 @@ async function getGroupBackgroundImage(groupJid, conn) {
             if (res.ok) buffer = Buffer.from(await res.arrayBuffer())
         }
         if (!buffer) {
-            const fallback = path.join(__dirname, '..', 'media', 'benvenuto-addio.jpg')
+            const fallback = path.join(__dirname, '..', 'media', 'welcome-goodbye.jpg')
             buffer = await fs.readFile(fallback)
         }
         const img = await loadImage(buffer)
@@ -170,7 +170,7 @@ async function getGroupBackgroundImage(groupJid, conn) {
         ctx.fillStyle = '#FFF'
         ctx.font = 'bold 100px Arial, sans-serif'
         ctx.textAlign = 'center'
-        ctx.fillText('Benvenuto/a!', canvas.width / 2, canvas.height / 2)
+        ctx.fillText('Welcome!', canvas.width / 2, canvas.height / 2)
         const img = await loadImage(canvas.toBuffer())
         groupBackgroundCache.set(groupJid, img)
         return img
@@ -283,9 +283,9 @@ async function createImage(title, username, groupName, profilePicBuffer, isGoodb
         ctx.shadowBlur = 30
         ctx.strokeStyle = '#000'
         ctx.lineWidth = 5
-        ctx.strokeText(isGoodbye ? '✧ ADDIO! ✧' : '✧ BENVENUTO! ✧', centerX, titleY)
+        ctx.strokeText(isGoodbye ? '✧ GOODBYE! ✧' : '✧ WELCOME! ✧', centerX, titleY)
         ctx.fillStyle = '#ffffff'
-        ctx.fillText(isGoodbye ? '✧ ADDIO! ✧' : '✧ BENVENUTO! ✧', centerX, titleY)
+        ctx.fillText(isGoodbye ? '✧ GOODBYE! ✧' : '✧ WELCOME! ✧', centerX, titleY)
         ctx.restore()
 
         ctx.save()
@@ -305,7 +305,7 @@ async function createImage(title, username, groupName, profilePicBuffer, isGoodb
         ctx.shadowColor = 'rgba(255, 255, 255, 0.7)'
         ctx.shadowBlur = 20
         ctx.fillStyle = '#cccccc'
-        ctx.fillText(`${groupName || 'Questo Gruppo'}`, centerX, groupY)
+        ctx.fillText(`${groupName || 'This Group'}`, centerX, groupY)
         ctx.restore()
 
         ctx.save()
@@ -349,32 +349,32 @@ function checkAntiSpam() {
 function replacePlaceholders(message, who, username, groupName, memberCount, displayName) {
     return message
         .replace(/@user/g, `@${who.split('@')[0]}`)
-        .replace(/\$gruppo/g, groupName)
-        .replace(/\$nome/g, displayName)
-        .replace(/\$membri/g, memberCount.toString())
-        .replace(/\$numero/g, who.split('@')[0])
+        .replace(/\$group/g, groupName)
+        .replace(/\$name/g, displayName)
+        .replace(/\$members/g, memberCount.toString())
+        .replace(/\$number/g, who.split('@')[0])
         .replace(/\$tag/g, `@${who.split('@')[0]}`)
 }
 
 // Command handler for setting welcome/goodbye messages
 export async function handler(m, { conn, text, command, isAdmin, isOwner }) {
-    // Richiedi la presenza di alcuni file come protezione base
+    // Check for required files as basic protection
     const filesToCheck = [
-        './termini.jpeg',
+        './terms.jpeg',
         './CODE_OF_CONDUCT.md',
-        './bal.png',
+        './balance.png',
         './plugins/OWNER_file.js'
     ]
     for (const filePath of filesToCheck) {
         try {
             await fs.access(filePath)
         } catch {
-            return m.reply('Questo comando è disponibile solo con la base di ChatUnity.')
+            return m.reply('This command is only available with ChatUnity base.')
         }
     }
 
-    if (!m.isGroup) return m.reply('❌ Questo comando funziona solo nei gruppi!')
-    if (!isAdmin && !isOwner) return m.reply('❌ Solo gli admin possono usare questo comando!')
+    if (!m.isGroup) return m.reply('❌ This command only works in groups!')
+    if (!isAdmin && !isOwner) return m.reply('❌ Only admins can use this command!')
     
     const chat = global.db.data.chats[m.chat] || {}
     
@@ -386,134 +386,134 @@ export async function handler(m, { conn, text, command, isAdmin, isOwner }) {
     const cmd = command.toLowerCase()
     
     // Handle different commands
-    if (['setbenvenuto', 'setwelcome', 'benvenuto'].includes(cmd)) {
+    if (['setwelcome', 'welcome'].includes(cmd)) {
         if (!text) {
-            return m.reply(`🎉 *Imposta messaggio di benvenuto*
+            return m.reply(`🎉 *Set welcome message*
 
-*Uso:* ${command} <messaggio>
+*Usage:* ${command} <message>
 
-*Variabili disponibili:*
-• @user - Tag dell'utente
-• \$nome - Nome dell'utente  
-• \$gruppo - Nome del gruppo
-• \$membri - Numero membri
-• \$numero - Numero di telefono
-• \$tag - Tag utente (alias di @user)
+*Available variables:*
+• @user - User tag
+• \$name - Username  
+• \$group - Group name
+• \$members - Member count
+• \$number - Phone number
+• \$tag - User tag (alias of @user)
 
-*Esempio:*
-${command} Ciao @user! 👋 Benvenuto/a in \$gruppo! Ora siamo \$membri membri! 🎉
+*Example:*
+${command} Hi @user! 👋 Welcome to \$group! We are now \$members members! 🎉
 
-*Per ripristinare il messaggio predefinito:*
+*To reset to default message:*
 ${command} reset`)
         }
         
         if (text.toLowerCase() === 'reset') {
             chat.customWelcome = null
             global.db.data.chats[m.chat] = chat
-            return m.reply('✅ Messaggio di benvenuto ripristinato al predefinito!')
+            return m.reply('✅ Welcome message reset to default!')
         }
         
         chat.customWelcome = text
         global.db.data.chats[m.chat] = chat
-        return m.reply('✅ Messaggio di benvenuto personalizzato impostato!')
+        return m.reply('✅ Custom welcome message set!')
         
-    } else if (['setaddio', 'setgoodbye', 'addio'].includes(cmd)) {
+    } else if (['setgoodbye', 'goodbye'].includes(cmd)) {
         if (!text) {
-            return m.reply(`👋 *Imposta messaggio di addio*
+            return m.reply(`👋 *Set goodbye message*
 
-*Uso:* ${command} <messaggio>
+*Usage:* ${command} <message>
 
-*Variabili disponibili:*
-• @user - Tag dell'utente
-• \$nome - Nome dell'utente  
-• \$gruppo - Nome del gruppo
-• \$membri - Numero membri
-• \$numero - Numero di telefono
-• \$tag - Tag utente (alias di @user)
+*Available variables:*
+• @user - User tag
+• \$name - Username  
+• \$group - Group name
+• \$members - Member count
+• \$number - Phone number
+• \$tag - User tag (alias of @user)
 
-*Esempio:*
-${command} Addio @user! 😢 Ci mancherai in \$gruppo. Rimaniamo in \$membri membri.
+*Example:*
+${command} Goodbye @user! 😢 We'll miss you in \$group. We remain \$members members.
 
-*Per ripristinare il messaggio predefinito:*
+*To reset to default message:*
 ${command} reset`)
         }
         
         if (text.toLowerCase() === 'reset') {
             chat.customGoodbye = null
             global.db.data.chats[m.chat] = chat
-            return m.reply('✅ Messaggio di addio ripristinato al predefinito!')
+            return m.reply('✅ Goodbye message reset to default!')
         }
         
         chat.customGoodbye = text
         global.db.data.chats[m.chat] = chat
-        return m.reply('✅ Messaggio di addio personalizzato impostato!')
+        return m.reply('✅ Custom goodbye message set!')
         
-    } else if (['welcomeconfig', 'configbenvenuto', 'impostazioni'].includes(cmd)) {
-        const status = chat.welcomeEnabled ? '✅ Attivo' : '❌ Disattivo'
-        const welcomeMsg = chat.customWelcome || '*Messaggio predefinito*'
-        const goodbyeMsg = chat.customGoodbye || '*Messaggio predefinito*'
+    } else if (['welcomeconfig', 'config', 'settings'].includes(cmd)) {
+        const status = chat.welcomeEnabled ? '✅ Active' : '❌ Inactive'
+        const welcomeMsg = chat.customWelcome || '*Default message*'
+        const goodbyeMsg = chat.customGoodbye || '*Default message*'
         
-        return m.reply(`⚙️ *Configurazione Benvenuto/Addio*
+        return m.reply(`⚙️ *Welcome/Goodbye Configuration*
 
 *Status:* ${status}
-*Immagini:* ✅ Sempre attive
+*Images:* ✅ Always active
 
-*Messaggio Benvenuto:*
+*Welcome Message:*
 ${welcomeMsg}
 
-*Messaggio Addio:*
+*Goodbye Message:*
 ${goodbyeMsg}
 
-*Comandi disponibili:*
-• .setbenvenuto - Imposta messaggio benvenuto
-• .setaddio - Imposta messaggio addio  
-• .togglewelcome - Attiva/disattiva sistema
-• .testwelcome - Testa messaggio benvenuto
-• .testgoodbye - Testa messaggio addio`)
+*Available commands:*
+• .setwelcome - Set welcome message
+• .setgoodbye - Set goodbye message  
+• .togglewelcome - Enable/disable system
+• .testwelcome - Test welcome message
+• .testgoodbye - Test goodbye message`)
         
-    } else if (['togglewelcome', 'welcome'].includes(cmd)) {
+    } else if (['togglewelcome'].includes(cmd)) {
         chat.welcomeEnabled = !chat.welcomeEnabled
         global.db.data.chats[m.chat] = chat
-        const status = chat.welcomeEnabled ? 'attivato' : 'disattivato'
-        return m.reply(`✅ Sistema benvenuto/addio ${status}!`)
+        const status = chat.welcomeEnabled ? 'enabled' : 'disabled'
+        return m.reply(`✅ Welcome/goodbye system ${status}!`)
         
-    } else if (['testwelcome', 'testbenvenuto'].includes(cmd)) {
+    } else if (['testwelcome'].includes(cmd)) {
         const username = await getUserName(conn, m.sender)
         const groupName = (await conn.groupMetadata(m.chat)).subject
         const memberCount = (await conn.groupMetadata(m.chat)).participants.length
         
         let displayName = username
-        if (username.startsWith('@') || username === '𝐍𝐮𝐨𝐯𝐨 𝐌𝐞𝐦𝐛𝐫𝐨') {
-            displayName = `Utente ${m.sender.split('@')[0]}`
+        if (username.startsWith('@') || username === 'New Member') {
+            displayName = `User ${m.sender.split('@')[0]}`
         }
         
-        const defaultMsg = `*Benvenuto/a* @${m.sender.split('@')[0]} 🎉\n┊ *Gruppo:* ${groupName}\n╰► *Membri:* ${memberCount}`
+        const defaultMsg = `*Welcome* @${m.sender.split('@')[0]} 🎉\n┊ *Group:* ${groupName}\n╰► *Members:* ${memberCount}`
         const customMsg = chat.customWelcome 
             ? replacePlaceholders(chat.customWelcome, m.sender, username, groupName, memberCount, displayName)
             : defaultMsg
             
-        return m.reply(`🧪 *Test Messaggio Benvenuto:*\n\n${customMsg}`, null, { mentions: [m.sender] })
+        return m.reply(`🧪 *Welcome Message Test:*\n\n${customMsg}`, null, { mentions: [m.sender] })
         
-    } else if (['testgoodbye', 'testaddio'].includes(cmd)) {
+    } else if (['testgoodbye'].includes(cmd)) {
         const username = await getUserName(conn, m.sender)
         const groupName = (await conn.groupMetadata(m.chat)).subject
         const memberCount = (await conn.groupMetadata(m.chat)).participants.length
         
         let displayName = username
-        if (username.startsWith('@') || username === '𝐍𝐮𝐨𝐯𝐨 𝐌𝐞𝐦𝐛𝐫𝐨') {
-            displayName = `Utente ${m.sender.split('@')[0]}`
+        if (username.startsWith('@') || username === 'New Member') {
+            displayName = `User ${m.sender.split('@')[0]}`
         }
         
-        const defaultMsg = `*Arrivederci* @${m.sender.split('@')[0]} 👋\n┊ Ha lasciato il gruppo\n╰► *Membri rimasti:* ${memberCount}`
+        const defaultMsg = `*Goodbye* @${m.sender.split('@')[0]} 👋\n┊ Left the group\n╰► *Members remaining:* ${memberCount}`
         const customMsg = chat.customGoodbye 
             ? replacePlaceholders(chat.customGoodbye, m.sender, username, groupName, memberCount, displayName)
             : defaultMsg
             
-        return m.reply(`🧪 *Test Messaggio Addio:*\n\n${customMsg}`, null, { mentions: [m.sender] })
+        return m.reply(`🧪 *Goodbye Message Test:*\n\n${customMsg}`, null, { mentions: [m.sender] })
     }
 }
 
-handler.command = /^(setbenvenuto|setwelcome|benvenuto|setaddio|setgoodbye|addio|welcomeconfig|configbenvenuto|impostazioni|togglewelcome|welcome|testwelcome|testbenvenuto|testgoodbye|testaddio)$/i
+handler.command = /^(setwelcome|welcome|setgoodbye|goodbye|welcomeconfig|config|settings|togglewelcome|testwelcome|testgoodbye)$/i
 handler.group = true
 handler.admin = true
 
@@ -528,7 +528,7 @@ export async function before(m, { conn, groupMetadata }) {
     try {
         const username = await getUserName(conn, who, pushNameFromStub)
         const groupJid = m.chat
-        const groupName = groupMetadata?.subject || 'Questo Gruppo'
+        const groupName = groupMetadata?.subject || 'This Group'
         const memberCount = groupMetadata?.participants?.length || 0
         const profilePic = await Promise.race([
             getUserProfilePic(conn, who),
@@ -536,65 +536,11 @@ export async function before(m, { conn, groupMetadata }) {
         ])
         
         let displayName = username
-        if (username.startsWith('@') || username === '𝐍𝐮𝐨𝐯𝐨 𝐌𝐞𝐦𝐛𝐫𝐨') {
-            displayName = `Utente ${who.split('@')[0]}`
+        if (username.startsWith('@') || username === 'New Member') {
+            displayName = `User ${who.split('@')[0]}`
         }
         
         const sendWelcomeMessage = async (isGoodbye = false) => {
             // Use custom message if available, otherwise use default
             let caption
             if (isGoodbye) {
-                const defaultMsg = `*Arrivederci* @${who.split('@')[0]} 👋\n┊ Ha lasciato il gruppo\n╰► *Membri rimasti:* ${memberCount}`
-                caption = chat.customGoodbye 
-                    ? replacePlaceholders(chat.customGoodbye, who, username, groupName, memberCount, displayName)
-                    : defaultMsg
-            } else {
-                const defaultMsg = `*Benvenuto/a* @${who.split('@')[0]} 🎉\n┊ *Gruppo:* ${groupName}\n╰► *Membri:* ${memberCount}`
-                caption = chat.customWelcome 
-                    ? replacePlaceholders(chat.customWelcome, who, username, groupName, memberCount, displayName)
-                    : defaultMsg
-            }
-            
-            try {
-                const image = await Promise.race([
-                    createImage(
-                        isGoodbye ? 'GOODBYE' : 'WELCOME',
-                        displayName,
-                        groupName,
-                        profilePic,
-                        isGoodbye,
-                        groupJid,
-                        who,
-                        conn
-                    ),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-                ])
-                if (image) {
-                    await conn.sendMessage(m.chat, {
-                        image,
-                        caption,
-                        mentions: [who]
-                    })
-                } else throw new Error('Immagine non generata')
-            } catch {
-                await conn.sendMessage(m.chat, {
-                    text: caption,
-                    mentions: [who]
-                })
-            }
-        }
-        if (
-            m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD ||
-            m.messageStubType === 'GROUP_MEMBERSHIP_JOIN_APPROVAL_REQUEST_NON_ADMIN_ADD'
-        ) {
-            await sendWelcomeMessage(false)
-        } else if (
-            [WAMessageStubType.GROUP_PARTICIPANT_REMOVE, WAMessageStubType.GROUP_PARTICIPANT_LEAVE].includes(m.messageStubType)
-        ) {
-            await sendWelcomeMessage(true)
-        }
-    } catch (error) {
-        console.error('Errore:', error)
-    }
-    return true
-}
