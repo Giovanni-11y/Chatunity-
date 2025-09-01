@@ -1,14 +1,14 @@
 let handler = async (m, { conn, command, text }) => {
     let width = Math.floor(Math.random() * 31);
     let finalPhrase = width >= 8 
-        ? "🔥 Complimenti, siamo su livelli impressionanti!"
-        : "😅 Un risultato discreto, c'è sempre margine di miglioramento!";
+        ? "🔥 Congratulations, impressive levels!"
+        : "😅 Decent result, there's always room for improvement!";
 
     let message = `
 ━━━━━━━━━━━━━━━━
-📏 CALCOLATORE DI APERTURA 📏
+📏 SIZE CALCULATOR 📏
 ━━━━━━━━━━━━━━━━
-🔍 ${text} ha un'apertura stimata di:  
+🔍 ${text} has an estimated size of:  
 👉 ${width} cm!  
 ━━━━━━━━━━━━━━━━
 ${finalPhrase}
@@ -26,10 +26,10 @@ ${finalPhrase}
         }
     };
 
-    // Inoltra il messaggio generato senza rispondere al comando
+    // Forward the generated message without replying to the command
     await conn.sendMessage(m.chat, { text: message, ...messageOptions });
 };
 
-handler.command = /^(figa)$/i;
+handler.command = /^(pussy)$/i;
 
 export default handler;
