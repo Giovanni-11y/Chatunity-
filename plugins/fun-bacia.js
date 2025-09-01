@@ -1,33 +1,33 @@
 let handler = async (m, { conn, text, participants, command, usedPrefix }) => {
-    // Se non è stato menzionato nessuno, verifica se il messaggio è una risposta
+    // If no one is mentioned, check if the message is a reply
     if (!text) {
         if (m.quoted && m.quoted.sender) {
             text = '@' + m.quoted.sender.split('@')[0];
         } else {
-            return conn.reply(m.chat, ` Devi menzionare qualcuno o rispondere a un messaggio per baciarlo💋! Esempio: ${usedPrefix + command} @utente`, m);
+            return conn.reply(m.chat, ` You need to mention someone or reply to a message to kiss them💋! Example: ${usedPrefix + command} @user`, m);
         }
     }
 
-    // Prende gli utenti menzionati nel messaggio
-    let utentiMenzionati = m.mentionedJid;
+    // Get users mentioned in the message
+    let mentionedUsers = m.mentionedJid;
 
-    // Se non ci sono menzionati e non è una risposta, usa il sender del messaggio citato
-    if (!utentiMenzionati.length && m.quoted && m.quoted.sender) {
-        utentiMenzionati = [m.quoted.sender];
+    // If no mentions and it's a reply, use the quoted message sender
+    if (!mentionedUsers.length && m.quoted && m.quoted.sender) {
+        mentionedUsers = [m.quoted.sender];
     }
 
-    // Se ancora non c'è nessuno da baciare
-    if (!utentiMenzionati.length) {
-        return m.reply("💋 *Devi menzionare qualcuno per baciarlo!*\nEsempio: *.bacia @utente*");
+    // If still no one to kiss
+    if (!mentionedUsers.length) {
+        return m.reply("💋 *You need to mention someone to kiss them!*\nExample: *.kiss @user*");
     }
 
-    let utenteBaciato = utentiMenzionati[0];
+    let kissedUser = mentionedUsers[0];
 
-    // Messaggio del bacio
-    let messaggio = `💋 *${await conn.getName(m.sender)} ha dato un bacio a ${await conn.getName(utenteBaciato)}!* 😘`;
+    // Kiss message
+    let message = `💋 *${await conn.getName(m.sender)} kissed ${await conn.getName(kissedUser)}!* 😘`;
 
-    await conn.sendMessage(m.chat, { text: messaggio, mentions: [utenteBaciato] }, { quoted: m });
+    await conn.sendMessage(m.chat, { text: message, mentions: [kissedUser] }, { quoted: m });
 };
 
-handler.command = ["bacia"];
+handler.command = ["kiss"];
 export default handler;
