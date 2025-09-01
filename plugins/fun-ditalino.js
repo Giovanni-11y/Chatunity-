@@ -1,50 +1,50 @@
 import { performance } from "perf_hooks";
 
-// Funzione per selezionare un elemento casuale da un array
+// Function to pick random element from array
 function pickRandom(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
 let handler = async (m, { conn, text }) => {
-    let destinatario;
+    let targetUser;
 
-    // Se è una risposta a un messaggio
+    // If replying to a message
     if (m.quoted && m.quoted.sender) {
-        destinatario = m.quoted.sender;
+        targetUser = m.quoted.sender;
     }
-    // Se ci sono utenti menzionati
+    // If users are mentioned
     else if (m.mentionedJid && m.mentionedJid.length > 0) {
-        destinatario = m.mentionedJid[0];
+        targetUser = m.mentionedJid[0];
     }
-    // Se non c'è nulla
+    // If nothing specified
     else {
-        return m.reply("Tagga qualcuno o rispondi a un messaggio per iniziare il ditalino.");
+        return m.reply("Tag someone or reply to a message to start the action.");
     }
 
-    let nomeDestinatario = `@${destinatario.split('@')[0]}`;
+    let targetName = `@${targetUser.split('@')[0]}`;
 
-    // Messaggi personalizzati
-    let sequenza = [
-        `🤟🏻 Inizio una serie di ditalino per *${nomeDestinatario}*...`,
-        "🤟🏻 Ci siamo quasi...",
-        "👋🏻 Riparatevi dalla cascata!!"
+    // Custom messages
+    let sequence = [
+        `🤟🏻 Starting action for *${targetName}*...`,
+        "🤟🏻 Almost there...",
+        "👋🏻 Brace yourselves!!"
     ];
 
-    // Invia i messaggi uno alla volta
-    for (let msg of sequenza) {
-        await m.reply(msg, null, { mentions: [destinatario] });
+    // Send messages one by one
+    for (let msg of sequence) {
+        await m.reply(msg, null, { mentions: [targetUser] });
     }
 
-    // Calcolo del tempo
+    // Calculate time
     let startTime = performance.now();
     let endTime = performance.now();
     let elapsedTime = (endTime - startTime).toFixed(2);
 
-    let resultMessage = `✨ *${nomeDestinatario}* è venuta🥵! Sta spruzzando come una cozza dopo *${elapsedTime}ms*!`;
+    let resultMessage = `✨ *${targetName}* finished🥵! Action completed in *${elapsedTime}ms*!`;
 
-    conn.reply(m.chat, resultMessage, m, { mentions: [destinatario] });
+    conn.reply(m.chat, resultMessage, m, { mentions: [targetUser] });
 };
 
-handler.command = ["ditalino"];
+handler.command = ["action"];
 handler.tags = ["fun"];
 export default handler;
