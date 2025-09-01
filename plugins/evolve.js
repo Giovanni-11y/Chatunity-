@@ -47,7 +47,7 @@ let handler = async (m, { conn, args }) => {
   global.db.data.users[user] = global.db.data.users[user] || {}
   const data = global.db.data.users[user]
 
-  data.mattecash = data.mattecash || 0
+  data.limit = data.limit || 0
   data.pokemons = data.pokemons || []
 
   const name = args.join(' ')
@@ -57,14 +57,14 @@ let handler = async (m, { conn, args }) => {
   if (!baseCard) return m.reply(`❌ You don't own *${name}*`)
 
   const cost = rarityCosts[baseCard.rarity]
-  if (data.mattecash < cost) {
-    return m.reply(`⛔ You don't have enough Mattecash!\n💰 You have: *${data.mattecash}*\n💸 Required: *${cost}*`)
+  if (data.limit < cost) {
+    return m.reply(`⛔ You don't have enough UnityCoins!\n💰 You have: *${data.limit}*\n💸 Required: *${cost}*`)
   }
 
   const nextForm = await getEvolution(baseCard.name)
   if (!nextForm) return m.reply(`⛔ *${baseCard.name}* cannot evolve further.`)
 
-  data.mattecash -= cost
+  data.limit -= cost
 
   await conn.sendMessage(m.chat, { text: `✨ *${baseCard.name}* is evolving...`, mentions: [user] }, { quoted: m })
   await sleep(1000)
@@ -83,7 +83,7 @@ let handler = async (m, { conn, args }) => {
     type: baseCard.type
   })
 
-  return m.reply(`✅ Evolution completed!\n💰 Remaining Mattecash: *${data.mattecash}*`)
+  return m.reply(`✅ Evolution completed!\n💰 Remaining UnityCoins: *${data.limit}*`)
 }
 
 handler.help = ['evolve <name>']
