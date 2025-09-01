@@ -1,33 +1,33 @@
 import { delay } from '@whiskeysockets/baileys';
 
-const salasRuleta = {};
+const rouletteRooms = {};
 
 const handler = async (m, { conn, usedPrefix, command }) => {
     const chatId = m.chat;
     const senderId = m.sender;
 
-    if (salasRuleta[chatId]) 
-        return conn.reply(m.chat, '✧ C\'è già una sala attiva in questo gruppo, attendi che finisca.', m);
+    if (rouletteRooms[chatId]) 
+        return conn.reply(m.chat, '✧ There is already an active roulette game in this group. Please wait for it to end.', m);
 
-    salasRuleta[chatId] = { giocatori: [senderId], stato: 'in_attesa' };
+    rouletteRooms[chatId] = { players: [senderId], status: 'waiting' };
 
     await conn.sendMessage(m.chat, { 
-        text: `✦ *Roulette della Morte* ✦\n\n@${senderId.split('@')[0]} ha avviato una sala di gioco.\n\n❀ Premi il bottone qui sotto per partecipare! (60 secondi)`,
+        text: `✦ *Death Roulette* ✦\n\n@${senderId.split('@')[0]} has created a game room.\n\n❀ Press the button below to join! (60 seconds)`,
         mentions: [senderId],
         buttons: [
-            { buttonId: `${usedPrefix}${command} accetto`, buttonText: { displayText: "✅ Accetto la sfida" }, type: 1 },
-            { buttonId: `${usedPrefix}${command} rifiuto`, buttonText: { displayText: "❌ Annulla" }, type: 1 }
+            { buttonId: `${usedPrefix}${command} accept`, buttonText: { displayText: "✅ Accept the challenge" }, type: 1 },
+            { buttonId: `${usedPrefix}${command} cancel`, buttonText: { displayText: "❌ Cancel" }, type: 1 }
         ]
     }, { quoted: m });
 
     await delay(60000);
-    if (salasRuleta[chatId] && salasRuleta[chatId].stato === 'in_attesa') {
-        delete salasRuleta[chatId];
-        await conn.sendMessage(m.chat, { text: '✦ Nessuno ha accettato la sfida, la sala è stata chiusa.' });
+    if (rouletteRooms[chatId] && rouletteRooms[chatId].status === 'waiting') {
+        delete rouletteRooms[chatId];
+        await conn.sendMessage(m.chat, { text: '✦ No one joined the game. The room has been closed.' });
     }
 };
 
-handler.command = ['roulettedelban'];
+handler.command = ['deathroulette'];
 handler.botAdmin = true;
 
 export default handler;
@@ -35,22 +35,22 @@ export default handler;
 handler.before = async (m, { conn, usedPrefix, command, args }) => {
     const chatId = m.chat;
     const senderId = m.sender;
-    const testo = (m.text || '').toLowerCase();
+    const lowerText = (m.text || '').toLowerCase();
 
-    if (!salasRuleta[chatId]) return;
+    if (!rouletteRooms[chatId]) return;
 
-    // Gestione tramite bottoni
     const arg = args && args[0] ? args[0].toLowerCase() : null;
 
-    if (testo === 'accetto' || testo === 'accettare' || arg === 'accetto') {
-        if (salasRuleta[chatId].giocatori.length >= 2) 
-            return conn.reply(m.chat, '✧ Ci sono già due giocatori in questa sala.', m);
+    // Accepting the challenge
+    if (lowerText === 'accept' || lowerText === 'join' || arg === 'accept') {
+        if (rouletteRooms[chatId].players.length >= 2) 
+            return conn.reply(m.chat, '✧ There are already two players in this room.', m);
 
-        if (senderId === salasRuleta[chatId].giocatori[0])
-            return conn.reply(m.chat, '✧ Non puoi accettare la tua stessa sfida.', m);
+        if (senderId === rouletteRooms[chatId].players[0])
+            return conn.reply(m.chat, '✧ You cannot accept your own challenge.', m);
 
-        salasRuleta[chatId].giocatori.push(senderId);
-        salasRuleta[chatId].stato = 'completa';
+        rouletteRooms[chatId].players.push(senderId);
+        rouletteRooms[chatId].status = 'full';
 
         await conn.sendMessage(m.chat, { 
             audio: { url: "https://qu.ax/iwAmy.mp3" }, 
@@ -59,44 +59,45 @@ handler.before = async (m, { conn, usedPrefix, command, args }) => {
         });
 
         await conn.sendMessage(m.chat, { 
-            text: '✦ *Roulette della Morte* ✦\n\n❀ La sala è completa!\n\n> ✧ Selezionando il perdente...' 
+            text: '✦ *Death Roulette* ✦\n\n❀ The game room is full!\n\n> ✧ Choosing the loser...' 
         });
 
         const loadingMessages = [
-            "《 █▒▒▒▒▒▒▒▒▒▒▒》10%\n- Calcolo probabilità...",
-            "《 ████▒▒▒▒▒▒▒▒》30%\n- Il destino è segnato...",
-            "《 ███████▒▒▒▒▒》50%\n- La sorte è decisa...",
-            "《 ██████████▒▒》80%\n- Presto conosceremo il perdente!",
-            "《 ████████████》100%\n- Risultato finale!"
+            "《 █▒▒▒▒▒▒▒▒▒▒▒》10%\n- Calculating odds...",
+            "《 ████▒▒▒▒▒▒▒▒》30%\n- Fate is being sealed...",
+            "《 ███████▒▒▒▒▒》50%\n- Destiny is being decided...",
+            "《 ██████████▒▒》80%\n- The loser will be revealed soon!",
+            "《 ████████████》100%\n- Final result!"
         ];
 
-        let { key } = await conn.sendMessage(m.chat, { text: "✧ Calcolo risultato in corso!" }, { quoted: m });
+        let { key } = await conn.sendMessage(m.chat, { text: "✧ Calculating result..." }, { quoted: m });
 
         for (let msg of loadingMessages) {
             await delay(3000);
             await conn.sendMessage(m.chat, { text: msg, edit: key }, { quoted: m });
         }
 
-        const [giocatore1, giocatore2] = salasRuleta[chatId].giocatori;
-        const perdente = Math.random() < 0.5 ? giocatore1 : giocatore2;
+        const [player1, player2] = rouletteRooms[chatId].players;
+        const loser = Math.random() < 0.5 ? player1 : player2;
 
         await conn.sendMessage(m.chat, { 
-            text: `✦ *Verdetto finale* ✦\n\n@${perdente.split('@')[0]} è stato il perdente.\n\n> ❀ Hai 60 secondi per le tue ultime parole...`, 
-            mentions: [perdente] 
+            text: `✦ *Final Verdict* ✦\n\n@${loser.split('@')[0]} has been chosen as the loser.\n\n> ❀ You have 60 seconds for your last words...`, 
+            mentions: [loser] 
         });
 
         await delay(60000);        
-        await conn.groupParticipantsUpdate(m.chat, [perdente], 'remove');
+        await conn.groupParticipantsUpdate(m.chat, [loser], 'remove');
         await conn.sendMessage(m.chat, { 
-            text: `❀ @${perdente.split('@')[0]} è stato eliminato. Fine del gioco.`, 
-            mentions: [perdente] 
+            text: `❀ @${loser.split('@')[0]} has been removed. Game over.`, 
+            mentions: [loser] 
         });        
-        delete salasRuleta[chatId];
+        delete rouletteRooms[chatId];
     }
 
-    if (testo === 'rifiuto' || arg === 'rifiuto') {
-        if (senderId !== salasRuleta[chatId].giocatori[0]) return;
-        delete salasRuleta[chatId];
-        await conn.sendMessage(m.chat, { text: '✧ Il gioco è stato annullato dal creatore della sfida.' });
+    // Cancelling the game
+    if (lowerText === 'cancel' || arg === 'cancel') {
+        if (senderId !== rouletteRooms[chatId].players[0]) return;
+        delete rouletteRooms[chatId];
+        await conn.sendMessage(m.chat, { text: '✧ The game has been cancelled by the creator.' });
     }
 };
