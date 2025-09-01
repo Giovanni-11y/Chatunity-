@@ -1,27 +1,27 @@
-// Plugin: Solo Maggiorenni (Abilita/disabilita phsearch per +18)
-// Attiva con: .attiva solomaggiorenni | .disabilita solomaggiorenni
+// Plugin: Adults Only (Enable/disable phsearch for 18+)
+// Enable with: .enable adultsonly | .disable adultsonly
 
 let handler = async (m, { conn, command, usedPrefix, args, isAdmin, isOwner }) => {
   const chat = global.db.data.chats[m.chat];
-  if (!chat) return m.reply('Impossibile trovare i dati del gruppo.');
+  if (!chat) return m.reply('Unable to find group data.');
 
-  // Solo admin o owner può attivare/disattivare
-  if (!isAdmin && !isOwner) return m.reply('Solo gli admin possono attivare/disattivare questa funzione.');
+  // Only admin or owner can enable/disable
+  if (!isAdmin && !isOwner) return m.reply('Only admins can enable/disable this feature.');
 
-  if (/attiva/i.test(command)) {
+  if (/enable/i.test(command)) {
     chat.solomaggiorenni = true;
-    return m.reply('✅ Solo Maggiorenni attivato! Ora il comando .phsearch è disponibile.');
-  } else if (/disabilita/i.test(command)) {
+    return m.reply('✅ Adults Only enabled! Now the .phsearch command is available.');
+  } else if (/disable/i.test(command)) {
     chat.solomaggiorenni = false;
-    return m.reply('❌ Solo Maggiorenni disattivato! Ora il comando .phsearch NON è più disponibile.');
+    return m.reply('❌ Adults Only disabled! Now the .phsearch command is NO longer available.');
   } else {
-    return m.reply(`Usa:\n${usedPrefix}attiva solomaggiorenni\n${usedPrefix}disabilita solomaggiorenni`);
+    return m.reply(`Use:\n${usedPrefix}enable adultsonly\n${usedPrefix}disable adultsonly`);
   }
 };
 
-handler.help = ['attiva solomaggiorenni', 'disabilita solomaggiorenni'];
-handler.tags = ['sicurezza'];
-handler.command = /^(attiva|disabilita)\s?solomaggiorenni$/i;
+handler.help = ['enable adultsonly', 'disable adultsonly'];
+handler.tags = ['security'];
+handler.command = /^(enable|disable)\s?adultsonly$/i;
 handler.admin = true;
 handler.group = true;
 
