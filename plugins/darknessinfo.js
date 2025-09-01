@@ -1,16 +1,16 @@
 let handler = async (m, { conn }) => {
   const message = `
-🌑 *PACCHETTI DARKNESS* 🌑
+🌑 *DARKNESS PACKS* 🌑
 
-I pacchetti *Darkness* non si possono comprare, ma si trovano **apparentemente dal nulla** quando apri pacchetti *Premium*.
+*Darkness* packs cannot be purchased, but they **seemingly appear out of nowhere** when you open *Premium* packs.
 
-➡️ Ogni 10 pacchetti *Premium* aperti, hai il 50% di possibilità di ottenere un pacchetto *Darkness* bonus.
+➡️ For every 10 *Premium* packs opened, you have a 50% chance to get a bonus *Darkness* pack.
 
-🎲 Aprendo un pacchetto *Darkness* puoi trovare Pokémon Darkness speciali con il 10% di possibilità.
+🎲 Opening a *Darkness* pack gives you a 10% chance to find special Darkness Pokémon.
 
-Usa *.apri darkness* per aprire i pacchetti Darkness.
+Use *.open darkness* to open Darkness packs.
 
-Buona fortuna! 🍀
+Good luck! 🍀
 `;
 
   await conn.sendMessage(m.chat, { text: message }, { quoted: m });
