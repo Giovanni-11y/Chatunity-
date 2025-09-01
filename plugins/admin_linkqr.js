@@ -1,13 +1,13 @@
-//Plugin fatto da Gabs & 333 Staff
+//Plugin made by Gabs & 333 Staff
 import QRCode from 'qrcode';
 
 const handler = async (m, { conn }) => {
     try {
         const inviteLink = 'https://chat.whatsapp.com/' + await conn.groupInviteCode(m.chat);
         const qrImageBuffer = await QRCode.toBuffer(inviteLink);
-        await conn.sendMessage(m.chat, { image: qrImageBuffer, caption: 'Ecco il QR Code per il link del gruppo!' });
+        await conn.sendMessage(m.chat, { image: qrImageBuffer, caption: 'Here is the QR Code for the group link!' });
     } catch (error) {
-        m.reply('Errore durante la generazione del QR Code: ' + error.message);
+        m.reply('Error generating QR Code: ' + error.message);
     }
 };
 
