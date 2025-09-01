@@ -1,28 +1,28 @@
-// crediti: Onix, di Riad
+// credits: Onix, by Riad
 let handler = async (m, { conn, text }) => {
     let who = m.mentionedJid?.[0] || m.quoted?.sender || m.sender;
 
-    // Verifica se l'utente target è il numero del bot
+    // Check if the target user is the bot's number
     if (who === conn.user.jid) {
         await conn.sendMessage(m.chat, { 
-            text: `🚫 Impossibile ottenere la foto profilo del bot.` 
+            text: `🚫 Unable to get the bot's profile photo.` 
         }, { quoted: m });
         return;
     }
 
     try {
-        // Recupera la foto profilo dell'utente (se esiste)
+        // Retrieve the user's profile picture (if available)
         let profilePicture = await conn.profilePictureUrl(who, 'image');
         await conn.sendMessage(m.chat, { 
             image: { url: profilePicture }, 
             caption: `📸` 
         }, { quoted: m, mentions: [who] });
     } catch (e) {
-        // Caso in cui l'utente non ha una foto profilo o non è disponibile
+        // User has no profile photo or it's not available
         await conn.sendMessage(m.chat, { 
-            text: `@${who.split('@')[0]} 𝐧𝐨𝐧 𝐡𝐚 𝐮𝐧𝐚 𝐟𝐨𝐭𝐨 𝐩𝐫𝐨𝐟𝐢𝐥𝐨 🚫`, 
+            text: `@${who.split('@')[0]} does not have a profile photo 🚫`, 
             mentions: [who] 
-        }, { quoted: m });
+        }, { quoted: m })
     }
 };
 
