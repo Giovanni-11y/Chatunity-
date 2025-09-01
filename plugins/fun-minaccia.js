@@ -4,14 +4,14 @@ const handler = async (m, {
     if (!m.isGroup) {
       throw '';
     }
-    const gruppi = global.db.data.chats[m.chat];
-    if (gruppi.spacobot === false) {
+    const groups = global.db.data.chats[m.chat];
+    if (groups.spacobot === false) {
       throw '';
     }
-    const menzione = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text;
-    if (!menzione) throw 'Chi vuoi minacciare?';
+    const mention = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text;
+    if (!mention) throw 'Who do you want to threaten?';
 
-    const message = `@${menzione.split`@`[0]} ${pickRandom(['spaco botilia e ti amazo familia', 'ti farò guardare Milley Cyrus 24/7', 'ti infilo una mano in culo, ti sfilo la spina dorsale e la uso per frustarti', 'ti do un calcio in culo così forte che rimane dentro la scarpa', 'ti inculo con sabbia, sale, e cocci di vetro', 'ti do mezza ora di schiaffi in cinque minuti', 'ti faccio inculare dai negri sordi, così quanno dici basta non ti sentono', 'ti smonto e do fuoco alle istruzioni', 'ti metto un dito in bocca, uno nel culo e ti sciaqquo come una damigiana', 'ti do un calcio che ti mando le palle a far salotto con le tonsille', 'ti infilo un bastone nel culo e ti sventolo come na bandiera', 'ti piglio per le orecchie e ti scarto come una golia', 'ti stacco le palle e le appendo all albero  di natale', 'ti stacco le braccia e le uso per menarti', 'ti faccio due occhi neri che se te metti a masticare il bambù il WWF te protegge'])}`;
+    const message = `@${mention.split`@`[0]} ${pickRandom(['I will end you', 'I will make you regret this', 'You will pay for that', 'I will teach you a lesson', 'You are in big trouble now', 'I will make you wish you never did that', 'This is your final warning', 'You have crossed the line', 'I will show you no mercy', 'Your time is up', 'I will make an example out of you', 'You have chosen the wrong person to mess with', 'I will make sure you never forget this', 'This is the end for you', 'You are finished'])}`;
     const messageOptions = {
         contextInfo: {
             forwardingScore: 1,
@@ -24,11 +24,11 @@ const handler = async (m, {
         }
     };
 
-    // Invia il messaggio con le menzioni e le opzioni
-    m.reply(message, null, { mentions: [menzione], ...messageOptions });
+    // Send message with mentions and options
+    m.reply(message, null, { mentions: [mention], ...messageOptions });
   };
 
-handler.command = /^\minaccia$/i; // Modifica per accettare solo il comando `.minaccia`
+handler.command = /^threat$/i; // Modified to accept only `.threat` command
 export default handler;
 
 function pickRandom(list) {
