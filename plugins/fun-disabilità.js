@@ -1,61 +1,61 @@
 let handler = async (m, { conn, command, text, usedPrefix }) => {
     let target = text ? text.replace(/[@]/g, '') + '@s.whatsapp.net' : (m.quoted ? m.quoted.sender : m.mentionedJid && m.mentionedJid[0]);
-    if (!target) return conn.reply(m.chat, `🚨 *TAGGA QUALCUNO, DIO CANE!* 🚨\nEsempio: *${usedPrefix}${command} @tuoexmiglioreamico*`, m);
+    if (!target) return conn.reply(m.chat, `🚨 *TAG SOMEONE, DAMN IT!* 🚨\nExample: *${usedPrefix}${command} @yourbestfriend*`, m);
 
     let name = await conn.getName(target);
     let randomPercent = Math.floor(Math.random() * 100) + 1;
 
-    // Frasi satiriche e spietate
-    let frasiTaglienti = [
-        `🧠 *Il suo QI? Stabile come il Bitcoin nel 2018.* 📉`,  
-        `💡 *Se l'ignoranza fosse luce, sarebbe un faro.* 🌟`,  
-        `🏆 *Campione olimpico di "Eh?" e "Come?"* 🥇`,  
-        `🦉 *Saggezza zero, ma almeno è simpatico... no?* 🙃`,  
-        `🌌 *La sua mente? Un vuoto cosmico.* 🚀`,  
-        `📚 *Se la stupidità fosse un libro, sarebbe un'enciclopedia.* 📖`,  
-        `🛠️ *Ha due neuroni e litigano per il terzo posto.* ⚡`,  
-        `🎭 *Parla tanto ma dice sempre... nulla.* 🤡`
+    // Sarcastic and ruthless phrases
+    let sharpPhrases = [
+        `🧠 *Their IQ? As stable as Bitcoin in 2018.* 📉`,  
+        `💡 *If ignorance were light, they'd be a lighthouse.* 🌟`,  
+        `🏆 *Olympic champion of "Huh?" and "What?"* 🥇`,  
+        `🦉 *Zero wisdom, but at least they're nice... right?* 🙃`,  
+        `🌌 *Their mind? A cosmic void.* 🚀`,  
+        `📚 *If stupidity were a book, they'd be an encyclopedia.* 📖`,  
+        `🛠️ *They have two neurons and they're fighting for third place.* ⚡`,  
+        `🎭 *They talk a lot but always say... nothing.* 🤡`
     ];
 
-    let fraseRandom = frasiTaglienti[Math.floor(Math.random() * frasiTaglienti.length)];
+    let randomPhrase = sharpPhrases[Math.floor(Math.random() * sharpPhrases.length)];
 
-    // Messaggio finale SPARA A ZERO
-    let messaggioFinale = `
-⚡ *📜 VERDETTO UFFICIALE DI "${command.toUpperCase()}" 📜* ⚡
+    // Final message SHOOTS TO KILL
+    let finalMessage = `
+⚡ *📜 OFFICIAL VERDICT OF "${command.toUpperCase()}" 📜* ⚡
 
-🧑 *Soggetto Analizzato:* ${name}  
-📉 *Livello di "${command}":* ${randomPercent}% ${randomPercent > 80 ? "☠️ *GRAVE PERICOLO SOCIALE* ☠️" : "🤏 *Quasi accettabile... quasi*"}  
+🧑 *Analyzed Subject:* ${name}  
+📉 *Level of "${command}":* ${randomPercent}% ${randomPercent > 80 ? "☠️ *SERIOUS SOCIAL DANGER* ☠️" : "🤏 *Almost acceptable... almost*"}  
 
-${fraseRandom}  
+${randomPhrase}  
 
 ${randomPercent > 90 ? 
-    "🚨 *AVVERTENZA:* La sua presenza potrebbe causare perdita di cellule cerebrali. Usare con cautela." : 
+    "🚨 *WARNING:* Their presence may cause loss of brain cells. Use with caution." : 
     randomPercent < 20 ? 
-    "🦸 *Miracolo! Riesce a respirare e pensare contemporaneamente!*" : 
-    "💀 *Sopravviverai... forse.*"
+    "🦸 *Miracle! They can breathe and think at the same time!*" : 
+    "💀 *You'll survive... maybe.*"
 }  
 
-💥 *CONCLUSIONE:* ${randomPercent > 70 ? 
-    "*La selezione naturale ha fallito.*" : 
-    "*Potrebbe essere utile come esempio di cosa non fare.*"
+💥 *CONCLUSION:* ${randomPercent > 70 ? 
+    "*Natural selection has failed.*" : 
+    "*Could be useful as an example of what not to do.*"
 }`.trim();
 
     await conn.sendMessage(m.chat, { 
-        text: messaggioFinale,
+        text: finalMessage,
         contextInfo: {
             forwardingScore: 999,
             isForwarded: true,
             forwardedNewsletterMessageInfo: {
                 newsletterJid: '120363259442839354@newsletter',
-                newsletterName: '🔥 *SALA VERDETTI SPARATI* 🔥'
+                newsletterName: '🔥 *VERDICT SHOOTING GALLERY* 🔥'
             }
         },
         mentions: [target]
     }, { quoted: m });
 };
 
-handler.help = ['down', 'ritardato', 'mongoloide', 'disabile', 'ritardata'].map(v => v + ' @tag | nome');
-handler.tags = ['satira', 'game'];
-handler.command = /^(down|ritardato|mongoloide|disabile|ritardata)$/i;
+handler.help = ['stupid', 'idiot', 'moron', 'dumb', 'retarded'].map(v => v + ' @tag | name');
+handler.tags = ['satire', 'game'];
+handler.command = /^(stupid|idiot|moron|dumb|retarded)$/i;
 
 export default handler;
