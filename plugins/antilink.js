@@ -2,11 +2,11 @@ import fetch from 'node-fetch'
 import FormData from 'form-data'
 import { downloadContentFromMessage } from '@whiskeysockets/baileys'
 
-// Regex migliorato per link WhatsApp (gruppi/canali), anche con spazi invisibili o caratteri . sparsi
+// Improved regex for WhatsApp links (groups/channels), even with invisible spaces or scattered dots
 const linkRegex = /\bchat[\s.\u200B\u200C\u200D\uFEFF]*whatsapp[\s.\u200B\u200C\u200D\uFEFF]*com\/([0-9A-Za-z]{20,24})/i
 const channelRegex = /\bwhatsapp[\s.\u200B\u200C\u200D\uFEFF]*com\/channel\/([0-9A-Za-z]{20,24})/i
 
-// Estrai immagine/video se presenti
+// Extract image/video if present
 async function getMediaBuffer(message) {
     try {
         const msg = message.message?.imageMessage
@@ -25,12 +25,12 @@ async function getMediaBuffer(message) {
 
         return buffer
     } catch (e) {
-        console.error('Errore nel download media:', e)
+        console.error('Error downloading media:', e)
         return null
     }
 }
 
-// Leggi QR code da immagine
+// Read QR code from image
 async function readQRCode(imageBuffer) {
     try {
         const controller = new AbortController()
@@ -49,12 +49,12 @@ async function readQRCode(imageBuffer) {
         const data = await response.json()
         return data?.[0]?.symbol?.[0]?.data || null
     } catch (e) {
-        console.error('Errore lettura QR:', e)
+        console.error('Error reading QR:', e)
         return null
     }
 }
 
-// Estrai testo e normalizza invisibili/spazi
+// Extract text and normalize invisible/spaces
 function extractPossibleText(m) {
     const rawText = m.text ?? ''
     const pollV3 = m.message?.pollCreationMessageV3?.title
@@ -67,10 +67,10 @@ function extractPossibleText(m) {
         || pollLegacy
         || quotedPoll
         || ''
-    ).replace(/[\s\u200b\u200c\u200d\uFEFF]+/g, '') // Rimuove spazi e invisibili
+    ).replace(/[\s\u200b\u200c\u200d\uFEFF]+/g, '') // Removes spaces and invisible characters
 }
 
-// Funzione principale
+// Main function
 export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isROwner }) {
     if (!m.isGroup) return false
     if (isAdmin || isOwner || isROwner || m.fromMe) return false
@@ -81,7 +81,7 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isROwner }
     try {
         const normalizedText = extractPossibleText(m)
 
-        // Controllo link nel testo
+        // Check link in text
         if (linkRegex.test(normalizedText) || channelRegex.test(normalizedText)) {
             const groupLink = `https://chat.whatsapp.com/${await conn.groupInviteCode(m.chat)}`
             if (normalizedText.includes(groupLink.replace(/[\s.\u200B\u200C\u200D\uFEFF]/g, ''))) return false
@@ -99,13 +99,13 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isROwner }
             }).catch(() => {})
 
             await conn.sendMessage(m.chat, {
-                text: `🛑 Link rilevato. Ritenta la prossima volta @${m.sender.split('@')[0]}`,
+                text: `🛑 Link detected. Try again next time @${m.sender.split('@')[0]}`,
                 mentions: [m.sender]
             })
             return true
         }
 
-        // Controllo link via QR code
+        // Check link via QR code
         const media = await getMediaBuffer(m)
         if (!media) return false
 
@@ -127,15 +127,15 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isROwner }
             }).catch(() => {})
 
             await conn.sendMessage(m.chat, {
-                text: `🚫 QR con link rilevato. Ciao ciao @${m.sender.split('@')[0]}`,
+                text: `🚫 QR with link detected. Goodbye @${m.sender.split('@')[0]}`,
                 mentions: [m.sender]
             })
             return true
         }
 
     } catch (err) {
-        console.error('Errore nel modulo antilink:', err)
+        console.error('Error in antilink module:', err)
     }
 
     return false
-}
+    }
