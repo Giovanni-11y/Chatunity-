@@ -1,30 +1,30 @@
 import fetch from 'node-fetch'
 
-// Handler principale
+// Main handler
 let handler = m => m
 
 handler.before = async function (m) {
-    // Accedi ai dati utente e chat dal database globale
+    // Access user and chat data from global database
     let chat = global.db.data.chats[m.chat]
     let user = global.db.data.users[m.sender]
 
-    // Se non è un gruppo, esci
+    // If it's not a group, exit
     if (!m.isGroup) return null
 
-    // Se la funzione bestemmiometro non è attiva, esci
+    // If the blasphemy meter function is not active, exit
     if (!chat.bestemmiometro) return
 
-    // Regex per rilevare bestemmie
-    const regex = /(?:porco dio|porcodio|dio bastardo|dio cane|porcamadonna|madonnaporca|porca madonna|madonna porca|dio cristo|diocristo|dio maiale|diomaiale|jesucristo|jesu cristo|cristo madonna|madonna impanata|dio cristo|cristo dio|dio frocio|dio gay|dio madonna|dio infuocato|dio crocifissato|madonna puttana|madonna vacca|madonna inculata|maremma maiala|padre pio|jesu impanato|jesu porco|porca madonna|diocane|madonna porca|dio capra|capra dio|padre pio ti spio)/i
+    // Regex to detect English blasphemies/swear words
+    const regex = /(?:god damn|goddamn|jesus christ|jesus fucking christ|christ almighty|holy shit|holy fuck|bloody hell|god damn it|god fucking damn it|jesus fucking christ|what the hell|what the fuck|for fuck's sake|motherfucker|shit damn|hell yeah|god awful|jesus wept|christ on a bike|holy mother of god|god forsaken|god damned|bloody fucking hell|fucking hell|damn it to hell|jesus h christ|christ in heaven|god be damned|holy fucking shit|god damn son of a bitch)/i
 
-    // Se il messaggio contiene bestemmie
+    // If the message contains blasphemies
     if (regex.test(m.text)) {
         user.blasphemy = (user.blasphemy || 0) + 1
         user.blasphemyCounted = Math.floor(user.blasphemy / 10)
 
-        // Notifica solo ogni 10 bestemmie
+        // Notify only every 10 blasphemies
         if (user.blasphemy % 10 === 0) {
-            const mention = '@' + m.sender.split('@')[0] + ` ha tirato ${user.blasphemy} bestemmie!`
+            const mention = '@' + m.sender.split('@')[0] + ` has said ${user.blasphemy} blasphemies!`
             let quoted = {
                 key: {
                     participants: '0@s.whatsapp.net',
@@ -33,7 +33,7 @@ handler.before = async function (m) {
                 },
                 message: {
                     locationMessage: {
-                        name: '𝐁𝐞𝐬𝐭𝐞𝐦𝐦𝐢𝐨𝐦𝐞𝐭𝐫𝐨',
+                        name: '𝐁𝐥𝐚𝐬𝐩𝐡𝐞𝐦𝐲 𝐌𝐞𝐭𝐞𝐫',
                         jpegThumbnail: await (await fetch('https://telegra.ph/file/ba01cc1e5bd64ca9d65ef.jpg')).buffer(),
                         vcard: 'BEGIN:VCARD\x0aVERSION:3.0\x0aN:;Unlimited;;;\x0aFN:Unlimited\x0aORG:Unlimited\x0aTITLE:\x0aitem1.TEL;waid=19709001746:+1\x20(970)\x20900-1746\x0aitem1.X-ABLabel:Unlimited\x0aX-WA-BIZ-DESCRIPTION:ofc\x0aX-WA-BIZ-NAME:Unlimited\x0aEND:VCARD'
                     }
