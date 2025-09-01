@@ -8,18 +8,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const handler = async (message, { conn }) => {
-    const newsText = `*RILASCIO V6.1*\n\n`
-                  + `📅 *Data:* 18/08 \n`
-                  + `🆕 *Aggiornamenti principali:*\n`
-                  + `• Nuovo comando social\n`
-                  + `• Ottimizzato i log su console\n`
-                  + `• Ottimizzato aggiorna\n`
-                  + `• nuova interfaccia dox\n`
-                  + `• nuovi staffer: giusemd & anubi\n`
-                  + `• *Cambio gestione security transato a DEATH:*\n`
-                  + `  - Nuove funzionalità in security\n`
-                  + `  - Ristrutturazione completa del progetto\n`
-                  + `• Preparazione per V7.0 con nuove funzionalità\n\n`;
+    const newsText = `*RELEASE V6.1*\n\n`
+                  + `📅 *Date:* 18/08\n`
+                  + `🆕 *Main updates:*\n`
+                  + `• New social command\n`
+                  + `• Optimized console logs\n`
+                  + `• Optimized update\n`
+                  + `• New dox interface\n`
+                  + `• New staff members: giusemd & anubi\n`
+                  + `• *Security management transferred to DEATH:*\n`
+                  + `  - New security features\n`
+                  + `  - Complete project restructuring\n`
+                  + `• Preparation for V7.0 with new features\n\n`;
 
     await conn.sendMessage(
         message.chat,
@@ -28,8 +28,8 @@ const handler = async (message, { conn }) => {
     );
 };
 
-handler.help = ['novita'];
+handler.help = ['news'];
 handler.tags = ['info'];
-handler.command = /^(novita|aggiornamenti|novità)$/i;
+handler.command = /^(news|updates)$/i;
 
 export default handler;
