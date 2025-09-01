@@ -4,21 +4,21 @@ import path from 'path';
 let handler = async (m, { text, conn, usedPrefix, command }) => {
   let fileName = text.trim();
   if (!fileName) {
-    return m.reply("⚠️ Devi specificare il nome del file da creare. Es: `.file nome.txt`");
+    return m.reply("⚠️ You must specify the name of the file to create. Example: `.file name.txt`");
   }
   
   let filePath = path.join(process.cwd(), fileName);
   
   if (fs.existsSync(filePath)) {
-    return m.reply(`⚠️ Il file "${fileName}" esiste già.`);
+    return m.reply(`⚠️ The file "${fileName}" already exists.`);
   }
   
   fs.writeFile(filePath, '', (err) => {
     if (err) {
-      console.error(`Errore nella creazione del file: ${err.message}`);
-      return m.reply(`❌ Errore nella creazione del file: ${err.message}`);
+      console.error(`Error creating the file: ${err.message}`);
+      return m.reply(`❌ Error creating the file: ${err.message}`);
     }
-    m.reply(`✅ Il file "${fileName}" è stato creato con successo nella cartella del bot.`);
+    m.reply(`✅ The file "${fileName}" was created successfully in the bot's folder.`);
   });
 };
 
