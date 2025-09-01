@@ -2,16 +2,16 @@ const { generateWAMessageFromContent, proto } = (await import('@whiskeysockets/b
 
 var handler = async (m, { conn, text}) => {
 
-const emoji2 = "😂"; // Emoji di default per le barzellette
+const emoji2 = "😂"; // Default emoji for jokes
 
-conn.reply(m.chat, `${emoji2} Cerco una barzelletta, attendi un momento...`, m)
+conn.reply(m.chat, `${emoji2} Looking for a joke, please wait...`, m)
 
-conn.reply(m.chat, `*┏━_͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡_͜͡━┓*\n\n❥ *"${pickRandom(global.barzelletta)}"*\n\n*┗━_͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡_͜͡━┛*`, m)
+conn.reply(m.chat, `*┏━_͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡_͜͡━┓*\n\n❥ *"${pickRandom(global.jokes)}"*\n\n*┗━_͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡⚘-͜͡-͜͡-͜͡-͜͡-͜͡-͜͡_͜͡━┛*`, m)
 
 }
-handler.help = ['barzelletta']
+handler.help = ['joke']
 handler.tags = ['fun']
-handler.command = ['barzelletta']
+handler.command = ['joke']
 handler.fail = null
 handler.exp = 0
 handler.group = true;
@@ -24,25 +24,25 @@ function pickRandom(list) {
 return list[Math.floor(list.length * Math.random())]
 }
 
-global.barzelletta = [
-  "Qual è l’ultimo animale salito sull’arca di Noè? Il delfino.",
-  "Come si dice fazzoletto in giapponese? Saka-moko.",
-  "Come si dice sparo in arabo? Ahì-va-la-bala.",
-  "Cosa dice un verme a un altro verme? Vado a fare un giro alla mela.",
-  "Un gatto inizia ad abbaiare sul tetto di una casa. Un altro gatto, sorpreso, gli dice: Sei matto gatto, perché abbai invece di miagolare? Il gattino risponde: Non posso forse imparare un’altra lingua?",
-  "Il dottore dice al paziente: respiri profondamente che la ausculto. Il paziente risponde: dottore, da chi mi deve nascondere se non devo niente a nessuno?",
-  "Dopo un parto il padre chiede: Dottore, com’è andata? Il dottore: tutto bene, ma abbiamo dovuto mettere ossigeno al bambino. Il padre, sconvolto: ma noi volevamo chiamarlo Gabriele!",
-  "Un pesce chiede a un altro pesce: cosa fa tua mamma? Questo risponde: Nuota, e la tua? Nuota anche lei.",
-  "Qual è il colmo per Aladino? Avere un brutto genio.",
-  "Il professore dice allo studente dopo aver corretto il compito: Il tuo lavoro mi ha commosso. Lo studente, sorpreso, chiede: E perché professore? Il professore: Perché mi ha fatto tanta pena.",
-  "Il bambino dice alla mamma: Mamma, non voglio più giocare con Pierino. La mamma: Perché? Perché quando giochiamo con i mattoncini e gliene tiro uno in testa, si mette a piangere.",
-  "La maestra chiede a Gianluca: Cosa faresti se stessi annegando in piscina? Gianluca risponde: Mi metterei a piangere tanto per sfogarmi.",
-  "Mamma, mi vedo grassa, brutta e vecchia. Cosa ho? Mamma, hai proprio ragione.",
-  "Come si dice capelli sporchi in cinese? Chin cham pu.",
-  "C’era una volta un bambino così, ma così distratto che... vabbè, mi sono dimenticato la barzelletta!",
-  "Un’amica chiede a un’altra: Come va la vita da sposata? Non mi posso lamentare, dice lei. Quindi va bene? No, non mi posso lamentare perché mio marito è qui vicino.",
-  "Perché le foche guardano sempre in alto? Perché lì ci sono i fari!",
-  "Cameriere, questa bistecca è molto nervosa. È normale, è la prima volta che la mangiano.",
-  "Come si chiama il cugino di Bruce Lee? Broco Lee.",
-  "Una mamma dice al figlio: Giacomino, mi ha detto un uccellino che ti droghi. Quella che si droga sei tu, che parli con gli uccellini."
+global.jokes = [
+  "Why don't scientists trust atoms? Because they make up everything!",
+  "Why did the scarecrow win an award? He was outstanding in his field!",
+  "What do you call a fake noodle? An impasta!",
+  "Why did the math book look so sad? Because it had too many problems!",
+  "What do you call a bear with no teeth? A gummy bear!",
+  "Why don't eggs tell jokes? They'd crack each other up!",
+  "What do you call a sleeping bull? A bulldozer!",
+  "Why did the coffee file a police report? It got mugged!",
+  "What do you call a dinosaur that crashes his car? Tyrannosaurus Wrecks!",
+  "Why don't skeletons fight each other? They don't have the guts!",
+  "What do you call a fish wearing a bowtie? Sofishticated!",
+  "Why did the bicycle fall over? Because it was two tired!",
+  "What do you call a cow with no legs? Ground beef!",
+  "Why don't melons get married? Because they cantaloupe!",
+  "What do you call a boomerang that doesn't come back? A stick!",
+  "Why did the tomato turn red? Because it saw the salad dressing!",
+  "What do you call a parade of rabbits hopping backwards? A receding hare-line!",
+  "Why was the computer cold? It left its Windows open!",
+  "What do you call a sheep with no legs? A cloud!",
+  "Why did the golfer bring two pairs of pants? In case he got a hole in one!"
 ]
