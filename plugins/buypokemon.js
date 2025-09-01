@@ -1,4 +1,4 @@
-Here's the translated version of your script in English:
+
 
 ```javascript
 let handler = async (m, { conn, args }) => {
