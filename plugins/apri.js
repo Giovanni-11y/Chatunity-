@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-const API_KEY = '9746da2c-ac5f-487c-b4ae-fc55d1cd58b3'; // 🔐 Inserisci la tua chiave personale qui
+const API_KEY = '9746da2c-ac5f-487c-b4ae-fc55d1cd58b3'; // 🔐 Insert your personal key here
 
 const packPrices = {
   base: 100,
@@ -12,42 +12,42 @@ const rarities = {
   base: ['Common', 'Common', 'Uncommon'],
   imperium: ['Common', 'Uncommon', 'Rare'],
   premium: ['Rare', 'Rare', 'Rare Holo'],
-  darkness: ['Misterioso']
+  darkness: ['Mysterious']
 };
 
 // Define darknessPokemons array with some default dark-type Pokémon
 const darknessPokemons = [
   {
     name: "Darkrai",
-    rarity: "Misterioso",
+    rarity: "Mysterious",
     type: "Dark",
     image: "https://images.pokemontcg.io/dp7/3_hires.png",
     hp: "110"
   },
   {
     name: "Umbreon",
-    rarity: "Misterioso",
+    rarity: "Mysterious",
     type: "Dark",
     image: "https://images.pokemontcg.io/ecard2/H32_hires.png",
     hp: "90"
   },
   {
     name: "Tyranitar",
-    rarity: "Misterioso",
+    rarity: "Mysterious",
     type: "Dark/Rock",
     image: "https://images.pokemontcg.io/ex15/30_hires.png",
     hp: "150"
   },
   {
     name: "Zoroark",
-    rarity: "Misterioso",
+    rarity: "Mysterious",
     type: "Dark",
     image: "https://images.pokemontcg.io/bw6/71_hires.png",
     hp: "100"
   },
   {
     name: "Houndoom",
-    rarity: "Misterioso",
+    rarity: "Mysterious",
     type: "Dark/Fire",
     image: "https://images.pokemontcg.io/ex15/4_hires.png",
     hp: "90"
@@ -56,11 +56,11 @@ const darknessPokemons = [
 
 function convertRarityLabel(rarity) {
   switch (rarity) {
-    case 'Common': return 'Comune';
-    case 'Uncommon': return 'Non Comune';
-    case 'Rare': return 'Raro';
-    case 'Rare Holo': return 'Leggendario';
-    case 'Misterioso': return 'Misterioso';
+    case 'Common': return 'Common';
+    case 'Uncommon': return 'Uncommon';
+    case 'Rare': return 'Rare';
+    case 'Rare Holo': return 'Legendary';
+    case 'Mysterious': return 'Mysterious';
     default: return rarity;
   }
 }
@@ -71,7 +71,7 @@ async function getRandomCardByRarity(rarity) {
       headers: { 'X-Api-Key': API_KEY }
     });
 
-    if (!res.ok) throw new Error(`Errore API: ${res.status} ${res.statusText}`);
+    if (!res.ok) throw new Error(`API Error: ${res.status} ${res.statusText}`);
 
     const json = await res.json();
     const cards = json.data || [];
@@ -89,7 +89,7 @@ async function getRandomCardByRarity(rarity) {
       level: Math.floor(Math.random() * 100) + 1
     };
   } catch (err) {
-    console.error(`Errore fetch API: ${err}`);
+    console.error(`API fetch error: ${err}`);
     return null;
   }
 }
@@ -98,21 +98,21 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function mostraAnimazioneDarkness(conn, m, pokemon, user) {
-  const animazione = [
+async function showDarknessAnimation(conn, m, pokemon, user) {
+  const animation = [
     '🌑...',
     '🌑🌑...',
     '🌑🌑🌑 *???*',
-    '🌑🌑🌑 *Una presenza oscura si manifesta...*',
-    `✨🌑 *${pokemon.name.toUpperCase()}* appare dalle tenebre!`
+    '🌑🌑🌑 *A dark presence manifests...*',
+    `✨🌑 *${pokemon.name.toUpperCase()}* emerges from the shadows!`
   ];
-  for (let frame of animazione) {
+  for (let frame of animation) {
     await conn.sendMessage(m.chat, { text: frame, mentions: [user] }, { quoted: m });
     await delay(800);
   }
   await conn.sendMessage(m.chat, {
     image: { url: pokemon.image },
-    caption: `🌑 *${pokemon.name}* (${pokemon.rarity})\n🔰 Tipo: ${pokemon.type} | Lvl: ${pokemon.level}${pokemon.shiny ? ' ✨ Shiny' : ''}`,
+    caption: `🌑 *${pokemon.name}* (${pokemon.rarity})\n🔰 Type: ${pokemon.type} | Lvl: ${pokemon.level}${pokemon.shiny ? ' ✨ Shiny' : ''}`,
     mentions: [user]
   }, { quoted: m });
 }
@@ -127,24 +127,24 @@ let handler = async (m, { conn, args }) => {
 
   const packType = args[0]?.toLowerCase();
   if (!['base', 'imperium', 'premium', 'darkness'].includes(packType)) {
-    return m.reply(`❌ Specifica un tipo di pacchetto valido: *base*, *imperium*, *premium* o *darkness*.\n\nEsempio: *.apripokemon base*`);
+    return m.reply(`❌ Specify a valid pack type: *base*, *imperium*, *premium* or *darkness*.\n\nExample: *.openpokemon base*`);
   }
 
   if ((data.packInventory[packType] || 0) <= 0) {
-    return m.reply(`⛔ Non hai pacchetti *${packType.toUpperCase()}*. Usane o trovane uno.`);
+    return m.reply(`⛔ You don't have any *${packType.toUpperCase()}* packs. Find or use one.`);
   }
 
-  // Scala pacchetto
+  // Remove pack
   data.packInventory[packType]--;
 
-  await conn.sendMessage(m.chat, { text: '🎁 Aprendo il pacchetto...', mentions: [user] }, { quoted: m });
+  await conn.sendMessage(m.chat, { text: '🎁 Opening pack...', mentions: [user] }, { quoted: m });
   await delay(1200);
-  await conn.sendMessage(m.chat, { text: '✨ Rivelando le carte...', mentions: [user] }, { quoted: m });
+  await conn.sendMessage(m.chat, { text: '✨ Revealing cards...', mentions: [user] }, { quoted: m });
   await delay(1200);
 
   let cards = [];
 
-  // Darkness ha carte predefinite
+  // Darkness has predefined cards
   if (packType === 'darkness') {
     for (let i = 0; i < 3; i++) {
       const card = JSON.parse(JSON.stringify(darknessPokemons[Math.floor(Math.random() * darknessPokemons.length)]));
@@ -156,7 +156,7 @@ let handler = async (m, { conn, args }) => {
     const cardPromises = rarities[packType].map(r => getRandomCardByRarity(r));
     cards = (await Promise.all(cardPromises)).filter(Boolean);
 
-    // Inizializza il contatore pity se non esiste
+    // Initialize pity counter if doesn't exist
     data.pityCounter = data.pityCounter || 0;
     const chanceDarkness = Math.random() < 0.10;
     const pityTriggered = data.pityCounter >= 15;
@@ -168,13 +168,13 @@ let handler = async (m, { conn, args }) => {
       darkness.shiny = Math.random() < 0.05;
       cards.push(darkness);
       data.packInventory.darkness = (data.packInventory.darkness || 0) + 1;
-      await mostraAnimazioneDarkness(conn, m, darkness, user);
+      await showDarknessAnimation(conn, m, darkness, user);
       data.pokemons.push(darkness);
       data.pityCounter = 0;
 
       if (pityTriggered && !chanceDarkness) {
         await conn.sendMessage(m.chat, {
-          text: `🕯️ *Il potere oscuro ti ha risposto dopo molta attesa...*\n🔄 Sistema _pity_ attivato dopo 15 pacchetti senza Darkness.`,
+          text: `🕯️ *The dark power has answered you after much waiting...*\n🔄 _Pity_ system activated after 15 packs without Darkness.`,
           mentions: [user]
         }, { quoted: m });
       }
@@ -184,7 +184,7 @@ let handler = async (m, { conn, args }) => {
       data.pityCounter++;
     }
 
-    // Bonus Leggendario
+    // Legendary Bonus
     if ((packType === 'imperium' || packType === 'premium') && Math.random() < 0.1) {
       const bonusCard = await getRandomCardByRarity('Rare Holo');
       if (bonusCard) cards.push(bonusCard);
@@ -201,15 +201,15 @@ let handler = async (m, { conn, args }) => {
     });
   }
 
-  if (cards.length === 0) return m.reply(`😢 Nessuna carta trovata. Riprova.`);
+  if (cards.length === 0) return m.reply(`😢 No cards found. Try again.`);
 
-  const rarityRank = { 'Comune': 1, 'Non Comune': 2, 'Raro': 3, 'Leggendario': 4, 'Misterioso': 5 };
+  const rarityRank = { 'Common': 1, 'Uncommon': 2, 'Rare': 3, 'Legendary': 4, 'Mysterious': 5 };
   const best = [...cards].sort((a, b) => (rarityRank[b.rarity] || 0) - (rarityRank[a.rarity] || 0))[0];
 
-  const msg = `🎉 Hai aperto un pacchetto *${packType.toUpperCase()}* e trovato:\n\n` +
+  const msg = `🎉 You opened a *${packType.toUpperCase()}* pack and found:\n\n` +
     `✨ *${best.name}* (${best.rarity})${best.shiny ? ' ✨ Shiny' : ''}\n` +
-    `🔰 Tipo: ${best.type} | Lvl: ${best.level}\n\n` +
-    `📦 Pacchetti rimasti: *${data.packInventory[packType]}* ${packType}`;
+    `🔰 Type: ${best.type} | Lvl: ${best.level}\n\n` +
+    `📦 Remaining packs: *${data.packInventory[packType]}* ${packType}`;
 
   const messageContent = {
     caption: msg,
@@ -217,7 +217,7 @@ let handler = async (m, { conn, args }) => {
     buttons: [
       {
         buttonId: '.pity',
-        buttonText: { displayText: '📊 Controlla Pity' },
+        buttonText: { displayText: '📊 Check Pity' },
         type: 1
       }
     ]
@@ -236,8 +236,8 @@ let handler = async (m, { conn, args }) => {
   }
 };
 
-handler.help = ['apri <base|imperium|premium|darkness>'];
+handler.help = ['open <base|imperium|premium|darkness>'];
 handler.tags = ['pokemon'];
-handler.command = /^apripokemon$/i;
+handler.command = /^openpokemon$/i;
 
 export default handler;
