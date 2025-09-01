@@ -36,7 +36,7 @@ let handler = async (m, { conn, text }) => {
 
   // Messaggio finale
   return conn.sendMessage(m.chat, { 
-    text: `Oh ${nomeDestinatario} ha sborrato! 😋💦`,
+    text: `Oh ${nomeDestinatario} is cumming! 😋💦`,
     edit: key,
     mentions: [destinatario]
   }, { quoted: m })
@@ -44,6 +44,6 @@ let handler = async (m, { conn, text }) => {
 
 handler.help = ['sega']
 handler.tags = ['fun']
-handler.command = /^(sega)$/i
+handler.command = /^(handjob)$/i
 
 export default handler
