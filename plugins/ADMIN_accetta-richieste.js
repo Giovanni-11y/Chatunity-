@@ -1,38 +1,38 @@
-// Codice di ADMIN_accetta-richieste.js :)
+// Code for ADMIN_accept-requests.js :)
 
 let handler = async (m, { conn, isAdmin, isBotAdmin, participants, groupMetadata }) => {
-  if (!m.isGroup) return m.reply("Questo comando si usa solo nei gruppi.")
-  if (!isBotAdmin) return m.reply("Devo essere admin per accettare le richieste.")
-  if (!isAdmin) return m.reply("Solo gli admin del gruppo possono usare questo comando.")
+  if (!m.isGroup) return m.reply("This command is only used in groups.")
+  if (!isBotAdmin) return m.reply("I need to be admin to accept requests.")
+  if (!isAdmin) return m.reply("Only group admins can use this command.")
 
   try {
     const groupId = m.chat
     const pending = await conn.groupRequestParticipantsList(groupId)
 
-    if (!pending.length) return m.reply("Non ci sono richieste da accettare.")
+    if (!pending.length) return m.reply("There are no requests to accept.")
 
-    let accettati = 0
+    let accepted = 0
 
     for (let p of pending) {
       try {
         await conn.groupRequestParticipantsUpdate(groupId, [p.jid], 'approve')
-        accettati++
+        accepted++
       } catch (e) {
-        console.log(`[ERRORE] Non sono riuscito ad accettare ${p.jid}:`, e)
+        console.log(`[ERROR] Could not accept ${p.jid}:`, e)
       }
     }
 
-    m.reply(`✅ Accettate ${accettati} richieste con successo.`)
+    m.reply(`✅ Successfully accepted ${accepted} requests.`)
 
   } catch (err) {
-    console.error('[ERRORE ACCETTA]', err)
-    m.reply('Errore durante l\'accettazione delle richieste.')
+    console.error('[ACCEPT ERROR]', err)
+    m.reply('Error while accepting requests.')
   }
 }
 
-handler.command = ['accettarichieste']
-handler.tags = ['gruppo']
-handler.help = ['accetta - accetta tutte le richieste in sospeso']
+handler.command = ['acceptrequests']
+handler.tags = ['group']
+handler.help = ['accept - accept all pending requests']
 handler.group = true
 handler.admin = true
 handler.botAdmin = true
