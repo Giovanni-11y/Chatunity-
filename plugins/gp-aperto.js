@@ -1,32 +1,33 @@
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-    // Prende il nome del bot
-    let nomeDelBot = global.db.data.nomedelbot || `𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲`
+    // Get the bot name
+    let botName = global.db.data.botname || `ChatUnity`
 
-    // Solo se il comando è "aperto" (ignora argomenti)
-    if (command === 'aperto') {
-        // Prova a cambiare le impostazioni del gruppo
+    // Only if the command is "open" (ignore arguments)
+    if (command === 'open') {
+        // Try to change group settings
         try {
             await conn.groupSettingUpdate(m.chat, 'not_announcement');
             await conn.sendMessage(m.chat, {
-                text: '𝐂𝐡𝐚𝐭 𝐚𝐩𝐞𝐫𝐭𝐚 𝐩𝐞𝐫 𝐭𝐮𝐭𝐭𝐢',
+                text: 'Chat opened for everyone',
                 contextInfo: {
                     forwardingScore: 99,
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: '120363259442839354@newsletter',
                         serverMessageId: '',
-                        newsletterName: `${nomeDelBot}`
+                        newsletterName: `${botName}`
                     }
                 }
             }, { quoted: m });
         } catch (e) {
-            await m.reply('❌ Non posso modificare le impostazioni: assicurati che io sia admin!');
+            await m.reply('❌ I cannot change settings: make sure I am an admin!');
         }
     }
 }
-handler.help = ['aperto'];
+
+handler.help = ['open'];
 handler.tags = ['group'];
-handler.command = /^aperto$/i;
+handler.command = /^open$/i;
 handler.admin = true;
 handler.botAdmin = true;
 
