@@ -20,7 +20,7 @@ const handler = async (m, { conn }) => {
 
   await conn.sendMessage(m.chat, {
     text,
-    footer: 'Scegli un canale e unisciti!'
+    footer: 'choose a channel and join!'
   }, { quoted: m });
 };
 
