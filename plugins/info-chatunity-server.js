@@ -1,6 +1,6 @@
 const handler = async (m, { conn }) => {
   await conn.sendMessage(m.chat, {
-    text: "🚧 *Funzionalità in arrivo!*\nPresto qui troverai tutte le info sul server ChatUnity.",
+    text: "🚧 **Features coming soon!*\nYou'll find all the server info here soon. ChatUnity.",
   }, { quoted: m });
 };
 
