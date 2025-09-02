@@ -1,5 +1,5 @@
 let handler = async (m, { conn, text, args, groupMetadata, usedPrefix, command }) => {
-  let war = 2 // <-- numero di warning prima del ban
+  let war = 2
 
   let who
   if (m.isGroup) {
@@ -8,20 +8,19 @@ let handler = async (m, { conn, text, args, groupMetadata, usedPrefix, command }
     who = m.chat
   }
 
-  if (!who) return m.reply("❌ Devi menzionare un utente o rispondere a un suo messaggio.")
+  if (!who) return m.reply("❌ You must mention a user or reply to their message.")
 
-  // 🔒 BLOCCA AVVERTIMENTI AL BOT
   if (who === conn.user.jid) {
-    return m.reply("🚫 Non puoi warnare il bot.")
+    return m.reply("🚫 You cannot warn the bot.")
   }
 
   if (!(who in global.db.data.users)) {
-    return m.reply("❌ Utente non trovato nel database.")
+    return m.reply("❌ User not found in the database.")
   }
 
   let user = global.db.data.users[who]
   let warn = user.warn || 0
-  let nomeDelBot = global.db.data.nomedelbot || `𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲`
+  let botName = global.db.data.nomedelbot || `ChatUnity`
 
   const messageOptions = {
     contextInfo: {
@@ -31,7 +30,7 @@ let handler = async (m, { conn, text, args, groupMetadata, usedPrefix, command }
       forwardedNewsletterMessageInfo: {
         newsletterJid: '120363259442839354@newsletter',
         serverMessageId: '',
-        newsletterName: `${nomeDelBot}`
+        newsletterName: `${botName}`
       }
     }
   }
@@ -39,13 +38,13 @@ let handler = async (m, { conn, text, args, groupMetadata, usedPrefix, command }
   if (warn < war) {
     user.warn += 1
     await conn.sendMessage(m.chat, {
-      text: `⚠️ 𝐀𝐕𝐕𝐄𝐑𝐓𝐈𝐌𝐄𝐍𝐓𝐎 ${user.warn}/𝟑 (𝟑 𝐰𝐚𝐫𝐧=𝐛𝐚𝐧)`,
+      text: `⚠️ WARNING ${user.warn}/3 (3 warns = ban)`,
       ...messageOptions
     })
   } else if (warn >= war) {
     user.warn = 0
     await conn.sendMessage(m.chat, {
-      text: `⛔ 𝐔𝐓𝐄𝐍𝐓𝐄 𝐑𝐈𝐌𝐎𝐒𝐒𝐎 𝐃𝐎𝐏𝐎 3 𝐀𝐕𝐕𝐄𝐑𝐓𝐈𝐌𝐄𝐍𝐓𝐈 (𝐀𝐯𝐞𝐯𝐚 𝐫𝐨𝐭𝐭𝐨 𝐢𝐥 𝐜𝐚𝐳𝐳𝐨)`,
+      text: `⛔ USER REMOVED AFTER 3 WARNINGS (They pushed it too far)`,
       ...messageOptions
     })
     await sleep(1000)
@@ -62,5 +61,4 @@ handler.botAdmin = true
 
 export default handler
 
-// Funzione di attesa
 const sleep = async (ms) => new Promise(resolve => setTimeout(resolve, ms))
