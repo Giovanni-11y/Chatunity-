@@ -1,262 +1,261 @@
-//comando creato da sam aka vare github.com/realvare
 let handler = async (m, { conn, args, participants, isAdmin, isBotAdmin }) => {
-  if (m.text?.toLowerCase() === '.skipbandiera') {
-    if (!m.isGroup) return m.reply('⚠️ Questo comando funziona solo nei gruppi!')
-    if (!global.bandieraGame?.[m.chat]) return m.reply('⚠️ Non c\'è nessuna partita attiva in questo gruppo!')
+  if (m.text?.toLowerCase() === '.skipflag') {
+    if (!m.isGroup) return m.reply('⚠️ This command only works in groups!')
+    if (!global.flagGame?.[m.chat]) return m.reply('⚠️ There is no active game in this group!')
     
     if (!isAdmin && !m.fromMe) {
-      return m.reply('❌ *Questo comando può essere usato solo dagli admin!*')
+      return m.reply('❌ *This command can only be used by admins!*')
     }
 
-    clearTimeout(global.bandieraGame[m.chat].timeout)
-    await conn.reply(m.chat, `🛑 *Gioco delle bandiere interrotto dall'admin*\n✨ La risposta era: *${global.bandieraGame[m.chat].risposta}*`, m)
-    delete global.bandieraGame[m.chat]
+    clearTimeout(global.flagGame[m.chat].timeout)
+    await conn.reply(m.chat, `🛑 *Flag game stopped by admin*\n✨ The answer was: *${global.flagGame[m.chat].answer}*`, m)
+    delete global.flagGame[m.chat]
     return
   }
 
-  if (global.bandieraGame?.[m.chat]) {
-    return m.reply('⚠️ C\'è già una partita attiva in questo gruppo!')
+  if (global.flagGame?.[m.chat]) {
+    return m.reply('⚠️ There is already an active game in this group!')
   }
 
-  const cooldownKey = `bandiera_${m.chat}`
+  const cooldownKey = `flag_${m.chat}`
   const lastGame = global.cooldowns?.[cooldownKey] || 0
   const now = Date.now()
   const cooldownTime = 10000
 
   if (now - lastGame < cooldownTime) {
     const remainingTime = Math.ceil((cooldownTime - (now - lastGame)) / 1000)
-    return m.reply(`⏳ *Aspetta ancora ${remainingTime} secondi prima di avviare un nuovo gioco!*`)
+    return m.reply(`⏳ *Wait ${remainingTime} more seconds before starting a new game!*`)
   }
 
   global.cooldowns = global.cooldowns || {}
   global.cooldowns[cooldownKey] = now
 
-  let bandiere = [
-    { url: 'https://flagcdn.com/w320/it.png', nome: 'Italia' },
-    { url: 'https://flagcdn.com/w320/fr.png', nome: 'Francia' },
-    { url: 'https://flagcdn.com/w320/de.png', nome: 'Germania' },
-    { url: 'https://flagcdn.com/w320/gb.png', nome: 'Regno Unito' },
-    { url: 'https://flagcdn.com/w320/es.png', nome: 'Spagna' },
-    { url: 'https://flagcdn.com/w320/se.png', nome: 'Svezia' },
-    { url: 'https://flagcdn.com/w320/no.png', nome: 'Norvegia' },
-    { url: 'https://flagcdn.com/w320/fi.png', nome: 'Finlandia' },
-    { url: 'https://flagcdn.com/w320/dk.png', nome: 'Danimarca' },
-    { url: 'https://flagcdn.com/w320/pl.png', nome: 'Polonia' },
-    { url: 'https://flagcdn.com/w320/pt.png', nome: 'Portogallo' },
-    { url: 'https://flagcdn.com/w320/gr.png', nome: 'Grecia' },
-    { url: 'https://flagcdn.com/w320/ch.png', nome: 'Svizzera' },
-    { url: 'https://flagcdn.com/w320/at.png', nome: 'Austria' },
-    { url: 'https://flagcdn.com/w320/be.png', nome: 'Belgio' },
-    { url: 'https://flagcdn.com/w320/nl.png', nome: 'Paesi Bassi' },
-    { url: 'https://flagcdn.com/w320/ua.png', nome: 'Ucraina' },
-    { url: 'https://flagcdn.com/w320/ro.png', nome: 'Romania' },
-    { url: 'https://flagcdn.com/w320/hu.png', nome: 'Ungheria' },
-    { url: 'https://flagcdn.com/w320/cz.png', nome: 'Repubblica Ceca' },
-    { url: 'https://flagcdn.com/w320/ie.png', nome: 'Irlanda' },
-    { url: 'https://flagcdn.com/w320/ee.png', nome: 'Estonia' },
-    { url: 'https://flagcdn.com/w320/lt.png', nome: 'Lituania' },
-    { url: 'https://flagcdn.com/w320/lv.png', nome: 'Lettonia' },
-    { url: 'https://flagcdn.com/w320/sk.png', nome: 'Slovacchia' },
-    { url: 'https://flagcdn.com/w320/si.png', nome: 'Slovenia' },
-    { url: 'https://flagcdn.com/w320/hr.png', nome: 'Croazia' },
-    { url: 'https://flagcdn.com/w320/ba.png', nome: 'Bosnia ed Erzegovina' },
-    { url: 'https://flagcdn.com/w320/me.png', nome: 'Montenegro' },
-    { url: 'https://flagcdn.com/w320/mk.png', nome: 'Macedonia del Nord' },
-    { url: 'https://flagcdn.com/w320/al.png', nome: 'Albania' },
-    { url: 'https://flagcdn.com/w320/bg.png', nome: 'Bulgaria' },
-    { url: 'https://flagcdn.com/w320/md.png', nome: 'Moldavia' },
-    { url: 'https://flagcdn.com/w320/by.png', nome: 'Bielorussia' },
-    { url: 'https://flagcdn.com/w320/is.png', nome: 'Islanda' },
-    { url: 'https://flagcdn.com/w320/mt.png', nome: 'Malta' },
-    { url: 'https://flagcdn.com/w320/cy.png', nome: 'Cipro' },
-    { url: 'https://flagcdn.com/w320/lu.png', nome: 'Lussemburgo' },
-    { url: 'https://flagcdn.com/w320/li.png', nome: 'Liechtenstein' },
-    { url: 'https://flagcdn.com/w320/sm.png', nome: 'San Marino' },
-    { url: 'https://flagcdn.com/w320/ad.png', nome: 'Andorra' },
-    { url: 'https://flagcdn.com/w320/mc.png', nome: 'Monaco' },
-    { url: 'https://flagcdn.com/w320/va.png', nome: 'Città del Vaticano' },
-    { url: 'https://flagcdn.com/w320/rs.png', nome: 'Serbia' },
-    { url: 'https://flagcdn.com/w320/xk.png', nome: 'Kosovo' },
-    { url: 'https://flagcdn.com/w320/cn.png', nome: 'Cina' },
-    { url: 'https://flagcdn.com/w320/jp.png', nome: 'Giappone' },
-    { url: 'https://flagcdn.com/w320/in.png', nome: 'India' },
-    { url: 'https://flagcdn.com/w320/kr.png', nome: 'Corea del Sud' },
-    { url: 'https://flagcdn.com/w320/kp.png', nome: 'Corea del Nord' },
-    { url: 'https://flagcdn.com/w320/th.png', nome: 'Thailandia' },
-    { url: 'https://flagcdn.com/w320/vn.png', nome: 'Vietnam' },
-    { url: 'https://flagcdn.com/w320/id.png', nome: 'Indonesia' },
-    { url: 'https://flagcdn.com/w320/ph.png', nome: 'Filippine' },
-    { url: 'https://flagcdn.com/w320/my.png', nome: 'Malesia' },
-    { url: 'https://flagcdn.com/w320/sg.png', nome: 'Singapore' },
-    { url: 'https://flagcdn.com/w320/mm.png', nome: 'Myanmar' },
-    { url: 'https://flagcdn.com/w320/kh.png', nome: 'Cambogia' },
-    { url: 'https://flagcdn.com/w320/la.png', nome: 'Laos' },
-    { url: 'https://flagcdn.com/w320/lk.png', nome: 'Sri Lanka' },
-    { url: 'https://flagcdn.com/w320/np.png', nome: 'Nepal' },
-    { url: 'https://flagcdn.com/w320/bt.png', nome: 'Bhutan' },
-    { url: 'https://flagcdn.com/w320/bd.png', nome: 'Bangladesh' },
-    { url: 'https://flagcdn.com/w320/pk.png', nome: 'Pakistan' },
-    { url: 'https://flagcdn.com/w320/af.png', nome: 'Afghanistan' },
-    { url: 'https://flagcdn.com/w320/ir.png', nome: 'Iran' },
-    { url: 'https://flagcdn.com/w320/iq.png', nome: 'Iraq' },
-    { url: 'https://flagcdn.com/w320/tr.png', nome: 'Turchia' },
-    { url: 'https://flagcdn.com/w320/il.png', nome: 'Israele' },
-    { url: 'https://flagcdn.com/w320/ps.png', nome: 'Palestina' },
-    { url: 'https://flagcdn.com/w320/sa.png', nome: 'Arabia Saudita' },
-    { url: 'https://flagcdn.com/w320/ae.png', nome: 'Emirati Arabi Uniti' },
-    { url: 'https://flagcdn.com/w320/qa.png', nome: 'Qatar' },
-    { url: 'https://flagcdn.com/w320/om.png', nome: 'Oman' },
-    { url: 'https://flagcdn.com/w320/jo.png', nome: 'Giordania' },
-    { url: 'https://flagcdn.com/w320/lb.png', nome: 'Libano' },
-    { url: 'https://flagcdn.com/w320/sy.png', nome: 'Siria' },
-    { url: 'https://flagcdn.com/w320/ye.png', nome: 'Yemen' },
-    { url: 'https://flagcdn.com/w320/kz.png', nome: 'Kazakistan' },
-    { url: 'https://flagcdn.com/w320/uz.png', nome: 'Uzbekistan' },
-    { url: 'https://flagcdn.com/w320/tj.png', nome: 'Tagikistan' },
-    { url: 'https://flagcdn.com/w320/kg.png', nome: 'Kirghizistan' },
-    { url: 'https://flagcdn.com/w320/tm.png', nome: 'Turkmenistan' },
-    { url: 'https://flagcdn.com/w320/mn.png', nome: 'Mongolia' },
-    { url: 'https://flagcdn.com/w320/az.png', nome: 'Azerbaigian' },
-    { url: 'https://flagcdn.com/w320/ge.png', nome: 'Georgia' },
-    { url: 'https://flagcdn.com/w320/am.png', nome: 'Armenia' },
-    { url: 'https://flagcdn.com/w320/kw.png', nome: 'Kuwait' },
-    { url: 'https://flagcdn.com/w320/bh.png', nome: 'Bahrain' },
-    { url: 'https://flagcdn.com/w320/tw.png', nome: 'Taiwan' },
-    { url: 'https://flagcdn.com/w320/hk.png', nome: 'Hong Kong' },
-    { url: 'https://flagcdn.com/w320/eg.png', nome: 'Egitto' },
-    { url: 'https://flagcdn.com/w320/ng.png', nome: 'Nigeria' },
-    { url: 'https://flagcdn.com/w320/ma.png', nome: 'Marocco' },
-    { url: 'https://flagcdn.com/w320/tn.png', nome: 'Tunisia' },
-    { url: 'https://flagcdn.com/w320/ke.png', nome: 'Kenya' },
-    { url: 'https://flagcdn.com/w320/et.png', nome: 'Etiopia' },
-    { url: 'https://flagcdn.com/w320/gh.png', nome: 'Ghana' },
-    { url: 'https://flagcdn.com/w320/cm.png', nome: 'Camerun' },
-    { url: 'https://flagcdn.com/w320/ci.png', nome: "Costa d'Avorio" },
-    { url: 'https://flagcdn.com/w320/sn.png', nome: 'Senegal' },
-    { url: 'https://flagcdn.com/w320/zm.png', nome: 'Zambia' },
-    { url: 'https://flagcdn.com/w320/zw.png', nome: 'Zimbabwe' },
-    { url: 'https://flagcdn.com/w320/ao.png', nome: 'Angola' },
-    { url: 'https://flagcdn.com/w320/mg.png', nome: 'Madagascar' },
-    { url: 'https://flagcdn.com/w320/tz.png', nome: 'Tanzania' },
-    { url: 'https://flagcdn.com/w320/ug.png', nome: 'Uganda' },
-    { url: 'https://flagcdn.com/w320/mz.png', nome: 'Mozambico' },
-    { url: 'https://flagcdn.com/w320/rw.png', nome: 'Ruanda' },
-    { url: 'https://flagcdn.com/w320/mw.png', nome: 'Malawi' },
-    { url: 'https://flagcdn.com/w320/bw.png', nome: 'Botswana' },
-    { url: 'https://flagcdn.com/w320/na.png', nome: 'Namibia' },
-    { url: 'https://flagcdn.com/w320/sz.png', nome: 'Eswatini' },
-    { url: 'https://flagcdn.com/w320/ls.png', nome: 'Lesotho' },
-    { url: 'https://flagcdn.com/w320/dz.png', nome: 'Algeria' },
-    { url: 'https://flagcdn.com/w320/ly.png', nome: 'Libia' },
-    { url: 'https://flagcdn.com/w320/sd.png', nome: 'Sudan' },
-    { url: 'https://flagcdn.com/w320/ss.png', nome: 'Sudan del Sud' },
-    { url: 'https://flagcdn.com/w320/er.png', nome: 'Eritrea' },
-    { url: 'https://flagcdn.com/w320/dj.png', nome: 'Gibuti' },
-    { url: 'https://flagcdn.com/w320/so.png', nome: 'Somalia' },
-    { url: 'https://flagcdn.com/w320/cd.png', nome: 'Repubblica Democratica del Congo' },
-    { url: 'https://flagcdn.com/w320/cg.png', nome: 'Repubblica del Congo' },
-    { url: 'https://flagcdn.com/w320/cf.png', nome: 'Repubblica Centrafricana' },
-    { url: 'https://flagcdn.com/w320/td.png', nome: 'Ciad' },
-    { url: 'https://flagcdn.com/w320/ne.png', nome: 'Niger' },
-    { url: 'https://flagcdn.com/w320/ml.png', nome: 'Mali' },
-    { url: 'https://flagcdn.com/w320/bf.png', nome: 'Burkina Faso' },
-    { url: 'https://flagcdn.com/w320/mr.png', nome: 'Mauritania' },
-    { url: 'https://flagcdn.com/w320/gn.png', nome: 'Guinea' },
-    { url: 'https://flagcdn.com/w320/gw.png', nome: 'Guinea-Bissau' },
-    { url: 'https://flagcdn.com/w320/sl.png', nome: 'Sierra Leone' },
-    { url: 'https://flagcdn.com/w320/lr.png', nome: 'Liberia' },
-    { url: 'https://flagcdn.com/w320/tg.png', nome: 'Togo' },
-    { url: 'https://flagcdn.com/w320/bj.png', nome: 'Benin' },
-    { url: 'https://flagcdn.com/w320/ga.png', nome: 'Gabon' },
-    { url: 'https://flagcdn.com/w320/gq.png', nome: 'Guinea Equatoriale' },
-    { url: 'https://flagcdn.com/w320/cv.png', nome: 'Capo Verde' },
-    { url: 'https://flagcdn.com/w320/gm.png', nome: 'Gambia' },
-    { url: 'https://flagcdn.com/w320/bi.png', nome: 'Burundi' },
-    { url: 'https://flagcdn.com/w320/km.png', nome: 'Comore' },
-    { url: 'https://flagcdn.com/w320/mu.png', nome: 'Mauritius' },
-    { url: 'https://flagcdn.com/w320/sc.png', nome: 'Seychelles' },
-    { url: 'https://flagcdn.com/w320/us.png', nome: 'Stati Uniti' },
-    { url: 'https://flagcdn.com/w320/ca.png', nome: 'Canada' },
-    { url: 'https://flagcdn.com/w320/mx.png', nome: 'Messico' },
-    { url: 'https://flagcdn.com/w320/br.png', nome: 'Brasile' },
-    { url: 'https://flagcdn.com/w320/ar.png', nome: 'Argentina' },
-    { url: 'https://flagcdn.com/w320/cl.png', nome: 'Cile' },
-    { url: 'https://flagcdn.com/w320/co.png', nome: 'Colombia' },
-    { url: 'https://flagcdn.com/w320/pe.png', nome: 'Perù' },
-    { url: 'https://flagcdn.com/w320/ve.png', nome: 'Venezuela' },
-    { url: 'https://flagcdn.com/w320/cu.png', nome: 'Cuba' },
-    { url: 'https://flagcdn.com/w320/bo.png', nome: 'Bolivia' },
-    { url: 'https://flagcdn.com/w320/ec.png', nome: 'Ecuador' },
-    { url: 'https://flagcdn.com/w320/uy.png', nome: 'Uruguay' },
-    { url: 'https://flagcdn.com/w320/py.png', nome: 'Paraguay' },
-    { url: 'https://flagcdn.com/w320/cr.png', nome: 'Costa Rica' },
-    { url: 'https://flagcdn.com/w320/pa.png', nome: 'Panama' },
-    { url: 'https://flagcdn.com/w320/do.png', nome: 'Repubblica Dominicana' },
-    { url: 'https://flagcdn.com/w320/jm.png', nome: 'Giamaica' },
-    { url: 'https://flagcdn.com/w320/gt.png', nome: 'Guatemala' },
-    { url: 'https://flagcdn.com/w320/hn.png', nome: 'Honduras' },
-    { url: 'https://flagcdn.com/w320/ni.png', nome: 'Nicaragua' },
-    { url: 'https://flagcdn.com/w320/sv.png', nome: 'El Salvador' },
-    { url: 'https://flagcdn.com/w320/bz.png', nome: 'Belize' },
-    { url: 'https://flagcdn.com/w320/ht.png', nome: 'Haiti' },
-    { url: 'https://flagcdn.com/w320/gy.png', nome: 'Guyana' },
-    { url: 'https://flagcdn.com/w320/sr.png', nome: 'Suriname' },
-    { url: 'https://flagcdn.com/w320/gf.png', nome: 'Guyana Francese' },
-    { url: 'https://flagcdn.com/w320/tt.png', nome: 'Trinidad e Tobago' },
-    { url: 'https://flagcdn.com/w320/bb.png', nome: 'Barbados' },
-    { url: 'https://flagcdn.com/w320/lc.png', nome: 'Santa Lucia' },
-    { url: 'https://flagcdn.com/w320/dm.png', nome: 'Dominica' },
-    { url: 'https://flagcdn.com/w320/bs.png', nome: 'Bahamas' },
-    { url: 'https://flagcdn.com/w320/au.png', nome: 'Australia' },
-    { url: 'https://flagcdn.com/w320/nz.png', nome: 'Nuova Zelanda' },
-    { url: 'https://flagcdn.com/w320/fj.png', nome: 'Fiji' },
-    { url: 'https://flagcdn.com/w320/pg.png', nome: 'Papua Nuova Guinea' },
-    { url: 'https://flagcdn.com/w320/nc.png', nome: 'Nuova Caledonia' },
-    { url: 'https://flagcdn.com/w320/pr.png', nome: 'Porto Rico' },
-    { url: 'https://flagcdn.com/w320/gl.png', nome: 'Groenlandia' },
-    { url: 'https://flagcdn.com/w320/gi.png', nome: 'Gibilterra' },
-    { url: 'https://flagcdn.com/w320/aq.png', nome: 'Antartide' },
-    { url: 'https://flagcdn.com/w320/eh.png', nome: 'Sahara Occidentale' },
+  let flags = [
+    { url: 'https://flagcdn.com/w320/it.png', name: 'Italy' },
+    { url: 'https://flagcdn.com/w320/fr.png', name: 'France' },
+    { url: 'https://flagcdn.com/w320/de.png', name: 'Germany' },
+    { url: 'https://flagcdn.com/w320/gb.png', name: 'United Kingdom' },
+    { url: 'https://flagcdn.com/w320/es.png', name: 'Spain' },
+    { url: 'https://flagcdn.com/w320/se.png', name: 'Sweden' },
+    { url: 'https://flagcdn.com/w320/no.png', name: 'Norway' },
+    { url: 'https://flagcdn.com/w320/fi.png', name: 'Finland' },
+    { url: 'https://flagcdn.com/w320/dk.png', name: 'Denmark' },
+    { url: 'https://flagcdn.com/w320/pl.png', name: 'Poland' },
+    { url: 'https://flagcdn.com/w320/pt.png', name: 'Portugal' },
+    { url: 'https://flagcdn.com/w320/gr.png', name: 'Greece' },
+    { url: 'https://flagcdn.com/w320/ch.png', name: 'Switzerland' },
+    { url: 'https://flagcdn.com/w320/at.png', name: 'Austria' },
+    { url: 'https://flagcdn.com/w320/be.png', name: 'Belgium' },
+    { url: 'https://flagcdn.com/w320/nl.png', name: 'Netherlands' },
+    { url: 'https://flagcdn.com/w320/ua.png', name: 'Ukraine' },
+    { url: 'https://flagcdn.com/w320/ro.png', name: 'Romania' },
+    { url: 'https://flagcdn.com/w320/hu.png', name: 'Hungary' },
+    { url: 'https://flagcdn.com/w320/cz.png', name: 'Czech Republic' },
+    { url: 'https://flagcdn.com/w320/ie.png', name: 'Ireland' },
+    { url: 'https://flagcdn.com/w320/ee.png', name: 'Estonia' },
+    { url: 'https://flagcdn.com/w320/lt.png', name: 'Lithuania' },
+    { url: 'https://flagcdn.com/w320/lv.png', name: 'Latvia' },
+    { url: 'https://flagcdn.com/w320/sk.png', name: 'Slovakia' },
+    { url: 'https://flagcdn.com/w320/si.png', name: 'Slovenia' },
+    { url: 'https://flagcdn.com/w320/hr.png', name: 'Croatia' },
+    { url: 'https://flagcdn.com/w320/ba.png', name: 'Bosnia and Herzegovina' },
+    { url: 'https://flagcdn.com/w320/me.png', name: 'Montenegro' },
+    { url: 'https://flagcdn.com/w320/mk.png', name: 'North Macedonia' },
+    { url: 'https://flagcdn.com/w320/al.png', name: 'Albania' },
+    { url: 'https://flagcdn.com/w320/bg.png', name: 'Bulgaria' },
+    { url: 'https://flagcdn.com/w320/md.png', name: 'Moldova' },
+    { url: 'https://flagcdn.com/w320/by.png', name: 'Belarus' },
+    { url: 'https://flagcdn.com/w320/is.png', name: 'Iceland' },
+    { url: 'https://flagcdn.com/w320/mt.png', name: 'Malta' },
+    { url: 'https://flagcdn.com/w320/cy.png', name: 'Cyprus' },
+    { url: 'https://flagcdn.com/w320/lu.png', name: 'Luxembourg' },
+    { url: 'https://flagcdn.com/w320/li.png', name: 'Liechtenstein' },
+    { url: 'https://flagcdn.com/w320/sm.png', name: 'San Marino' },
+    { url: 'https://flagcdn.com/w320/ad.png', name: 'Andorra' },
+    { url: 'https://flagcdn.com/w320/mc.png', name: 'Monaco' },
+    { url: 'https://flagcdn.com/w320/va.png', name: 'Vatican City' },
+    { url: 'https://flagcdn.com/w320/rs.png', name: 'Serbia' },
+    { url: 'https://flagcdn.com/w320/xk.png', name: 'Kosovo' },
+    { url: 'https://flagcdn.com/w320/cn.png', name: 'China' },
+    { url: 'https://flagcdn.com/w320/jp.png', name: 'Japan' },
+    { url: 'https://flagcdn.com/w320/in.png', name: 'India' },
+    { url: 'https://flagcdn.com/w320/kr.png', name: 'South Korea' },
+    { url: 'https://flagcdn.com/w320/kp.png', name: 'North Korea' },
+    { url: 'https://flagcdn.com/w320/th.png', name: 'Thailand' },
+    { url: 'https://flagcdn.com/w320/vn.png', name: 'Vietnam' },
+    { url: 'https://flagcdn.com/w320/id.png', name: 'Indonesia' },
+    { url: 'https://flagcdn.com/w320/ph.png', name: 'Philippines' },
+    { url: 'https://flagcdn.com/w320/my.png', name: 'Malaysia' },
+    { url: 'https://flagcdn.com/w320/sg.png', name: 'Singapore' },
+    { url: 'https://flagcdn.com/w320/mm.png', name: 'Myanmar' },
+    { url: 'https://flagcdn.com/w320/kh.png', name: 'Cambodia' },
+    { url: 'https://flagcdn.com/w320/la.png', name: 'Laos' },
+    { url: 'https://flagcdn.com/w320/lk.png', name: 'Sri Lanka' },
+    { url: 'https://flagcdn.com/w320/np.png', name: 'Nepal' },
+    { url: 'https://flagcdn.com/w320/bt.png', name: 'Bhutan' },
+    { url: 'https://flagcdn.com/w320/bd.png', name: 'Bangladesh' },
+    { url: 'https://flagcdn.com/w320/pk.png', name: 'Pakistan' },
+    { url: 'https://flagcdn.com/w320/af.png', name: 'Afghanistan' },
+    { url: 'https://flagcdn.com/w320/ir.png', name: 'Iran' },
+    { url: 'https://flagcdn.com/w320/iq.png', name: 'Iraq' },
+    { url: 'https://flagcdn.com/w320/tr.png', name: 'Turkey' },
+    { url: 'https://flagcdn.com/w320/il.png', name: 'Israel' },
+    { url: 'https://flagcdn.com/w320/ps.png', name: 'Palestine' },
+    { url: 'https://flagcdn.com/w320/sa.png', name: 'Saudi Arabia' },
+    { url: 'https://flagcdn.com/w320/ae.png', name: 'United Arab Emirates' },
+    { url: 'https://flagcdn.com/w320/qa.png', name: 'Qatar' },
+    { url: 'https://flagcdn.com/w320/om.png', name: 'Oman' },
+    { url: 'https://flagcdn.com/w320/jo.png', name: 'Jordan' },
+    { url: 'https://flagcdn.com/w320/lb.png', name: 'Lebanon' },
+    { url: 'https://flagcdn.com/w320/sy.png', name: 'Syria' },
+    { url: 'https://flagcdn.com/w320/ye.png', name: 'Yemen' },
+    { url: 'https://flagcdn.com/w320/kz.png', name: 'Kazakhstan' },
+    { url: 'https://flagcdn.com/w320/uz.png', name: 'Uzbekistan' },
+    { url: 'https://flagcdn.com/w320/tj.png', name: 'Tajikistan' },
+    { url: 'https://flagcdn.com/w320/kg.png', name: 'Kyrgyzstan' },
+    { url: 'https://flagcdn.com/w320/tm.png', name: 'Turkmenistan' },
+    { url: 'https://flagcdn.com/w320/mn.png', name: 'Mongolia' },
+    { url: 'https://flagcdn.com/w320/az.png', name: 'Azerbaijan' },
+    { url: 'https://flagcdn.com/w320/ge.png', name: 'Georgia' },
+    { url: 'https://flagcdn.com/w320/am.png', name: 'Armenia' },
+    { url: 'https://flagcdn.com/w320/kw.png', name: 'Kuwait' },
+    { url: 'https://flagcdn.com/w320/bh.png', name: 'Bahrain' },
+    { url: 'https://flagcdn.com/w320/tw.png', name: 'Taiwan' },
+    { url: 'https://flagcdn.com/w320/hk.png', name: 'Hong Kong' },
+    { url: 'https://flagcdn.com/w320/eg.png', name: 'Egypt' },
+    { url: 'https://flagcdn.com/w320/ng.png', name: 'Nigeria' },
+    { url: 'https://flagcdn.com/w320/ma.png', name: 'Morocco' },
+    { url: 'https://flagcdn.com/w320/tn.png', name: 'Tunisia' },
+    { url: 'https://flagcdn.com/w320/ke.png', name: 'Kenya' },
+    { url: 'https://flagcdn.com/w320/et.png', name: 'Ethiopia' },
+    { url: 'https://flagcdn.com/w320/gh.png', name: 'Ghana' },
+    { url: 'https://flagcdn.com/w320/cm.png', name: 'Cameroon' },
+    { url: 'https://flagcdn.com/w320/ci.png', name: "Ivory Coast" },
+    { url: 'https://flagcdn.com/w320/sn.png', name: 'Senegal' },
+    { url: 'https://flagcdn.com/w320/zm.png', name: 'Zambia' },
+    { url: 'https://flagcdn.com/w320/zw.png', name: 'Zimbabwe' },
+    { url: 'https://flagcdn.com/w320/ao.png', name: 'Angola' },
+    { url: 'https://flagcdn.com/w320/mg.png', name: 'Madagascar' },
+    { url: 'https://flagcdn.com/w320/tz.png', name: 'Tanzania' },
+    { url: 'https://flagcdn.com/w320/ug.png', name: 'Uganda' },
+    { url: 'https://flagcdn.com/w320/mz.png', name: 'Mozambique' },
+    { url: 'https://flagcdn.com/w320/rw.png', name: 'Rwanda' },
+    { url: 'https://flagcdn.com/w320/mw.png', name: 'Malawi' },
+    { url: 'https://flagcdn.com/w320/bw.png', name: 'Botswana' },
+    { url: 'https://flagcdn.com/w320/na.png', name: 'Namibia' },
+    { url: 'https://flagcdn.com/w320/sz.png', name: 'Eswatini' },
+    { url: 'https://flagcdn.com/w320/ls.png', name: 'Lesotho' },
+    { url: 'https://flagcdn.com/w320/dz.png', name: 'Algeria' },
+    { url: 'https://flagcdn.com/w320/ly.png', name: 'Libya' },
+    { url: 'https://flagcdn.com/w320/sd.png', name: 'Sudan' },
+    { url: 'https://flagcdn.com/w320/ss.png', name: 'South Sudan' },
+    { url: 'https://flagcdn.com/w320/er.png', name: 'Eritrea' },
+    { url: 'https://flagcdn.com/w320/dj.png', name: 'Djibouti' },
+    { url: 'https://flagcdn.com/w320/so.png', name: 'Somalia' },
+    { url: 'https://flagcdn.com/w320/cd.png', name: 'Democratic Republic of the Congo' },
+    { url: 'https://flagcdn.com/w320/cg.png', name: 'Republic of the Congo' },
+    { url: 'https://flagcdn.com/w320/cf.png', name: 'Central African Republic' },
+    { url: 'https://flagcdn.com/w320/td.png', name: 'Chad' },
+    { url: 'https://flagcdn.com/w320/ne.png', name: 'Niger' },
+    { url: 'https://flagcdn.com/w320/ml.png', name: 'Mali' },
+    { url: 'https://flagcdn.com/w320/bf.png', name: 'Burkina Faso' },
+    { url: 'https://flagcdn.com/w320/mr.png', name: 'Mauritania' },
+    { url: 'https://flagcdn.com/w320/gn.png', name: 'Guinea' },
+    { url: 'https://flagcdn.com/w320/gw.png', name: 'Guinea-Bissau' },
+    { url: 'https://flagcdn.com/w320/sl.png', name: 'Sierra Leone' },
+    { url: 'https://flagcdn.com/w320/lr.png', name: 'Liberia' },
+    { url: 'https://flagcdn.com/w320/tg.png', name: 'Togo' },
+    { url: 'https://flagcdn.com/w320/bj.png', name: 'Benin' },
+    { url: 'https://flagcdn.com/w320/ga.png', name: 'Gabon' },
+    { url: 'https://flagcdn.com/w320/gq.png', name: 'Equatorial Guinea' },
+    { url: 'https://flagcdn.com/w320/cv.png', name: 'Cape Verde' },
+    { url: 'https://flagcdn.com/w320/gm.png', name: 'Gambia' },
+    { url: 'https://flagcdn.com/w320/bi.png', name: 'Burundi' },
+    { url: 'https://flagcdn.com/w320/km.png', name: 'Comoros' },
+    { url: 'https://flagcdn.com/w320/mu.png', name: 'Mauritius' },
+    { url: 'https://flagcdn.com/w320/sc.png', name: 'Seychelles' },
+    { url: 'https://flagcdn.com/w320/us.png', name: 'United States' },
+    { url: 'https://flagcdn.com/w320/ca.png', name: 'Canada' },
+    { url: 'https://flagcdn.com/w320/mx.png', name: 'Mexico' },
+    { url: 'https://flagcdn.com/w320/br.png', name: 'Brazil' },
+    { url: 'https://flagcdn.com/w320/ar.png', name: 'Argentina' },
+    { url: 'https://flagcdn.com/w320/cl.png', name: 'Chile' },
+    { url: 'https://flagcdn.com/w320/co.png', name: 'Colombia' },
+    { url: 'https://flagcdn.com/w320/pe.png', name: 'Peru' },
+    { url: 'https://flagcdn.com/w320/ve.png', name: 'Venezuela' },
+    { url: 'https://flagcdn.com/w320/cu.png', name: 'Cuba' },
+    { url: 'https://flagcdn.com/w320/bo.png', name: 'Bolivia' },
+    { url: 'https://flagcdn.com/w320/ec.png', name: 'Ecuador' },
+    { url: 'https://flagcdn.com/w320/uy.png', name: 'Uruguay' },
+    { url: 'https://flagcdn.com/w320/py.png', name: 'Paraguay' },
+    { url: 'https://flagcdn.com/w320/cr.png', name: 'Costa Rica' },
+    { url: 'https://flagcdn.com/w320/pa.png', name: 'Panama' },
+    { url: 'https://flagcdn.com/w320/do.png', name: 'Dominican Republic' },
+    { url: 'https://flagcdn.com/w320/jm.png', name: 'Jamaica' },
+    { url: 'https://flagcdn.com/w320/gt.png', name: 'Guatemala' },
+    { url: 'https://flagcdn.com/w320/hn.png', name: 'Honduras' },
+    { url: 'https://flagcdn.com/w320/ni.png', name: 'Nicaragua' },
+    { url: 'https://flagcdn.com/w320/sv.png', name: 'El Salvador' },
+    { url: 'https://flagcdn.com/w320/bz.png', name: 'Belize' },
+    { url: 'https://flagcdn.com/w320/ht.png', name: 'Haiti' },
+    { url: 'https://flagcdn.com/w320/gy.png', name: 'Guyana' },
+    { url: 'https://flagcdn.com/w320/sr.png', name: 'Suriname' },
+    { url: 'https://flagcdn.com/w320/gf.png', name: 'French Guiana' },
+    { url: 'https://flagcdn.com/w320/tt.png', name: 'Trinidad and Tobago' },
+    { url: 'https://flagcdn.com/w320/bb.png', name: 'Barbados' },
+    { url: 'https://flagcdn.com/w320/lc.png', name: 'Saint Lucia' },
+    { url: 'https://flagcdn.com/w320/dm.png', name: 'Dominica' },
+    { url: 'https://flagcdn.com/w320/bs.png', name: 'Bahamas' },
+    { url: 'https://flagcdn.com/w320/au.png', name: 'Australia' },
+    { url: 'https://flagcdn.com/w320/nz.png', name: 'New Zealand' },
+    { url: 'https://flagcdn.com/w320/fj.png', name: 'Fiji' },
+    { url: 'https://flagcdn.com/w320/pg.png', name: 'Papua New Guinea' },
+    { url: 'https://flagcdn.com/w320/nc.png', name: 'New Caledonia' },
+    { url: 'https://flagcdn.com/w320/pr.png', name: 'Puerto Rico' },
+    { url: 'https://flagcdn.com/w320/gl.png', name: 'Greenland' },
+    { url: 'https://flagcdn.com/w320/gi.png', name: 'Gibraltar' },
+    { url: 'https://flagcdn.com/w320/aq.png', name: 'Antarctica' },
+    { url: 'https://flagcdn.com/w320/eh.png', name: 'Western Sahara' },
   ]
 
-  let frasi = [
-    `🇺🇳 *INDOVINA LA BANDIERA!* 🇺🇳`,
-    `🌍 *Che nazione rappresenta questa bandiera?*`,
-    `🏳️ *Sfida geografica: riconosci questa bandiera?*`,
-    `🧭 *Indovina la nazione dalla sua bandiera!*`,
-    `🎯 *Quiz bandiere: quale paese è questo?*`,
-    `🌟 *Metti alla prova la tua conoscenza geografica!*`,
-    `🔍 *Osserva attentamente e indovina la nazione!*`,
+  let phrases = [
+    `🇺🇳 *GUESS THE FLAG!* 🇺🇳`,
+    `🌍 *Which country does this flag represent?*`,
+    `🏳️ *Geographic challenge: recognize this flag?*`,
+    `🧭 *Guess the country from its flag!*`,
+    `🎯 *Flag quiz: which country is this?*`,
+    `🌟 *Test your geographic knowledge!*`,
+    `🔍 *Look carefully and guess the country!*`,
   ]
 
-  let scelta = bandiere[Math.floor(Math.random() * bandiere.length)]
-  let frase = frasi[Math.floor(Math.random() * frasi.length)]
+  let choice = flags[Math.floor(Math.random() * flags.length)]
+  let phrase = phrases[Math.floor(Math.random() * phrases.length)]
 
   try {
     let msg = await conn.sendMessage(m.chat, {
-      image: { url: scelta.url },
-      caption: `${frase}\n\n ㌌ *Rispondi con il nome della nazione!*\n⏱️ *Tempo disponibile:* 30 secondi\n\n> \`vare ✧ bot\``,
+      image: { url: choice.url },
+      caption: `${phrase}\n\n ㌌ *Reply with the country name!*\n⏱️ *Available time:* 30 seconds\n\n> \`vare ✧ bot\``,
       quoted: m
     })
 
-    global.bandieraGame = global.bandieraGame || {}
-    global.bandieraGame[m.chat] = {
+    global.flagGame = global.flagGame || {}
+    global.flagGame[m.chat] = {
       id: msg.key.id,
-      risposta: scelta.nome.toLowerCase(),
-      rispostaOriginale: scelta.nome,
-      tentativi: {},
-      suggerito: false,
+      answer: choice.name.toLowerCase(),
+      originalAnswer: choice.name,
+      attempts: {},
+      suggested: false,
       startTime: Date.now(),
       timeout: setTimeout(() => {
-        if (global.bandieraGame?.[m.chat]) {
-          conn.reply(m.chat, `⏳ *Tempo scaduto!*\n\n🌍 *La risposta era:* *${scelta.nome}*\n\n> \`vare ✧ bot\``, msg)
-          delete global.bandieraGame[m.chat]
+        if (global.flagGame?.[m.chat]) {
+          conn.reply(m.chat, `⏳ *Time's up!*\n\n🌍 *The answer was:* *${choice.name}*\n\n> \`vare ✧ bot\``, msg)
+          delete global.flagGame[m.chat]
         }
       }, 30000)
     }
   } catch (error) {
-    console.error('Errore nel gioco bandiere:', error)
-    m.reply('❌ *Si è verificato un errore durante l\'avvio del gioco*\n\n🔄 *Riprova tra qualche secondo*')
+    console.error('Error in flag game:', error)
+    m.reply('❌ *An error occurred while starting the game*\n\n🔄 *Try again in a few seconds*')
   }
 }
 
@@ -298,12 +297,12 @@ function isAnswerCorrect(userAnswer, correctAnswer) {
 
 handler.before = async (m, { conn }) => {
     const chat = m.chat
-    const game = global.bandieraGame?.[chat]
+    const game = global.flagGame?.[chat]
     
     if (!game || !m.quoted || m.quoted.id !== game.id || m.key.fromMe) return
     
     const userAnswer = normalizeString(m.text || '')
-    const correctAnswer = normalizeString(game.risposta)
+    const correctAnswer = normalizeString(game.answer)
     
     if (!userAnswer || userAnswer.length < 2) return
     
@@ -319,74 +318,74 @@ handler.before = async (m, { conn }) => {
         const timeBonus = timeTaken <= 10 ? 20 : timeTaken <= 20 ? 10 : 0
         reward += timeBonus
         
-        // Inizializza il portafoglio se non esiste
+        // Initialize wallet if it doesn't exist
         if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
         if (global.db.data.users[m.sender].limit == null) global.db.data.users[m.sender].limit = 0
         if (global.db.data.users[m.sender].exp == null) global.db.data.users[m.sender].exp = 0
 
-        // Aggiungi UnityCoins e exp (usa .limit come saldo portafoglio)
+        // Add UnityCoins and exp (use .limit as wallet balance)
         global.db.data.users[m.sender].limit = Number(global.db.data.users[m.sender].limit) + Number(reward)
         global.db.data.users[m.sender].exp = Number(global.db.data.users[m.sender].exp) + Number(exp)
 
-        // Forza la scrittura del database e aggiorna la cache in memoria
+        // Force database write and update memory cache
         if (global.db && typeof global.db.write === 'function') {
             await global.db.write();
-            await global.db.read(); // aggiorna la cache dopo la scrittura
+            await global.db.read(); // update cache after writing
         }
 
         let congratsMessage = `
-╭━『 🎉 *RISPOSTA CORRETTA!* 』━╮
+╭━『 🎉 *CORRECT ANSWER!* 』━╮
 ┃
-┃ 🌍 *Nazione:* ${game.rispostaOriginale}
-┃ ⏱️ *Tempo impiegato:* ${timeTaken}s
+┃ 🌍 *Country:* ${game.originalAnswer}
+┃ ⏱️ *Time taken:* ${timeTaken}s
 ┃
-┃ 🎁 *Ricompense:*
-┃ • ${reward} 🪙 UnityCoins${timeBonus > 0 ? ` (+${timeBonus} bonus velocità)` : ''}
+┃ 🎁 *Rewards:*
+┃ • ${reward} 🪙 UnityCoins${timeBonus > 0 ? ` (+${timeBonus} speed bonus)` : ''}
 ┃ • ${exp} 🆙 EXP
 ┃
-┃ 💰 *Saldo attuale:* ${global.db.data.users[m.sender].limit} UnityCoins
+┃ 💰 *Current balance:* ${global.db.data.users[m.sender].limit} UnityCoins
 ╰━━━━━━━━━━━━━━━━╯
 
 > \`vare ✧ bot\``
 
         await conn.reply(chat, congratsMessage, m)
-        delete global.bandieraGame[chat]
+        delete global.flagGame[chat]
         
-    } else if (similarityScore >= 0.6 && !game.suggerito) {
-        game.suggerito = true
-        await conn.reply(chat, '👀 *Ci sei quasi!*', m)
+    } else if (similarityScore >= 0.6 && !game.suggested) {
+        game.suggested = true
+        await conn.reply(chat, '👀 *You are close!*', m)
         
-    } else if (game.tentativi[m.sender] >= 3) {
-        await conn.reply(chat, '❌ *Hai esaurito i tuoi 3 tentativi!*\n\n⏳ *Aspetta che altri giocatori provino o che finisca il tempo*', m)
+    } else if (game.attempts[m.sender] >= 3) {
+        await conn.reply(chat, '❌ *You have exhausted your 3 attempts!*\n\n⏳ *Wait for other players to try or for time to run out*', m)
         
     } else {
-        game.tentativi[m.sender] = (game.tentativi[m.sender] || 0) + 1
-        const tentativiRimasti = 3 - game.tentativi[m.sender]
+        game.attempts[m.sender] = (game.attempts[m.sender] || 0) + 1
+        const attemptsLeft = 3 - game.attempts[m.sender]
         
-        if (tentativiRimasti === 1) {
-            const primaLettera = game.rispostaOriginale[0].toUpperCase()
-            const numeroLettere = game.rispostaOriginale.length
-            await conn.reply(chat, `❌ *Risposta errata!*
+        if (attemptsLeft === 1) {
+            const firstLetter = game.originalAnswer[0].toUpperCase()
+            const letterCount = game.originalAnswer.length
+            await conn.reply(chat, `❌ *Wrong answer!*
 
-💡 *Suggerimento:*
-   • Inizia con la lettera *"${primaLettera}"*
-   • È composta da *${numeroLettere} lettere*`, m)
-        } else if (tentativiRimasti === 2) {
-            await conn.reply(chat, `❌ *Risposta errata!*
+💡 *Hint:*
+   • Starts with the letter *"${firstLetter}"*
+   • Composed of *${letterCount} letters*`, m)
+        } else if (attemptsLeft === 2) {
+            await conn.reply(chat, `❌ *Wrong answer!*
 
-📝 *Tentativi rimasti:* 
-🤔 *Pensa bene alla tua prossima risposta!*`, m)
+📝 *Attempts left:* 
+🤔 *Think carefully about your next answer!*`, m)
         } else {
-            await conn.reply(chat, `❌ *Risposta errata!*
+            await conn.reply(chat, `❌ *Wrong answer!*
 
-📝 *Ultimo tentativo rimasto..*`, m)
+📝 *Last attempt remaining..*`, m)
         }
     }
 }
 
-handler.help = ['bandiera']
-handler.tags = ['giochi']
-handler.command = /^(bandiera|skipbandiera)$/i
+handler.help = ['flag']
+handler.tags = ['games']
+handler.command = /^(flag|skipflag)$/i
 handler.group = true
 handler.register = true
 
