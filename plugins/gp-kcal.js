@@ -2,84 +2,89 @@ import axios from 'axios';
 
 const kcalPlugin = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return conn.reply(m.chat, `﹒⋆❛ ${usedPrefix + command} <alimento>\n❥ Per favore indica un alimento da analizzare!\nEsempio: *${usedPrefix + command} fragola*`, m);
+    return conn.reply(
+      m.chat,
+      `﹒⋆❛ ${usedPrefix + command} <food item>\n❥ Please specify a food item to analyze!\nExample: *${usedPrefix + command} strawberry*`,
+      m
+    );
   }
 
-  const alimento = text.trim();
+  const foodItem = text.trim();
 
   const prompt = `
-Genera una scheda nutrizionale decorata, leggibile ma stilosa, per il seguente alimento: *${alimento}*.
+Generate a stylish, readable, and informative **nutrition facts sheet** for the following food: *${foodItem}*.
 
-Il formato deve essere esattamente questo (non cambiare lo stile, solo i valori):
+The format must be **exactly** like this (only change values, not the style):
 
-★·.·´¯\`·.·★ ⟡ ˚｡⋆『 ˗ˏˋ  ${alimento.toUpperCase()}  ˎˊ˗ 』⋆｡˚⟡ ★·.·´¯\`·.·★
+★·.·´¯\`·.·★ ⟡ ˚｡⋆『 ˗ˏˋ  ${foodItem.toUpperCase()}  ˎˊ˗ 』⋆｡˚⟡ ★·.·´¯\`·.·★
 
-📌 *Porzione analizzata:* *100g*
-🧭 *Valutazione nutrizionale:* *(Alta, Moderata, Bassa)*
-🔍 *Fonte dati:* *AI Nutrizionale*
+📌 *Analyzed portion:* *100g*
+🧭 *Nutritional rating:* *(High, Moderate, Low)*
+🔍 *Data source:* *AI Nutrition Engine*
 
-╭─❍ 『 🔥 』 *ENERGIA*
-│• *XXX kcal* (X% VG)
-│🔹 Densità calorica: *(alta / moderata / bassa)*
+╭─❍ 『 🔥 』 *ENERGY*
+│• *XXX kcal* (X% DV)
+│🔹 Caloric density: *(high / moderate / low)*
 ╰───────────────
 
-╭─❍ 『 🥩 』 *MACRONUTRIENTI*
-│• *Proteine:* Xg (X% VG)
-│• *Grassi:* Xg (X% VG)
-│  ↳ _Saturi:_ Xg (X% VG)
-│• *Carboidrati:* Xg (X% VG)
-│  ↳ _Zuccheri:_ Xg
-│• *Fibre:* Xg (X% VG)
+╭─❍ 『 🥩 』 *MACRONUTRIENTS*
+│• *Protein:* Xg (X% DV)
+│• *Fat:* Xg (X% DV)
+│  ↳ _Saturated:_ Xg (X% DV)
+│• *Carbohydrates:* Xg (X% DV)
+│  ↳ _Sugars:_ Xg
+│• *Fiber:* Xg (X% DV)
 ╰───────────────
 
-╭─❍ 『 🧪 』 *MICRONUTRIENTI*
-│• *Sodio:* Xmg
-│• *Potassio:* Xmg
-│• *Calcio:* Xmg
-│• *Ferro:* Xmg
-│• *Colesterolo:* Xmg
+╭─❍ 『 🧪 』 *MICRONUTRIENTS*
+│• *Sodium:* Xmg
+│• *Potassium:* Xmg
+│• *Calcium:* Xmg
+│• *Iron:* Xmg
+│• *Cholesterol:* Xmg
 ╰───────────────
 
-╭─❍ 『 ℹ️ 』 *INFO GENERALI*
-│• Categoria: *(es. Frutta, Verdura, Legumi)*
-│• Porzione consigliata: XXg
-│• Densità calorica: XXX kcal/100g
+╭─❍ 『 ℹ️ 』 *GENERAL INFO*
+│• Category: *(e.g. Fruit, Vegetable, Legume)*
+│• Recommended portion: XXg
+│• Caloric density: XXX kcal/100g
 ╰───────────────
 
-╭─❍ 『 💡 』 *CONSIGLIO NUTRIZIONALE*
-│✓ *(es. Ottimo per spuntini / Da bilanciare con proteine, ecc.)*
+╭─❍ 『 💡 』 *NUTRITIONAL ADVICE*
+│✓ *(e.g. Great for snacking / Should be balanced with proteins, etc.)*
 ╰───────────────
 
-╭─❍ 『 📝 』 *NOTA PROFESSIONALE*
-│Scrivi una breve nota (max 4 righe) con tono medico-nutrizionale.
+╭─❍ 『 📝 』 *PROFESSIONAL NOTE*
+│Write a short note (max 4 lines) with a medical-nutritional tone.
 ╰───────────────
 
-⋆ ˚｡✦ *VG = Valori Giornalieri di riferimento (dieta 2000 kcal)*
-⋆ ˚｡✦ *Consulta un nutrizionista per piani personalizzati*
+⋆ ˚｡✦ *DV = Daily Values based on a 2000 kcal diet*
+⋆ ˚｡✦ *Consult a registered dietitian for personalized guidance*
 `;
 
   try {
     await conn.sendPresenceUpdate('composing', m.chat);
+
     const res = await axios.post("https://luminai.my.id", {
       content: prompt,
-      user: m.pushName || "utente",
-      prompt: `Rispondi sempre in italiano.`,
+      user: m.pushName || "user",
+      prompt: `Always respond in English.`,
       webSearchMode: false
     });
 
-    const risposta = res.data.result;
-    if (!risposta) throw new Error("Risposta vuota dall'API.");
+    const response = res.data.result;
+    if (!response) throw new Error("Empty response from the API.");
 
-    return await conn.reply(m.chat, risposta, m);
+    return await conn.reply(m.chat, response, m);
 
   } catch (err) {
-    console.error('[❌ kcal plugin errore]', err);
-    return await conn.reply(m.chat, '⚠️ Errore durante l’elaborazione. Riprova più tardi.', m);
+    console.error('[❌ kcal plugin error]', err);
+    return await conn.reply(m.chat, '⚠️ Error while processing the nutritional sheet. Please try again later.', m);
   }
 };
 
-kcalPlugin.help = ['kcal <cibo>'];
-kcalPlugin.tags = ['nutrizione', 'ai'];
+kcalPlugin.help = ['kcal <food>'];
+kcalPlugin.tags = ['nutrition', 'ai'];
 kcalPlugin.command = /^kcal$/i;
 
 export default kcalPlugin;
