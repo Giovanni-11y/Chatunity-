@@ -10,11 +10,11 @@ let format = sizeFormatter({
 })
 
 let handler = async (m, { conn, usedPrefix, command }) => {
-  let nomeDelBot = global.db.data.nomedelbot || `𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲`
-  let versioneBot = '5.2' // Specifica la versione del bot
+  let botName = global.db.data.botname || `𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲`
+  let botVersion = '5.2' // Specify bot version
   let old = performance.now()
   let neww = performance.now()
-  let speed = (neww - old).toFixed(2) // Limita la velocità a 2 decimali
+  let speed = (neww - old).toFixed(2) // Limit ping precision to 2 decimals
   let uptime = process.uptime() * 1000
 
   // CPU info
@@ -46,9 +46,8 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 
   let cpuModel = cpus[0]?.model || 'Unknown Model'
   let cpuSpeed = cpu.speed.toFixed(2)
-  let networkSpeed = 'N/A'
 
-  let caption = `╭━〔🚀𝑺𝑻𝑨𝑻𝐎 𝑺𝑰𝑺𝑻𝑬𝑴𝑨🚀〕━┈⊷
+  let caption = `╭━〔🚀 SYSTEM STATUS 🚀〕━┈⊷
 ┃◈╭─────────────·๏
 ┃◈┃• ⌛ *Uptime*: ${clockString(uptime)}
 ┃◈┃• ⚡ *Ping*: ${speed} ms
@@ -71,7 +70,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
       forwardedNewsletterMessageInfo: {
         newsletterJid: '120363259442839354@newsletter',
         serverMessageId: '',
-        newsletterName: `${nomeDelBot}`
+        newsletterName: `${botName}`
       }
     }
   }
@@ -79,8 +78,8 @@ let handler = async (m, { conn, usedPrefix, command }) => {
   if (profilePictureUrl !== 'default-profile-picture-url') {
     try {
       messageOptions.contextInfo.externalAdReply = {
-        title: nomeDelBot,
-        body: `Versione: 6.0`,
+        title: botName,
+        body: `Version: 6.0`,
         mediaType: 1,
         renderLargerThumbnail: false,
         previewType: 'thumbnail',
@@ -106,7 +105,7 @@ async function fetchProfilePictureUrl(conn, sender) {
     return await conn.profilePictureUrl(sender)
   } catch (error) {
     console.error('Error fetching profile picture URL:', error)
-    return 'default-profile-picture-url' // Fallback URL in case of error
+    return 'default-profile-picture-url' // Fallback in case of error
   }
 }
 
@@ -118,7 +117,7 @@ async function fetchThumbnail(url) {
     return buffer
   } catch (error) {
     console.error('Error fetching thumbnail:', error)
-    return 'default-thumbnail' // Fallback thumbnail in case of error
+    return 'default-thumbnail' // Fallback in case of error
   }
 }
 
