@@ -6,17 +6,17 @@ let handler = async (m, { conn, args }) => {
   let repoData = await response.json();
 
   let messageText = `『💬』 ══ •⊰✰⊱• ══ 『💬』\n`;
-  messageText += `✧ Nome: ${repoData.name}\n`;
+  messageText += `✧ Name: ${repoData.name}\n`;
   messageText += `✧ Link: ${repoData.html_url}\n`;
-  messageText += `✦ Dimensione: ${(repoData.size / 1024).toFixed(2)} MB\n`;
-  messageText += `✧ Aggiornato: ${moment(repoData.updated_at).format('DD/MM/YY - HH:mm:ss')}\n`;
-  messageText += `✧ Visitatori: ${repoData.watchers_count}\n`;
+  messageText += `✦ Size: ${(repoData.size / 1024).toFixed(2)} MB\n`;
+  messageText += `✧ Updated: ${moment(repoData.updated_at).format('DD/MM/YY - HH:mm:ss')}\n`;
+  messageText += `✧ Watchers: ${repoData.watchers_count}\n`;
   messageText += `『💬』 ══ •⊰✰⊱• ══ 『💬』\n`;
   messageText += `✧ Forks: ${repoData.forks_count} · Stars: ${repoData.stargazers_count} · Issues: ${repoData.open_issues_count}\n`;
   messageText += `『💬』 ══ •⊰✰⊱• ══ 『💬』\n`;
 
   const messageOptions = {
-    mentions: [], // Puoi aggiungere menzioni se necessario
+    mentions: [], // You can add mentions if needed
     contextInfo: {
       forwardingScore: 999,
       isForwarded: true,
@@ -31,8 +31,8 @@ let handler = async (m, { conn, args }) => {
   try {
     await conn.sendMessage(m.chat, { text: messageText, ...messageOptions });
   } catch (error) {
-    console.error('Errore durante l\'invio del messaggio:', error);
-    m.reply('Errore durante l\'esecuzione del comando.');
+    console.error('Error while sending the message:', error);
+    m.reply('Error while executing the command.');
   }
 };
 
