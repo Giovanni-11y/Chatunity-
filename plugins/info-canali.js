@@ -1,6 +1,6 @@
 const handler = async (m, { conn }) => {
   const text = `
-╭━〔 *🌐 CANALI UFFICIALI* 〕━┈⊷
+╭━〔 *🌐 OFFICIAL CHANNELS* 〕━┈⊷
 ┃─────────────·๏
 ┃✨ *ChatUnity* 
 ┃🔗 https://whatsapp.com/channel/0029VaZVlJZHwXb8naJBQN0J
@@ -13,7 +13,7 @@ const handler = async (m, { conn }) => {
 ┃╰─────────────·๏
 ╰━━━━━━━━━━━━━━━━━━━⊷
 
-*Unisciti ai nostri canali per restare aggiornato, ricevere supporto e scoprire tutte le novità!*
+*Join our channels to stay updated, receive support and discover all the news!*
 
 💎 _Powered by ChatUnity_
 `.trim();
