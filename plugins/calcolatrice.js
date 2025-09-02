@@ -1,41 +1,41 @@
 let handler = async (m, { conn, command, text, usedPrefix }) => {
     if (!text) {
-    if (m.quoted && m.quoted.sender) {
-        text = '@' + m.quoted.sender.split('@')[0];
-    } else {
-        return conn.reply(m.chat, `⚠️ Devi menzionare qualcuno o rispondere a un messaggio! Esempio: ${usedPrefix + command} @utente`, m);
+        if (m.quoted && m.quoted.sender) {
+            text = '@' + m.quoted.sender.split('@')[0];
+        } else {
+            return conn.reply(m.chat, `⚠️ You must mention someone or reply to a message! Example: ${usedPrefix + command} @user`, m);
+        }
     }
-}
 
     let tag = text.replace(/[@]/g, '');
     let target = tag + '@s.whatsapp.net';
     let name = await conn.getName(target);
     let percentage = Math.floor(Math.random() * 100) + 1;
 
-    // Personalizziamo le risposte per ogni comando
+    // Customize responses for each command
     let responses = {
         'lesbica': {
             emoji: '🏳️‍🌈',
             messages: [
-                `@${tag} è ${percentage}% lesbica! ${percentage > 80 ? 'Sapphica al 100%' : ''}`,
-                `Test completato: @${tag} è ${percentage}% amante delle donne!`,
-                `💕 @${tag} preferisce le donne al ${percentage}%`
+                `@${tag} is ${percentage}% lesbian! ${percentage > 80 ? 'Full sapphic mode!' : ''}`,
+                `Test complete: @${tag} is ${percentage}% into women!`,
+                `💕 @${tag} prefers women ${percentage}% of the time`
             ]
         },
         'pajero': {
             emoji: '✊💦',
             messages: [
-                `@${tag} è ${percentage}% pajero! ${percentage > 80 ? 'Chiamate il blocco adulti!' : ''}`,
-                `Risultato imbarazzante: @${tag} è ${percentage}% segaiolo`,
-                `🍆 @${tag} pensa al sesso il ${percentage}% del tempo`
+                `@${tag} is ${percentage}% wanker! ${percentage > 80 ? 'Parental lock needed!' : ''}`,
+                `Embarrassing result: @${tag} is ${percentage}% masturbator`,
+                `🍆 @${tag} thinks about sex ${percentage}% of the time`
             ]
         },
         'puttana': {
             emoji: '🔞',
             messages: [
-                `@${tag} è ${percentage}% puttana! ${percentage > 80 ? 'Quanto costa?' : ''}`,
-                `Analisi completa: @${tag} è ${percentage}% di professione più antica`,
-                `💰 @${tag} ha un prezzo: ${percentage}% sconto oggi!`
+                `@${tag} is ${percentage}% whore! ${percentage > 80 ? 'How much do you charge?' : ''}`,
+                `Full analysis: @${tag} is ${percentage}% in the world's oldest profession`,
+                `💰 @${tag} has a price: ${percentage}% off today!`
             ]
         }
     };
@@ -43,7 +43,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
     let cmd = command.toLowerCase();
     let response = responses[cmd] || {
         emoji: '❓',
-        messages: [`@${tag} è ${percentage}% ${cmd}!`]
+        messages: [`@${tag} is ${percentage}% ${cmd}!`]
     };
 
     let randomMessage = response.messages[Math.floor(Math.random() * response.messages.length)];
@@ -55,7 +55,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 };
 
 handler.help = ['gay', 'lesbica', 'puttana', 'prostituta', 'prostituto']
-    .map(v => v + ' @tag | nome');
+    .map(v => v + ' @tag | name');
 handler.tags = ['fun'];
 handler.command = /^(lesbica|puttana|prostituta|prostituto)$/i;
 
