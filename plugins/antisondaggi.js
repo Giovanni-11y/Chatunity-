@@ -1,20 +1,23 @@
-// Creation by Riad the Holy Father
+// Script created by Riad, the Holy Father
 
 export async function before(m, { isAdmin, isBotAdmin, conn }) {
-    // Check if the message is from a group or is a Baileys system message
+    // Skip if message is not from a group or is a system (Baileys) message
     if (!m.isGroup || m.isBaileys) return true;
 
-    // Check if antisondaggi (anti-poll) is enabled for this chat
+    // Check if anti-poll feature is enabled for this chat
     let chat = global.db.data.chats[m.chat];
     if (!chat.antisondaggi) return true;
 
-    // Determine poll type (pollCreationMessageV3, pollCreationMessage, pollCreationMessageV2)
+    // Detect the poll type (varies depending on WhatsApp version)
     const pollType = Object.keys(m.message || {})[0];
-    const isPoll = pollType === 'pollCreationMessageV3' || pollType === 'pollCreationMessage' || pollType === 'pollCreationMessageV2';
+    const isPoll = pollType === 'pollCreationMessageV3' ||
+                   pollType === 'pollCreationMessage' ||
+                   pollType === 'pollCreationMessageV2';
 
-    // If the message is a poll and the sender is not an admin, delete the poll and send a warning
+    // If a poll is detected and the sender is not an admin, delete the poll and notify the group
     if (isPoll && !isAdmin) {
         try {
+            // Delete the poll message
             await conn.sendMessage(m.chat, {
                 delete: {
                     remoteJid: m.chat,
@@ -23,13 +26,16 @@ export async function before(m, { isAdmin, isBotAdmin, conn }) {
                     participant: m.key.participant || m.sender
                 }
             });
+
+            // Notify the group about the deleted poll
             await conn.sendMessage(m.chat, {
-                text: `> ⚠️ POLL DETECTED ⚠️\nThe poll from @${m.sender.split('@')[0]} has been deleted.`,
+                text: `> ⚠️ POLL DETECTED ⚠️\nThe poll created by @${m.sender.split('@')[0]} has been deleted.`,
                 mentions: [m.sender]
             });
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error handling poll deletion:', error);
         }
     }
+
     return true;
 }
