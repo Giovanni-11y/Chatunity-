@@ -4,15 +4,13 @@ import fs from 'fs';
 import os from 'os';
 import path from "path";
 
-// Sistema comando diretto (compatibile con handler.js)
 let handler = async (m, { conn, args }) => {
   try {
-    // Cerca l'immagine nel messaggio quotato o nel messaggio stesso
     let quotedMsg = m.quoted ? m.quoted : m;
     let mimeType = (quotedMsg.msg || quotedMsg).mimetype || '';
 
     let mediaBuffer;
-    // Se rispondo a un messaggio normale (non immagine), prendi la foto profilo del target
+
     if (m.quoted && (!mimeType || !mimeType.startsWith('image/'))) {
       let who = m.quoted.sender || m.sender;
       try {
@@ -21,11 +19,9 @@ let handler = async (m, { conn, args }) => {
         mediaBuffer = Buffer.from(res.data);
         mimeType = 'image/jpeg';
       } catch (e) {
-        return m.reply("Non è stato possibile recuperare la foto profilo di questo utente.");
+        return m.reply("Could not fetch the profile picture of this user.");
       }
-    }
-    // Se non c'è quoted e ci sono mentions, usa la foto profilo del primo utente menzionato
-    else if (!m.quoted && m.mentionedJid && m.mentionedJid.length > 0) {
+    } else if (!m.quoted && m.mentionedJid && m.mentionedJid.length > 0) {
       let who = m.mentionedJid[0];
       try {
         let url = await conn.profilePictureUrl(who, 'image');
@@ -33,11 +29,9 @@ let handler = async (m, { conn, args }) => {
         mediaBuffer = Buffer.from(res.data);
         mimeType = 'image/jpeg';
       } catch (e) {
-        return m.reply("Non è stato possibile recuperare la foto profilo dell'utente menzionato.");
+        return m.reply("Could not fetch the profile picture of the mentioned user.");
       }
-    }
-    // Se non c'è quoted e non c'è immagine, prendi la foto profilo dell'utente che ha inviato il comando
-    else if (!m.quoted && (!mimeType || !mimeType.startsWith('image/'))) {
+    } else if (!m.quoted && (!mimeType || !mimeType.startsWith('image/'))) {
       let who = m.sender;
       try {
         let url = await conn.profilePictureUrl(who, 'image');
@@ -45,26 +39,20 @@ let handler = async (m, { conn, args }) => {
         mediaBuffer = Buffer.from(res.data);
         mimeType = 'image/jpeg';
       } catch (e) {
-        return m.reply("Non hai una foto profilo o non è stato possibile recuperarla.");
+        return m.reply("You don't have a profile picture or it could not be retrieved.");
       }
-    }
-    // Se c'è quoted e contiene immagine, usa quella
-    else {
+    } else {
       mediaBuffer = await quotedMsg.download();
     }
 
-    // Get file extension based on mime type
     let extension = '';
     if (mimeType.includes('image/jpeg')) extension = '.jpg';
     else if (mimeType.includes('image/png')) extension = '.png';
-    else {
-      return m.reply("Unsupported image format. Please use JPEG or PNG");
-    }
+    else return m.reply("Unsupported image format. Use JPEG or PNG");
 
     const tempFilePath = path.join(os.tmpdir(), `imgscan_${Date.now()}${extension}`);
     fs.writeFileSync(tempFilePath, mediaBuffer);
 
-    // Upload to Catbox
     const form = new FormData();
     form.append('fileToUpload', fs.createReadStream(tempFilePath), `image${extension}`);
     form.append('reqtype', 'fileupload');
@@ -74,19 +62,14 @@ let handler = async (m, { conn, args }) => {
     });
 
     const imageUrl = uploadResponse.data;
-    fs.unlinkSync(tempFilePath); // Clean up temp file
+    fs.unlinkSync(tempFilePath);
 
-    if (!imageUrl) {
-      throw "Failed to upload image to Catbox";
-    }
+    if (!imageUrl) throw "Failed to upload image to Catbox";
 
-    // Scan the image using the API
     const apiUrl = `https://api.popcat.xyz/v2/wanted?image=${encodeURIComponent(imageUrl)}`;
     const response = await axios.get(apiUrl, { responseType: "arraybuffer" });
 
-    if (!response || !response.data) {
-      return m.reply("Error: The API did not return a valid image. Try again later.");
-    }
+    if (!response || !response.data) return m.reply("Error: API did not return a valid image.");
 
     const imageBuffer = Buffer.from(response.data, "binary");
 
@@ -101,7 +84,6 @@ let handler = async (m, { conn, args }) => {
   }
 };
 
-// Definizione comando per handler.js
 handler.help = ['wanted'];
 handler.tags = ['img'];
 handler.command = /^(wanted|wantededit)$/i;
