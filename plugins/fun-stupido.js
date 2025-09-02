@@ -9,5 +9,5 @@ const handler = async (m, {conn, args}) => {
 };
 handler.help = ['stupida', 'iss', 'stupido'];
 handler.tags = ['maker'];
-handler.command = /^(stupida|iss|stupido)$/i;
+handler.command = /^(stupid|dumb)$/i;
 export default handler;
