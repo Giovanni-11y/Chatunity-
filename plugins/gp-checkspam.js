@@ -1,30 +1,30 @@
 import fetch from "node-fetch";
 
 let handler = async (m, { conn, args }) => {
-    if (!args[0]) return m.reply("❌ *Devi inserire un sito da controllare!*\n📌 _Esempio:_ *.checkscam www.sito.com*");
+    if (!args[0]) return m.reply("❌ *You must enter a website to check!*\n📌 _Example:_ *.checkscam www.site.com*");
 
-    let sito = args[0].replace(/https?:\/\//, "").replace("www.", "").split("/")[0]; // Pulizia URL
+    let site = args[0].replace(/https?:\/\//, "").replace("www.", "").split("/")[0]; // URL cleaning
 
     try {
-        // 🌐 Controllo con Google Safe Browsing API (senza chiave API)
-        let googleResponse = await fetch(`https://transparencyreport.google.com/safe-browsing/search?url=${sito}`);
+        // 🌐 Check with Google Safe Browsing API (without API key)
+        let googleResponse = await fetch(`https://transparencyreport.google.com/safe-browsing/search?url=${site}`);
         let isScam = googleResponse.status !== 200;
 
-        let messaggio = `🔍 *Analisi del sito:*\n🌐 *Dominio:* ${sito}\n\n`;
-        messaggio += isScam ? "⚠️ *RISCHIO SCAM!* ❌" : "✅ *Sito Sicuro!*";
-        messaggio += `\n\n🔗 *Verifica anche su:* [ScamAdviser](https://www.scamadviser.com/check-website/${sito})`;
+        let message = `🔍 *Website Analysis:*\n🌐 *Domain:* ${site}\n\n`;
+        message += isScam ? "⚠️ *SCAM RISK!* ❌" : "✅ *Safe Website!*";
+        message += `\n\n🔗 *Also check on:* [ScamAdviser](https://www.scamadviser.com/check-website/${site})`;
 
-        await conn.sendMessage(m.chat, { text: messaggio }, { quoted: m });
+        await conn.sendMessage(m.chat, { text: message }, { quoted: m });
 
     } catch (err) {
         console.error(err);
-        m.reply("❌ *Errore nel controllo del sito! Riprova più tardi.*");
+        m.reply("❌ *Error checking the website! Try again later.*");
     }
 };
 
-// Configurazione del comando per Gab
+// Command configuration
 handler.command = ["checkscam"];
 handler.category = "security";
-handler.desc = "Controlla se un sito è scam o sicuro 🔍";
+handler.desc = "Check if a website is scam or safe 🔍";
 
 export default handler;
