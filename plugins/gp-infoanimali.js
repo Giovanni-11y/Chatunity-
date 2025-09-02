@@ -1,57 +1,62 @@
 import axios from 'axios';
 
-const infoAnimalePlugin = async (m, { conn, text, usedPrefix, command }) => {
+const animalInfoPlugin = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return conn.reply(m.chat, `﹒⋆❛ ${usedPrefix + command} <nome animale>\n❥ Per favore indica un animale di cui vuoi informazioni!\nEsempio: *${usedPrefix + command} fennec*`, m);
+    return conn.reply(
+      m.chat,
+      `﹒⋆❛ ${usedPrefix + command} <animal name>\n❥ Please specify an animal you'd like information about!\nExample: *${usedPrefix + command} fennec*`,
+      m
+    );
   }
 
-  const animale = text.trim();
+  const animal = text.trim();
 
   const prompt = `
-Crea una scheda informativa decorata e leggibile per l'animale "*${animale}*".
+Create an informative and aesthetically formatted profile for the animal "*${animal}*".
 
-❥ Il tono deve essere divulgativo ma leggero. Usa simboli estetici ma non esagerati.
-❥ Rispondi sempre in italiano.
-❥ Il formato deve essere **esattamente** questo (modifica solo i dati reali, non lo stile):
+❥ The tone should be educational yet light. Use subtle decorative symbols.
+❥ Always reply in **English**.
+❥ The format must be **exactly** like this (only replace the factual content, not the style):
 
-★·.·´¯\`·.·★ ⟡ ˚｡⋆『 ˗ˏˋ  ${animale.toUpperCase()}  ˎˊ˗ 』⋆｡˚⟡ ★·.·´¯\`·.·★
+★·.·´¯\`·.·★ ⟡ ˚｡⋆『 ˗ˏˋ  ${animal.toUpperCase()}  ˎˊ˗ 』⋆｡˚⟡ ★·.·´¯\`·.·★
 
-🦊 *Nome comune:* ${animale}
-📚 *Nome scientifico:* (es. Vulpes vulpes)
-🌍 *Habitat:* (es. Foreste temperate, deserti, savane...)
-🍽️ *Dieta:* (erbivoro, onnivoro, carnivoro – dettaglia con esempi)
-📏 *Dimensioni:* (lunghezza/peso medio)
-🧠 *Comportamento:* (solitario, sociale, notturno, ecc.)
-🎨 *Caratteristiche:* (es. pelo, becco, artigli, dentatura...)
+🦊 *Common Name:* ${animal}
+📚 *Scientific Name:* (e.g. Vulpes vulpes)
+🌍 *Habitat:* (e.g. Temperate forests, deserts, savannas...)
+🍽️ *Diet:* (herbivore, omnivore, carnivore – include examples)
+📏 *Size:* (average length/weight)
+🧠 *Behavior:* (e.g. solitary, social, nocturnal, etc.)
+🎨 *Features:* (e.g. fur, beak, claws, teeth...)
 
-╭─❍ 『 💫 』 *CURIOSITÀ*
-│• Inserisci 2-3 curiosità interessanti e brevi
+╭─❍ 『 💫 』 *FUN FACTS*
+│• Add 2-3 short and interesting fun facts
 ╰───────────────
 𖦹﹒✧･ﾟﾟ･:*:･ﾟ✧﹒𖦹
 `;
 
   try {
     await conn.sendPresenceUpdate('composing', m.chat);
+
     const res = await axios.post("https://luminai.my.id", {
       content: prompt,
-      user: m.pushName || "utente",
-      prompt: `Rispondi sempre in italiano.`,
+      user: m.pushName || "user",
+      prompt: `Always reply in English.`,
       webSearchMode: false
     });
 
-    const risposta = res.data.result;
-    if (!risposta) throw new Error("Risposta vuota dall'API.");
+    const replyText = res.data.result;
+    if (!replyText) throw new Error("Empty response from the API.");
 
-    return await conn.reply(m.chat, risposta, m);
+    return await conn.reply(m.chat, replyText, m);
 
   } catch (err) {
-    console.error('[❌ infoanimale plugin errore]', err);
-    return await conn.reply(m.chat, '⚠️ Errore durante l’elaborazione della scheda animale. Riprova più tardi.', m);
+    console.error('[❌ animalInfo plugin error]', err);
+    return await conn.reply(m.chat, '⚠️ Error while generating the animal profile. Please try again later.', m);
   }
 };
 
-infoAnimalePlugin.help = ['infoanimale <animale>'];
-infoAnimalePlugin.tags = ['animali', 'ai', 'divulgazione'];
-infoAnimalePlugin.command = /^infoanimale$/i;
+animalInfoPlugin.help = ['animalinfo <animal>'];
+animalInfoPlugin.tags = ['animals', 'ai', 'education'];
+animalInfoPlugin.command = /^animalinfo$/i;
 
-export default infoAnimalePlugin;
+export default animalInfoPlugin;
