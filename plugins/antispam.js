@@ -1,9 +1,7 @@
-// Code for _antispam.js
-
-let userSpamCounters = {};  // Start
-const STICKER_LIMIT = 6;  // Start
-const PHOTO_VIDEO_LIMIT = 13;  // Start
-const RESET_TIMEOUT = 5000;  // Start
+let userSpamCounters = {};  // Initialize spam counters
+const STICKER_LIMIT = 6;  // Max allowed stickers before action
+const PHOTO_VIDEO_LIMIT = 13;  // Max allowed images/videos before action
+const RESET_TIMEOUT = 5000;  // Time (ms) after which spam counters reset
 
 export async function before(m, { isAdmin, isBotAdmin, conn }) {
     if (m.isBaileys && m.fromMe) return true;
@@ -13,26 +11,32 @@ export async function before(m, { isAdmin, isBotAdmin, conn }) {
     let bot = global.db.data.settings[this.user.jid] || {};
     let delet = m.key.participant;
     let bang = m.key.id;
-    const sender = m.sender;  // Start
+    const sender = m.sender;
 
-    // Start
+    // Initialize counters for this chat and sender if not already set
     if (!userSpamCounters[m.chat]) {
         userSpamCounters[m.chat] = {};
     }
     if (!userSpamCounters[m.chat][sender]) {
-        userSpamCounters[m.chat][sender] = { stickerCount: 0, photoVideoCount: 0, tagCount: 0, messageIds: [], lastMessageTime: 0, timer: null };
+        userSpamCounters[m.chat][sender] = {
+            stickerCount: 0,
+            photoVideoCount: 0,
+            tagCount: 0,
+            messageIds: [],
+            lastMessageTime: 0,
+            timer: null
+        };
     }
 
     const counter = userSpamCounters[m.chat][sender];
     const currentTime = Date.now();
 
-    // Start
     const isSticker = m.message?.stickerMessage;
-    // DlStart
     const isPhoto = m.message?.imageMessage || m.message?.videoMessage;
-    // Start
-    const isTaggingAll = m.message?.extendedTextMessage?.text?.includes('@all') || m.message?.extendedTextMessage?.text?.includes('@everyone');
+    const isTaggingAll = m.message?.extendedTextMessage?.text?.includes('@all') ||
+                         m.message?.extendedTextMessage?.text?.includes('@everyone');
 
+    // If message is sticker, photo/video or tags all members
     if (isSticker || isPhoto || isTaggingAll) {
         if (isSticker) {
             counter.stickerCount++;
@@ -45,12 +49,12 @@ export async function before(m, { isAdmin, isBotAdmin, conn }) {
         counter.messageIds.push(m.key.id);
         counter.lastMessageTime = currentTime;
 
-        // Start
+        // Clear previous timer if it exists
         if (counter.timer) {
             clearTimeout(counter.timer);
         }
 
-        // Start
+        // Check if spam limits are reached
         const isStickerSpam = counter.stickerCount >= STICKER_LIMIT;
         const isPhotoVideoSpam = counter.photoVideoCount >= PHOTO_VIDEO_LIMIT;
         const isTagSpam = counter.tagCount > 0;
@@ -58,13 +62,13 @@ export async function before(m, { isAdmin, isBotAdmin, conn }) {
         if (isStickerSpam || isPhotoVideoSpam || isTagSpam) {
             if (isBotAdmin && bot.restrict) {
                 try {
-                    console.log('Spam detected! Modifying group settings...');
+                    console.log('Spam detected! Changing group settings...');
 
-                    // Start
+                    // Lock group (only admins can send messages)
                     await conn.groupSettingUpdate(m.chat, 'announcement');
-                    console.log('Only administrators can send messages.');
+                    console.log('Group is now restricted to admins only.');
 
-                    // Start
+                    // If user is not admin, remove them
                     if (!isAdmin) {
                         let responseb = await conn.groupParticipantsUpdate(m.chat, [sender], 'remove');
                         console.log(`Participant removal response: ${JSON.stringify(responseb)}`);
@@ -73,48 +77,56 @@ export async function before(m, { isAdmin, isBotAdmin, conn }) {
                             console.log('User not found or already removed.');
                         }
                     } else {
-                        console.log('The user is an administrator and will not be removed.');
+                        console.log('User is an admin and will not be removed.');
                     }
 
-                    // Start
+                    // Delete all messages flagged as spam
                     for (const messageId of counter.messageIds) {
-                        await conn.sendMessage(m.chat, { delete: { remoteJid: m.chat, fromMe: false, id: messageId, participant: delet } });
-                        console.log(`Message with ID ${messageId} deleted.`);
+                        await conn.sendMessage(m.chat, {
+                            delete: {
+                                remoteJid: m.chat,
+                                fromMe: false,
+                                id: messageId,
+                                participant: delet
+                            }
+                        });
+                        console.log(`Deleted message ID: ${messageId}`);
                     }
                     console.log('All spam messages have been deleted.');
 
-                    // Start
+                    // Reopen group for all members
                     await conn.groupSettingUpdate(m.chat, 'not_announcement');
-                    console.log('Chat reactivated for all members.');
+                    console.log('Group reopened for all participants.');
 
-                    // Start
+                    // Notify group of action taken
                     await conn.sendMessage(m.chat, { text: '*antispam by Origin detected*' });
-                    console.log('Antispam notification message sent.');
+                    console.log('Antispam notification sent.');
 
-                    // Start
+                    // Clear spam counter for user
                     delete userSpamCounters[m.chat][sender];
-                    console.log('Spam counter for the user has been reset.');
+                    console.log('Spam counter for user has been reset.');
 
                 } catch (error) {
-                    console.error('Error while handling spam:', error);
+                    console.error('Error handling spam:', error);
                 }
             } else {
-                console.log('Bot is not an administrator or restriction is disabled. Cannot perform the operation.');
+                console.log('Bot is not admin or restriction is disabled — cannot take action.');
             }
         } else {
-            // Start
+            // Set/reset timeout to clear user's spam counter
             counter.timer = setTimeout(() => {
                 delete userSpamCounters[m.chat][sender];
-                console.log('Spam counter for the user reset after timeout.');
+                console.log('Spam counter reset after timeout.');
             }, RESET_TIMEOUT);
         }
     } else {
-        // Start
-        if (currentTime - counter.lastMessageTime > RESET_TIMEOUT && (counter.stickerCount > 0 || counter.photoVideoCount > 0 || counter.tagCount > 0)) {
+        // Reset counter if timeout expired and previous activity exists
+        if (currentTime - counter.lastMessageTime > RESET_TIMEOUT &&
+            (counter.stickerCount > 0 || counter.photoVideoCount > 0 || counter.tagCount > 0)) {
             console.log('Timeout expired. Resetting user spam counter.');
             delete userSpamCounters[m.chat][sender];
         }
     }
 
     return true;
-                }
+}
