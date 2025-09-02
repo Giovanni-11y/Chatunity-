@@ -1,9 +1,9 @@
 import { createCanvas } from 'canvas';
 
-class DamaGame {
+class CheckersGame {
     constructor(playerId) {
         this.board = this.initializeBoard();
-        this.currentPlayer = 'B'; // B: Bianco, N: Nero
+        this.currentPlayer = 'W'; // W: White, B: Black
         this.selectedPiece = null;
         this.validMoves = [];
         this.mustCapture = false;
@@ -16,18 +16,18 @@ class DamaGame {
     }
 
     initializeBoard() {
-        // Creazione della scacchiera 8x8
+        // Create 8x8 board
         const board = Array(8).fill().map(() => Array(8).fill(null));
         
-        // Posizionamento delle pedine iniziali
+        // Place initial pieces
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
-                // Le pedine si trovano solo sulle caselle scure
+                // Pieces only on dark squares
                 if ((row + col) % 2 === 1) {
                     if (row < 3) {
-                        board[row][col] = { type: 'pedina', color: 'N' };
+                        board[row][col] = { type: 'piece', color: 'B' };
                     } else if (row > 4) {
-                        board[row][col] = { type: 'pedina', color: 'B' };
+                        board[row][col] = { type: 'piece', color: 'W' };
                     }
                 }
             }
@@ -36,19 +36,19 @@ class DamaGame {
     }
 
     selectPiece(row, col) {
-        if (this.gameOver) return { error: "La partita è già terminata!" };
+        if (this.gameOver) return { error: "The game is already over!" };
         
         const piece = this.board[row][col];
         if (!piece || piece.color !== this.currentPlayer) {
-            return { error: "Seleziona una tua pedina!" };
+            return { error: "Select one of your pieces!" };
         }
 
-        // Trova tutte le mosse possibili (con priorità alle catture)
+        // Find all possible moves (prioritizing captures)
         const allMoves = this.findValidMoves(row, col);
         
-        // Se ci sono catture obbligatorie in altre posizioni, devi catturare
+        // If there are mandatory captures elsewhere, you must capture
         if (this.mustCapture && !allMoves.some(move => move.captures.length > 0)) {
-            return { error: "Devi effettuare una cattura se possibile!" };
+            return { error: "You must capture if possible!" };
         }
 
         this.selectedPiece = { row, col };
@@ -64,24 +64,24 @@ class DamaGame {
         const moves = [];
         const directions = [];
         
-        // Determina le direzioni in base al tipo di pezzo e al colore
-        if (piece.type === 'dama') {
+        // Determine directions based on piece type and color
+        if (piece.type === 'king') {
             directions.push([-1, -1], [-1, 1], [1, -1], [1, 1]);
         } else {
-            // Pedine normali muovono in avanti rispetto al loro colore
-            if (piece.color === 'B') {
+            // Normal pieces move forward relative to their color
+            if (piece.color === 'W') {
                 directions.push([-1, -1], [-1, 1]);
             } else {
                 directions.push([1, -1], [1, 1]);
             }
         }
         
-        // Cerca mosse normali e catture
+        // Search for normal moves and captures
         for (const [dr, dc] of directions) {
             this.checkDirection(row, col, dr, dc, piece, moves, []);
         }
         
-        // Se ci sono catture, restituisci solo quelle (le catture sono obbligatorie)
+        // If there are captures, return only those (captures are mandatory)
         const captures = moves.filter(move => move.captures.length > 0);
         if (captures.length > 0) {
             return captures;
@@ -94,46 +94,46 @@ class DamaGame {
         const newRow = row + dr;
         const newCol = col + dc;
         
-        // Controlla se siamo fuori dalla scacchiera
+        // Check if we're outside the board
         if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) return;
         
         const targetCell = this.board[newRow][newCol];
         
         if (!targetCell) {
-            // Casella vuota - mossa valida
+            // Empty square - valid move
             if (!isCaptureSequence || captures.length > 0) {
                 moves.push({
                     row: newRow,
                     col: newCol,
                     captures: [...captures],
-                    becomesDama: this.shouldBecomeDama(newRow, piece.color)
+                    becomesKing: this.shouldBecomeKing(newRow, piece.color)
                 });
             }
             
-            // Per le pedine normali, solo un passo (a meno che non sia una sequenza di cattura)
-            if (piece.type === 'pedina' && captures.length === 0) return;
+            // For normal pieces, only one step (unless it's a capture sequence)
+            if (piece.type === 'piece' && captures.length === 0) return;
             
-            // Per le dama o durante una cattura, continua a controllare
-            if (piece.type === 'dama' || isCaptureSequence) {
+            // For kings or during capture, continue checking
+            if (piece.type === 'king' || isCaptureSequence) {
                 this.checkDirection(newRow, newCol, dr, dc, piece, moves, captures, isCaptureSequence);
             }
         } else if (targetCell.color !== piece.color) {
-            // C'è un pezzo avversario - controlla se possiamo catturarlo
+            // There's an opponent's piece - check if we can capture it
             const jumpRow = newRow + dr;
             const jumpCol = newCol + dc;
             
-            // Controlla se possiamo saltare oltre il pezzo avversario
+            // Check if we can jump over the opponent's piece
             if (jumpRow >= 0 && jumpRow < 8 && jumpCol >= 0 && jumpCol < 8 && 
                 !this.board[jumpRow][jumpCol]) {
                 
-                // Aggiungi questa cattura alla lista
+                // Add this capture to the list
                 const newCaptures = [...captures, { row: newRow, col: newCol }];
                 
-                // Prosegui con la sequenza di cattura
+                // Continue with capture sequence
                 this.checkDirection(jumpRow, jumpCol, dr, dc, piece, moves, newCaptures, true);
                 
-                // Per le dama, controlla anche altre direzioni dopo la cattura
-                if (piece.type === 'dama') {
+                // For kings, check other directions after capture
+                if (piece.type === 'king') {
                     const otherDirections = [
                         [-dr, -dc], [-dr, dc], [dr, -dc]
                     ].filter(([r, c]) => r !== dr || c !== dc);
@@ -146,42 +146,42 @@ class DamaGame {
         }
     }
 
-    shouldBecomeDama(row, color) {
-        return (color === 'B' && row === 0) || (color === 'N' && row === 7);
+    shouldBecomeKing(row, color) {
+        return (color === 'W' && row === 0) || (color === 'B' && row === 7);
     }
 
     movePiece(toRow, toCol) {
-        if (this.gameOver) return { error: "La partita è già terminata!" };
-        if (!this.selectedPiece) return { error: "Devi prima selezionare una pedina!" };
+        if (this.gameOver) return { error: "The game is already over!" };
+        if (!this.selectedPiece) return { error: "You must first select a piece!" };
         
         const { row: fromRow, col: fromCol } = this.selectedPiece;
         const move = this.validMoves.find(m => m.row === toRow && m.col === toCol);
         
-        if (!move) return { error: "Mossa non valida!" };
+        if (!move) return { error: "Invalid move!" };
         
-        // Esegui la mossa
+        // Execute the move
         const piece = this.board[fromRow][fromCol];
         this.board[toRow][toCol] = piece;
         this.board[fromRow][fromCol] = null;
         
-        // Rimuovi i pezzi catturati
+        // Remove captured pieces
         for (const capture of move.captures) {
             this.board[capture.row][capture.col] = null;
         }
         
-        // Promuovi a dama se necessario
-        if (move.becomesDama) {
-            this.board[toRow][toCol] = { type: 'dama', color: piece.color };
+        // Promote to king if necessary
+        if (move.becomesKing) {
+            this.board[toRow][toCol] = { type: 'king', color: piece.color };
         }
         
-        // Controlla se il gioco è terminato
+        // Check if the game is over
         this.checkGameOver();
         
-        // Prepara per il prossimo turno
+        // Prepare for next turn
         const hadCapture = move.captures.length > 0;
         let mustContinueCapture = false;
         
-        // Se c'è stata una cattura, controlla se possono essercene altre
+        // If there was a capture, check if more are possible
         if (hadCapture) {
             const furtherCaptures = this.findValidMoves(toRow, toCol)
                 .filter(m => m.captures.length > 0);
@@ -194,11 +194,11 @@ class DamaGame {
         }
         
         if (!mustContinueCapture) {
-            this.currentPlayer = this.currentPlayer === 'B' ? 'N' : 'B';
+            this.currentPlayer = this.currentPlayer === 'W' ? 'B' : 'W';
             this.selectedPiece = null;
             this.validMoves = [];
             
-            // Controlla se il giocatore successivo deve catturare
+            // Check if next player must capture
             this.mustCapture = this.checkMustCapture();
         }
         
@@ -227,7 +227,7 @@ class DamaGame {
     }
 
     checkGameOver() {
-        // Controlla se un giocatore non ha più pedine
+        // Check if a player has no more pieces
         let blackPieces = 0;
         let whitePieces = 0;
         let blackCanMove = false;
@@ -237,7 +237,7 @@ class DamaGame {
             for (let col = 0; col < 8; col++) {
                 const piece = this.board[row][col];
                 if (piece) {
-                    if (piece.color === 'B') {
+                    if (piece.color === 'W') {
                         whitePieces++;
                         if (!whiteCanMove) {
                             const moves = this.findValidMoves(row, col);
@@ -256,10 +256,10 @@ class DamaGame {
         
         if (whitePieces === 0 || !whiteCanMove) {
             this.gameOver = true;
-            this.winner = 'N';
+            this.winner = 'B';
         } else if (blackPieces === 0 || !blackCanMove) {
             this.gameOver = true;
-            this.winner = 'B';
+            this.winner = 'W';
         }
     }
 
@@ -273,7 +273,7 @@ class DamaGame {
         const canvas = createCanvas(canvasWidth, canvasHeight);
         const ctx = canvas.getContext('2d');
         
-        // Colori
+        // Colors
         const colors = {
             light: '#F0D9B5',
             dark: '#B58863',
@@ -281,49 +281,49 @@ class DamaGame {
             selected: 'rgba(255, 215, 0, 0.6)',
             whitePiece: '#FFFFFF',
             blackPiece: '#000000',
-            whiteDama: '#FFD700',
-            blackDama: '#8B4513',
+            whiteKing: '#FFD700',
+            blackKing: '#8B4513',
             border: '#000000',
             bg: '#2C2C2C'
         };
         
-        // Sfondo
+        // Background
         ctx.fillStyle = colors.bg;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         
-        // Disegna la scacchiera
+        // Draw the board
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 const x = padding + col * cellSize;
                 const y = padding + row * cellSize;
                 
-                // Casella
+                // Square
                 ctx.fillStyle = (row + col) % 2 === 0 ? colors.light : colors.dark;
                 ctx.fillRect(x, y, cellSize, cellSize);
                 
-                // Evidenzia le mosse valide
+                // Highlight valid moves
                 if (this.selectedPiece && 
                     this.validMoves.some(move => move.row === row && move.col === col)) {
                     ctx.fillStyle = colors.highlight;
                     ctx.fillRect(x, y, cellSize, cellSize);
                 }
                 
-                // Evidenzia il pezzo selezionato
+                // Highlight selected piece
                 if (this.selectedPiece && 
                     this.selectedPiece.row === row && this.selectedPiece.col === col) {
                     ctx.fillStyle = colors.selected;
                     ctx.fillRect(x, y, cellSize, cellSize);
                 }
                 
-                // Disegna i pezzi
+                // Draw pieces
                 const piece = this.board[row][col];
                 if (piece) {
                     const centerX = x + cellSize / 2;
                     const centerY = y + cellSize / 2;
                     const radius = cellSize * 0.4;
                     
-                    // Pedina
-                    ctx.fillStyle = piece.color === 'B' ? colors.whitePiece : colors.blackPiece;
+                    // Piece
+                    ctx.fillStyle = piece.color === 'W' ? colors.whitePiece : colors.blackPiece;
                     ctx.beginPath();
                     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
                     ctx.fill();
@@ -331,10 +331,10 @@ class DamaGame {
                     ctx.lineWidth = 2;
                     ctx.stroke();
                     
-                    // Dama (cerchio interno)
-                    if (piece.type === 'dama') {
+                    // King (inner circle)
+                    if (piece.type === 'king') {
                         const innerRadius = radius * 0.5;
-                        ctx.fillStyle = piece.color === 'B' ? colors.whiteDama : colors.blackDama;
+                        ctx.fillStyle = piece.color === 'W' ? colors.whiteKing : colors.blackKing;
                         ctx.beginPath();
                         ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
                         ctx.fill();
@@ -344,13 +344,13 @@ class DamaGame {
             }
         }
         
-        // Aggiungi indici di riga e colonna
+        // Add row and column indices
         ctx.font = 'bold 16px Arial';
         ctx.fillStyle = '#FFFFFF';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
-        // Lettere delle colonne (A-H)
+        // Column letters (A-H)
         for (let col = 0; col < 8; col++) {
             const x = padding + col * cellSize + cellSize / 2;
             const yTop = padding - 10;
@@ -360,7 +360,7 @@ class DamaGame {
             ctx.fillText(String.fromCharCode(65 + col), x, yBottom);
         }
         
-        // Numeri delle righe (1-8)
+        // Row numbers (1-8)
         for (let row = 0; row < 8; row++) {
             const y = padding + row * cellSize + cellSize / 2;
             const xLeft = padding - 10;
@@ -370,9 +370,9 @@ class DamaGame {
             ctx.fillText((8 - row).toString(), xRight, y);
         }
         
-        // Aggiungi informazioni di gioco
+        // Add game information
         ctx.font = 'bold 20px Arial';
-        ctx.fillText(`Turno: ${this.currentPlayer === 'B' ? 'Bianco' : 'Nero'}`, 
+        ctx.fillText(`Turn: ${this.currentPlayer === 'W' ? 'White' : 'Black'}`, 
                      canvasWidth / 2, 20);
         
         if (this.gameOver) {
@@ -382,7 +382,7 @@ class DamaGame {
             ctx.fillStyle = '#FFFFFF';
             ctx.font = 'bold 30px Arial';
             ctx.fillText('GAME OVER', canvasWidth / 2, canvasHeight / 2 - 20);
-            ctx.fillText(`Vincitore: ${this.winner === 'B' ? 'Bianco' : 'Nero'}`, 
+            ctx.fillText(`Winner: ${this.winner === 'W' ? 'White' : 'Black'}`, 
                          canvasWidth / 2, canvasHeight / 2 + 20);
         }
         
@@ -390,48 +390,48 @@ class DamaGame {
     }
 }
 
-global.damaGame = global.damaGame || {};
+global.checkersGame = global.checkersGame || {};
 
 async function handleGameTimeout(conn, chat, gameId, playerId) {
-    const currentGame = global.damaGame?.[chat];
+    const currentGame = global.checkersGame?.[chat];
     
     if (!currentGame || currentGame.id !== gameId) return;
     
     try {
         currentGame.gameOver = true;
-        currentGame.winner = currentGame.currentPlayer === 'B' ? 'N' : 'B';
+        currentGame.winner = currentGame.currentPlayer === 'W' ? 'B' : 'W';
         
-        let timeoutText = `ㅤ⋆｡˚『 ╭ \`TEMPO SCADUTO!\` ╯ 』˚｡⋆\n╭\n`;
-        timeoutText += `│ 『 🎯 』 \`Vincitore:\` *${currentGame.winner === 'B' ? 'Bianco' : 'Nero'}*\n`;
-        timeoutText += `│ 『 💡 』 _*Sii più veloce*_\n`;
+        let timeoutText = `ㅤ⋆｡˚『 ╭ \`TIME'S UP!\` ╯ 』˚｡⋆\n╭\n`;
+        timeoutText += `│ 『 🎯 』 \`Winner:\` *${currentGame.winner === 'W' ? 'White' : 'Black'}*\n`;
+        timeoutText += `│ 『 💡 』 _*Be faster next time*_\n`;
         timeoutText += `*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*`;
         
         const buttons = [{
             name: 'quick_reply',
-            buttonParamsJson: JSON.stringify({ display_text: '♟️ Gioca Ancora!', id: `.dama` })
+            buttonParamsJson: JSON.stringify({ display_text: '♟️ Play Again!', id: `.checkers` })
         }];
 
         await conn.sendMessage(chat, {
             text: timeoutText,
-            footer: 'Dama Bot',
+            footer: 'Checkers Bot',
             interactiveButtons: buttons
         });
         
-        delete global.damaGame[chat];
+        delete global.checkersGame[chat];
     } catch (error) {
-        console.error('[DAMA] Errore durante la gestione del timeout:', error);
-        delete global.damaGame[chat];
+        console.error('[CHECKERS] Error during timeout handling:', error);
+        delete global.checkersGame[chat];
     }
 }
 
 async function startGame(conn, m, usedPrefix) {
     const chat = m.chat;
 
-    if (global.damaGame?.[chat]) {
-        return conn.reply(m.chat, '『 ⚠️ 』 \`C\'è già una partita di dama attiva!\`', m);
+    if (global.checkersGame?.[chat]) {
+        return conn.reply(m.chat, '『 ⚠️ 』 \`There is already an active checkers game!\`', m);
     }
 
-    const cooldownKey = `dama_${chat}`;
+    const cooldownKey = `checkers_${chat}`;
     global.cooldowns = global.cooldowns || {};
     const lastGame = global.cooldowns[cooldownKey] || 0;
     const now = Date.now();
@@ -439,87 +439,87 @@ async function startGame(conn, m, usedPrefix) {
 
     if (now - lastGame < cooldownTime) {
         const remainingTime = Math.ceil((cooldownTime - (now - lastGame)) / 1000);
-        return conn.reply(m.chat, `『 ⏳ 』 *Aspetta ancora ${remainingTime} secondi prima di avviare un nuovo gioco!*`, m);
+        return conn.reply(m.chat, `『 ⏳ 』 *Wait ${remainingTime} more seconds before starting a new game!*`, m);
     }
     
     try {
-        const newGame = new DamaGame(m.sender);
+        const newGame = new CheckersGame(m.sender);
         const boardImage = await newGame.generateBoardImage();
 
-        let startCaption = `ㅤ⋆｡˚『 ╭ \`DAMA ITALIANA\` ╯ 』˚｡⋆\n╭\n`;
-        startCaption += `│ 『 🎯 』 \`Turno:\` *${newGame.currentPlayer === 'B' ? 'Bianco' : 'Nero'}*\n`;
-        startCaption += `│ 『 ⚡ 』 \`Seleziona una pedina con .select A2\`\n`;
-        startCaption += `│ 『 ⏱️ 』 \`2 minuti\` di tempo \`per mossa\`\n`;
+        let startCaption = `ㅤ⋆｡˚『 ╭ \`INTERNATIONAL CHECKERS\` ╯ 』˚｡⋆\n╭\n`;
+        startCaption += `│ 『 🎯 』 \`Turn:\` *${newGame.currentPlayer === 'W' ? 'White' : 'Black'}*\n`;
+        startCaption += `│ 『 ⚡ 』 \`Select a piece with .select A2\`\n`;
+        startCaption += `│ 『 ⏱️ 』 \`2 minutes\` of time \`per move\`\n`;
         startCaption += `*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*`;
 
         let msg = await conn.sendMessage(chat, { 
             image: boardImage, 
             caption: startCaption,
-            footer: 'Dama Bot'
+            footer: 'Checkers Bot'
         }, { quoted: m });
 
-        global.damaGame[chat] = newGame;
-        global.damaGame[chat].id = msg.key.id;
+        global.checkersGame[chat] = newGame;
+        global.checkersGame[chat].id = msg.key.id;
         global.cooldowns[cooldownKey] = now;
 
         const timeoutId = setTimeout(() => {
             handleGameTimeout(conn, chat, msg.key.id, m.sender);
-        }, 120000); // 2 minuti
+        }, 120000); // 2 minutes
 
-        global.damaGame[chat].timeoutId = timeoutId;
+        global.checkersGame[chat].timeoutId = timeoutId;
 
     } catch (error) {
-        console.error('Errore nell\'avvio del gioco Dama:', error);
-        await conn.reply(m.chat, `Si è verificato un errore durante l'avvio del gioco.`, m);
+        console.error('Error starting Checkers game:', error);
+        await conn.reply(m.chat, `An error occurred while starting the game.`, m);
     }
 }
 
 let handler = async (m, { conn, command, usedPrefix, text }) => {
-    if (command === 'skipdama') {
-        const game = global.damaGame?.[m.chat];
-        if (!game) return conn.reply(m.chat, '⚠️ Non c\'è nessuna partita di dama attiva in questo gruppo!', m);
+    if (command === 'skipcheckers') {
+        const game = global.checkersGame?.[m.chat];
+        if (!game) return conn.reply(m.chat, '⚠️ There is no active checkers game in this group!', m);
 
         const groupMeta = await conn.groupMetadata(m.chat).catch(() => null);
         const participant = groupMeta?.participants.find(p => p.id === m.sender);
         const isAdmin = participant?.admin === 'admin' || participant?.admin === 'superadmin';
 
         if (!isAdmin && m.sender !== game.playerId && !m.fromMe) {
-            return conn.reply(m.chat, '❌ *Questo comando può essere usato solo dagli admin o da chi ha iniziato la partita!*', m);
+            return conn.reply(m.chat, '❌ *This command can only be used by admins or the game starter!*', m);
         }
 
         clearTimeout(game.timeoutId);
         const boardImage = await game.generateBoardImage();
         
-        let skipCaption = `ㅤ⋆｡˚『 ╭ \`PARTITA INTERROTTA\` ╯ 』˚｡⋆\n╭\n`;
-        skipCaption += `│ 『 🎯 』 \`Partita interrotta\`\n`;
+        let skipCaption = `ㅤ⋆｡˚『 ╭ \`GAME INTERRUPTED\` ╯ 』˚｡⋆\n╭\n`;
+        skipCaption += `│ 『 🎯 』 \`Game interrupted\`\n`;
         skipCaption += `*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*`;
 
         const buttons = [{
             name: 'quick_reply',
-            buttonParamsJson: JSON.stringify({ display_text: '♟️ Gioca Ancora!', id: `.dama` })
+            buttonParamsJson: JSON.stringify({ display_text: '♟️ Play Again!', id: `.checkers` })
         }];
 
         await conn.sendMessage(m.chat, {
             image: boardImage,
             caption: skipCaption,
-            footer: 'Dama Bot',
+            footer: 'Checkers Bot',
             interactiveButtons: buttons
         }, { quoted: m });
-        delete global.damaGame[m.chat];
+        delete global.checkersGame[m.chat];
         return;
     }
 
-    if (command === 'dama') {
+    if (command === 'checkers') {
         await startGame(conn, m, usedPrefix);
     }
 
-    if (command === 'select' && global.damaGame?.[m.chat]) {
-        const game = global.damaGame[m.chat];
+    if (command === 'select' && global.checkersGame?.[m.chat]) {
+        const game = global.checkersGame[m.chat];
         
-        // Converti la notazione scacchistica (es. A2) in coordinate (riga, colonna)
+        // Convert chess notation (e.g., A2) to coordinates (row, column)
         const notation = text.trim().toUpperCase();
         if (!/^[A-H][1-8]$/.test(notation)) {
-            return conn.reply(m.chat, '❌ *Notazione non valida! Usa formato come A2, B3, etc.*', m);
+            return conn.reply(m.chat, '❌ *Invalid notation! Use format like A2, B3, etc.*', m);
         }
         
         const col = notation.charCodeAt(0) - 65;
@@ -531,29 +531,29 @@ let handler = async (m, { conn, command, usedPrefix, text }) => {
         }
         
         const boardImage = await game.generateBoardImage();
-        let caption = `ㅤ⋆｡˚『 ╭ \`PEDINA SELEZIONATA\` ╯ 』˚｡⋆\n╭\n`;
-        caption += `│ 『 🎯 』 \`Posizione:\` *${notation}*\n`;
-        caption += `│ 『 ⚡ 』 \`Mosse disponibili:\` *${result.moves.length}*\n`;
-        caption += `│ 『 💡 』 \`Usa .move [posizione] per muovere\`\n`;
+        let caption = `ㅤ⋆｡˚『 ╭ \`PIECE SELECTED\` ╯ 』˚｡⋆\n╭\n`;
+        caption += `│ 『 🎯 』 \`Position:\` *${notation}*\n`;
+        caption += `│ 『 ⚡ 』 \`Available moves:\` *${result.moves.length}*\n`;
+        caption += `│ 『 💡 』 \`Use .move [position] to move\`\n`;
         caption += `*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*`;
         
         await conn.sendMessage(m.chat, {
             image: boardImage,
             caption: caption,
-            footer: 'Dama Bot'
+            footer: 'Checkers Bot'
         }, { quoted: m });
     }
 
-    if (command === 'move' && global.damaGame?.[m.chat]) {
-        const game = global.damaGame[m.chat];
+    if (command === 'move' && global.checkersGame?.[m.chat]) {
+        const game = global.checkersGame[m.chat];
         
         if (!game.selectedPiece) {
-            return conn.reply(m.chat, '❌ *Devi prima selezionare una pedina con .select!*', m);
+            return conn.reply(m.chat, '❌ *You must first select a piece with .select!*', m);
         }
         
         const notation = text.trim().toUpperCase();
         if (!/^[A-H][1-8]$/.test(notation)) {
-            return conn.reply(m.chat, '❌ *Notazione non valida! Usa formato come A2, B3, etc.*', m);
+            return conn.reply(m.chat, '❌ *Invalid notation! Use format like A2, B3, etc.*', m);
         }
         
         const col = notation.charCodeAt(0) - 65;
@@ -567,33 +567,33 @@ let handler = async (m, { conn, command, usedPrefix, text }) => {
         clearTimeout(game.timeoutId);
         const boardImage = await game.generateBoardImage();
         
-        let caption = `ㅤ⋆｡˚『 ╭ \`MOSSA EFFETTUATA\` ╯ 』˚｡⋆\n╭\n`;
-        caption += `│ 『 🎯 』 \`A:\` *${notation}*\n`;
+        let caption = `ㅤ⋆｡˚『 ╭ \`MOVE MADE\` ╯ 』˚｡⋆\n╭\n`;
+        caption += `│ 『 🎯 』 \`To:\` *${notation}*\n`;
         if (result.hadCapture) {
-            caption += `│ 『 ⚔️ 』 \`Cattura effettuata!\`\n`;
+            caption += `│ 『 ⚔️ 』 \`Capture made!\`\n`;
         }
         
         if (result.mustContinueCapture) {
-            caption += `│ 『 ⚡ 』 \`Devi continuare a catturare!\`\n`;
+            caption += `│ 『 ⚡ 』 \`You must continue capturing!\`\n`;
         } else if (!result.gameOver) {
-            caption += `│ 『 🔄 』 \`Turno:\` *${game.currentPlayer === 'B' ? 'Bianco' : 'Nero'}*\n`;
+            caption += `│ 『 🔄 』 \`Turn:\` *${game.currentPlayer === 'W' ? 'White' : 'Black'}*\n`;
         }
         
         if (result.gameOver) {
-            caption += `│ 『 🏆 』 \`Vincitore:\` *${result.winner === 'B' ? 'Bianco' : 'Nero'}*\n`;
+            caption += `│ 『 🏆 』 \`Winner:\` *${result.winner === 'W' ? 'White' : 'Black'}*\n`;
         }
         
         caption += `*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*`;
         
         const buttons = [{
             name: 'quick_reply',
-            buttonParamsJson: JSON.stringify({ display_text: '♟️ Nuova Partita', id: `.dama` })
+            buttonParamsJson: JSON.stringify({ display_text: '♟️ New Game', id: `.checkers` })
         }];
         
         let msg = await conn.sendMessage(m.chat, {
             image: boardImage,
             caption: caption,
-            footer: 'Dama Bot',
+            footer: 'Checkers Bot',
             interactiveButtons: result.gameOver ? buttons : undefined
         }, { quoted: m });
         
@@ -604,29 +604,29 @@ let handler = async (m, { conn, command, usedPrefix, text }) => {
             }, 120000);
             game.timeoutId = newTimeoutId;
         } else {
-            delete global.damaGame[m.chat];
+            delete global.checkersGame[m.chat];
         }
     }
 };
 
 handler.before = async (m, { conn, usedPrefix }) => {
-    // Non necessario per la dama in quanto usiamo comandi specifici
+    // Not necessary for checkers as we use specific commands
 };
 
 setInterval(() => {
     const now = Date.now();
-    for (const [chat, game] of Object.entries(global.damaGame || {})) {
-        if (now - game.startTime > 1800000) { // 30 minuti di inattività
-            console.log(`[DAMA CLEANUP] Rimuovendo gioco inattivo nella chat ${chat}`);
+    for (const [chat, game] of Object.entries(global.checkersGame || {})) {
+        if (now - game.startTime > 1800000) { // 30 minutes of inactivity
+            console.log(`[CHECKERS CLEANUP] Removing inactive game in chat ${chat}`);
             clearTimeout(game.timeoutId);
-            delete global.damaGame[chat];
+            delete global.checkersGame[chat];
         }
     }
 }, 60000);
 
-handler.help = ['dama', 'select [posizione]', 'move [posizione]', 'skipdama'];
-handler.tags = ['giochi'];
-handler.command = /^(dama|select|move|skipdama)$/i;
+handler.help = ['checkers', 'select [position]', 'move [position]', 'skipcheckers'];
+handler.tags = ['games'];
+handler.command = /^(checkers|select|move|skipcheckers)$/i;
 handler.group = true;
 handler.register = true;
 
