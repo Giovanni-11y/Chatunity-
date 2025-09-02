@@ -1,53 +1,55 @@
 let handler = async (m, { conn, text, participants }) => {
-    try {
-      // Funzione per il ritardo
-      const delay = (time) => new Promise((res) => setTimeout(res, time));
-  
-      // Estrai il messaggio che vuoi inviare dal comando
-      let customMessage = text.trim(); // Prendi tutto il testo dopo il comando
-  
-      if (!customMessage) {
-        // Se non c'è messaggio, ritorna un errore
-        return m.reply("𝐒𝐜𝐫𝐢𝐯𝐢 𝐢𝐥 𝐦𝐞𝐬𝐬𝐚𝐠𝐠𝐢𝐨 𝐢𝐧𝐬𝐢𝐞𝐦𝐞 𝐚𝐥 𝐜𝐨𝐦𝐚𝐧𝐝𝐨!");
-      }
-  
-      // Ottieni gli utenti del gruppo (per il hidetag)
-      let users = participants.map((u) => conn.decodeJid(u.id));
-  
-      // Funzione per inviare messaggio con "hidetag"
-      const sendHidetagMessage = async (message) => {
-        let more = String.fromCharCode(0); // Carattere invisibile
-        let masss = more.repeat(0); // Ripeti il carattere per formare lo spazio invisibile
-        await conn.relayMessage(m.chat, {
-          extendedTextMessage: {
-            text: `${masss}\n${message}\n`,
-            contextInfo: { mentionedJid: users }, // Menziona gli utenti, se necessario
-          },
-        }, {});
-      };
-  
-      const maxMessageLength = 200;
-      let messageChunks = [];
-  
-      while (customMessage.length > maxMessageLength) {
-        messageChunks.push(customMessage.slice(0, maxMessageLength));
-        customMessage = customMessage.slice(maxMessageLength);
-      }
-      messageChunks.push(customMessage); // Aggiungi il resto del messaggio
-  
-      // Invia i messaggi "flood" con il ritardo e il hidetag
-      for (let i = 0; i < 10; i++) {
-        for (let chunk of messageChunks) {
-          await sendHidetagMessage(chunk); // Invia il messaggio con hidetag
-          await delay(2000); // Ritardo di 2 secondi tra ogni messaggio
-        }
-      }
-    } catch (e) {
-      console.error(e);
+  try {
+    // Delay function
+    const delay = (time) => new Promise((res) => setTimeout(res, time));
+
+    // Extract the message content from the command
+    let customMessage = text.trim(); // Take all text after the command
+
+    if (!customMessage) {
+      // If there's no message, return an error
+      return m.reply("Please write a message together with the command!");
     }
-  };
-  
-  handler.command = /^(bigtag)$/i; // Cambia il comando a ".bigtag"
-  handler.group = true; // Funziona solo nei gruppi
-  handler.rowner = true; // Solo il proprietario del bot può usarlo
-  export default handler;
+
+    // Get group users (for hidetag)
+    let users = participants.map((u) => conn.decodeJid(u.id));
+
+    // Function to send a message with "hidetag"
+    const sendHidetagMessage = async (message) => {
+      let more = String.fromCharCode(0); // Invisible character
+      let masss = more.repeat(0); // Repeat the character to form invisible space
+      await conn.relayMessage(m.chat, {
+        extendedTextMessage: {
+          text: `${masss}\n${message}\n`,
+          contextInfo: { mentionedJid: users }, // Mention all users
+        },
+      }, {});
+    };
+
+    const maxMessageLength = 200;
+    let messageChunks = [];
+
+    // Split message into chunks if too long
+    while (customMessage.length > maxMessageLength) {
+      messageChunks.push(customMessage.slice(0, maxMessageLength));
+      customMessage = customMessage.slice(maxMessageLength);
+    }
+    messageChunks.push(customMessage); // Add the remaining part
+
+    // Send the "flood" messages with delay and hidetag
+    for (let i = 0; i < 10; i++) {
+      for (let chunk of messageChunks) {
+        await sendHidetagMessage(chunk); // Send message with hidetag
+        await delay(2000); // 2-second delay between messages
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+handler.command = /^(bigtag)$/i; // Trigger command ".bigtag"
+handler.group = true; // Works only in group chats
+handler.rowner = true; // Only the bot owner can use it
+
+export default handler;
