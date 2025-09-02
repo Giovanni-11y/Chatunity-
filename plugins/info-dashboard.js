@@ -10,13 +10,13 @@ let handler = async (m, { conn }) => {
     
     let txt = stats.slice(0, 10).map(({ name, total, last }) => {
         return `┏━━━━━━━━━━━━━┓
-┣📚 COMANDO : ${name}
-┣🗂️ USI : ${total}
-┣⏱️ ULTIMO USO : ${getTime(last)}
+┣📚 COMMAND : ${name}
+┣🗂️ USES : ${total}
+┣⏱️ LAST USED : ${getTime(last)}
 ┗━━━━━━━━━━━━━┛`
     }).join('\n\n')
     
-    await conn.reply(m.chat, `⚡ *TOP 10 COMANDI PIÙ UTILIZZATI* ⚡\n\n${txt}`, m)
+    await conn.reply(m.chat, `⚡ *TOP 10 MOST USED COMMANDS* ⚡\n\n${txt}`, m)
 }
 
 handler.help = ['dashboard']
@@ -26,20 +26,20 @@ handler.command = /^dashboard$/i
 export default handler
 
 function parseMs(ms) {
-    if (typeof ms !== 'number') throw 'Parametro non valido'
+    if (typeof ms !== 'number') throw 'Invalid parameter'
     return {
-        giorni: Math.floor(ms / 86400000),
-        ore: Math.floor(ms / 3600000) % 24,
-        minuti: Math.floor(ms / 60000) % 60,
-        secondi: Math.floor(ms / 1000) % 60
+        days: Math.floor(ms / 86400000),
+        hours: Math.floor(ms / 3600000) % 24,
+        minutes: Math.floor(ms / 60000) % 60,
+        seconds: Math.floor(ms / 1000) % 60
     }
 }
 
 function getTime(ms) {
-    if (!ms) return 'Mai usato'
+    if (!ms) return 'Never used'
     let now = parseMs(+new Date() - ms)
-    if (now.giorni) return `${now.giorni} giorni fa`
-    if (now.ore) return `${now.ore} ore fa`
-    if (now.minuti) return `${now.minuti} minuti fa`
-    return `pochi secondi fa`
+    if (now.days) return `${now.days} days ago`
+    if (now.hours) return `${now.hours} hours ago`
+    if (now.minutes) return `${now.minutes} minutes ago`
+    return `a few seconds ago`
 }
