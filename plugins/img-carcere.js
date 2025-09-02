@@ -1,21 +1,18 @@
-
 import axios from "axios";
 import FormData from 'form-data';
 import fs from 'fs';
 import os from 'os';
 import path from "path";
 
-let handler = async (m, { conn, args }) => {
+let handler = async (m, { conn }) => {
   try {
     let who;
-    
+
     if (m.mentionedJid && m.mentionedJid[0]) {
       who = m.mentionedJid[0];
-    } 
-    else if (m.quoted) {
+    } else if (m.quoted) {
       who = m.quoted.sender;
-    }
-    else {
+    } else {
       who = m.sender;
     }
 
@@ -24,12 +21,11 @@ let handler = async (m, { conn, args }) => {
       let url = await conn.profilePictureUrl(who, 'image');
       const res = await axios.get(url, { responseType: 'arraybuffer' });
       mediaBuffer = Buffer.from(res.data);
-      mimeType = 'image/jpeg';
-    } catch (e) {
-      return m.reply("Non è stato possibile recuperare la foto profilo.");
+    } catch {
+      return m.reply("Could not fetch the profile picture.");
     }
 
-    let extension = '.jpg';
+    const extension = '.jpg';
     const tempFilePath = path.join(os.tmpdir(), `imgscan_${Date.now()}${extension}`);
     fs.writeFileSync(tempFilePath, mediaBuffer);
 
@@ -44,16 +40,12 @@ let handler = async (m, { conn, args }) => {
     const imageUrl = uploadResponse.data;
     fs.unlinkSync(tempFilePath);
 
-    if (!imageUrl) {
-      throw "Failed to upload image";
-    }
+    if (!imageUrl) throw "Failed to upload image";
 
     const apiUrl = `https://api.popcat.xyz/v2/jail?image=${encodeURIComponent(imageUrl)}`;
     const response = await axios.get(apiUrl, { responseType: "arraybuffer" });
 
-    if (!response || !response.data) {
-      return m.reply("Errore API");
-    }
+    if (!response || !response.data) return m.reply("API error");
 
     const imageBuffer = Buffer.from(response.data, "binary");
 
@@ -63,8 +55,8 @@ let handler = async (m, { conn, args }) => {
     });
 
   } catch (error) {
-    console.error("Error:", error);
-    m.reply(`Errore: ${error.response?.data?.message || error.message || "Errore sconosciuto"}`);
+    console.error("Jail Error:", error);
+    m.reply(`Error: ${error.response?.data?.message || error.message || "Unknown error"}`);
   }
 };
 
