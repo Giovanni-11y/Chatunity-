@@ -1,36 +1,32 @@
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-    // Verifica del messaggio di report
-    if (!text) return conn.reply(m.chat, '⚠ *Inserisci il comando che vuoi segnalare.*', m)
-    if (text.length < 10) return conn.reply(m.chat, '⚠️ *Descrivi meglio il problema (minimo 10 caratteri).*', m)
-    if (text.length > 1000) return conn.reply(m.chat, '⚠️ *Lunghezza massima consentita: 1000 caratteri.*', m)
+    if (!text) return conn.reply(m.chat, '⚠ *Enter the command you want to report.*', m)
+    if (text.length < 10) return conn.reply(m.chat, '⚠️ *Describe the problem better (minimum 10 characters).*', m)
+    if (text.length > 1000) return conn.reply(m.chat, '⚠️ *Maximum allowed length: 1000 characters.*', m)
     
-    // Formattazione del report
-    const reportText = `*❌️ \`S E G N A L A Z I O N E\` ❌️*
+    const reportText = `*❌️ \`R E P O R T\` ❌️*
 
-📱 Numero:
+📱 Number:
 • Wa.me/${m.sender.split`@`[0]}
 
-👤 Utente: 
-• ${m.pushName || 'Anonimo'}
+👤 User: 
+• ${m.pushName || 'Anonymous'}
 
-📝 Messaggio:
+📝 Message:
 • ${text}`
 
     try {
-        // Invia al proprietario
         await conn.reply(global.owner[0][0] + '@s.whatsapp.net', 
-            m.quoted ? reportText + '\n\n📎 Citazione:\n' + m.quoted.text : reportText, 
+            m.quoted ? reportText + '\n\n📎 Quoted message:\n' + m.quoted.text : reportText, 
             m, 
             { mentions: conn.parseMention(reportText) }
         )
 
-        // Invia al canale
         await conn.sendMessage(global.channelid, { 
-            text: m.quoted ? reportText + '\n\n📎 Citazione:\n' + m.quoted.text : reportText, 
+            text: m.quoted ? reportText + '\n\n📎 Quoted message:\n' + m.quoted.text : reportText, 
             contextInfo: {
                 externalAdReply: {
-                    title: "⚠️ SEGNALAZIONE BUG ⚠️",
-                    body: 'Nuova segnalazione ricevuta',
+                    title: "⚠️ BUG REPORT ⚠️",
+                    body: 'New report received',
                     thumbnailUrl: fotoperfil,
                     sourceUrl: redes,
                     mediaType: 1,
@@ -40,17 +36,16 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
             }
         }, { quoted: null })
 
-        // Conferma all'utente
-        await m.reply('✅ *La tua segnalazione è stata inviata allo sviluppatore.*\n_⚠ Segnalazioni false possono comportare restrizioni._')
+        await m.reply('✅ *Your report has been sent to the developer.*\n_⚠ False reports may result in restrictions._')
         
     } catch (error) {
-        console.error('Errore nella segnalazione:', error)
-        await m.reply('✅ *La tua segnalazione è stata inviata allo sviluppatore.*\n_⚠ Segnalazioni false possono comportare restrizioni._')
+        console.error('Error sending report:', error)
+        await m.reply('✅ *Your report has been sent to the developer.*\n_⚠ False reports may result in restrictions._')
     }
 }
 
-handler.help = ['segnala']
+handler.help = ['report']
 handler.tags = ['info']
-handler.command = ['segnala', 'report', 'bug', 'errore', 'reporta']
+handler.command = ['report', 'bug', 'error', 'reporta', 'segnala']
 
 export default handler
