@@ -1,3 +1,4 @@
+
 //edited by filo222
 const friendRequests = {};
 
@@ -6,10 +7,10 @@ let handler = async (m, { conn, participants, command, text, args, usedPrefix })
     let user = users[m.sender];
 
     switch (command) {
-        case 'amicizia':
+        case 'friend':
             await handleFriendRequest(m, user, users, text, usedPrefix, conn);
             break;
-        case 'rimuoviamico':
+        case 'removefriend':
             handleRemoveFriend(m, user, users);
             break;
     }
@@ -17,34 +18,34 @@ let handler = async (m, { conn, participants, command, text, args, usedPrefix })
 
 const handleFriendRequest = async (m, user, users, text, usedPrefix, conn) => {
     let mention = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : null;
-    if (!mention) throw `⚠️ 𝐓𝐚𝐠𝐠𝐚 𝐥𝐚 𝐩𝐞𝐫𝐬𝐨𝐧𝐚 𝐚 𝐜𝐮𝐢 𝐯𝐮𝐨𝐢 𝐢𝐧𝐯𝐢𝐚𝐫𝐞 𝐮𝐧𝐚 𝐫𝐢𝐜𝐡𝐢𝐞𝐬𝐭𝐚 𝐝𝐢 𝐚𝐦𝐢𝐜𝐢𝐳𝐢𝐚!\n𝐄𝐬𝐞𝐦𝐩𝐢𝐨: ${usedPrefix}amicizia @tag`;
+    if (!mention) throw `⚠️ Tag the person you want to send a friend request to!\nExample: ${usedPrefix}friend @tag`;
 
-    if (mention === m.sender) throw '❌ 𝐇𝐨 𝐜𝐚𝐩𝐢𝐭𝐨 𝐜𝐡𝐞 𝐭𝐢 𝐯𝐮𝐨𝐢 𝐛𝐞𝐧𝐞 𝐦𝐚 𝐧𝐨𝐧 𝐩𝐮𝐨𝐢 𝐚𝐠𝐠𝐢𝐮𝐧𝐠𝐞𝐫𝐞 𝐭𝐞 𝐬𝐭𝐞𝐬𝐬𝐨 𝐚𝐠𝐥𝐢 𝐚𝐦𝐢𝐜𝐢!';
+    if (mention === m.sender) throw '❌ I understand you love yourself but you cannot add yourself as a friend!';
 
-    let destinatario = users[mention];
-    if (!destinatario) throw '🚫 𝐏𝐞𝐫𝐬𝐨𝐧𝐚 𝐧𝐨𝐧 𝐩𝐫𝐞𝐬𝐞𝐧𝐭𝐞 𝐧𝐞𝐥 𝐬𝐢𝐬𝐭𝐞𝐦𝐚';
+    let recipient = users[mention];
+    if (!recipient) throw '🚫 Person not found in the system';
 
-    if (user.amici && user.amici.includes(mention)) {
-        let testo = `✅ @${mention.split('@')[0]} 𝐞̀ 𝐠𝐢𝐚' 𝐭𝐫𝐚 𝐢 𝐭𝐮𝐨𝐢 𝐚𝐦𝐢𝐜𝐢.`;
-        m.reply(testo, null, { mentions: [mention] });
+    if (user.friends && user.friends.includes(mention)) {
+        let text = `✅ @${mention.split('@')[0]} is already in your friends list.`;
+        m.reply(text, null, { mentions: [mention] });
         return;
     }
 
-    if (friendRequests[m.sender] || friendRequests[mention]) throw `⚠️ 𝐔𝐧𝐚 𝐫𝐢𝐜𝐡𝐢𝐞𝐬𝐭𝐚 𝐝𝐢 𝐚𝐦𝐢𝐜𝐢𝐳𝐢𝐚 𝐞̀ 𝐠𝐢𝐚̀ 𝐢𝐧 𝐜𝐨𝐫𝐬𝐨. 𝐀𝐬𝐩𝐞𝐭𝐭𝐚 𝐥𝐚 𝐫𝐢𝐬𝐩𝐨𝐬𝐭𝐚 𝐨 𝐥'𝐚𝐧𝐧𝐮𝐥𝐥𝐚𝐦𝐞𝐧𝐭𝐨.`;
+    if (friendRequests[m.sender] || friendRequests[mention]) throw `⚠️ A friend request is already pending. Wait for a response or cancellation.`;
 
     friendRequests[mention] = { from: m.sender, timeout: null };
     friendRequests[m.sender] = { to: mention, timeout: null };
     
- let testo = `👥 𝐑𝐢𝐜𝐡𝐢𝐞𝐬𝐭𝐚 𝐝𝐢 𝐚𝐦𝐢𝐜𝐢𝐳𝐢𝐚 𝐢𝐧 𝐜𝐨𝐫𝐬𝐨...\n\n@${mention.split('@')[0]}, 𝐯𝐮𝐨𝐢 𝐚𝐜𝐜𝐞𝐭𝐭𝐚𝐫𝐞 𝐥'𝐚𝐦𝐢𝐜𝐢𝐳𝐢𝐚 𝐝𝐢 @${m.sender.split('@')[0]}?\n\n> ⏳ 𝐇𝐚𝐢 60 𝐬𝐞𝐜𝐨𝐧𝐝𝐢 𝐩𝐞𝐫 𝐬𝐜𝐞𝐠𝐥𝐢𝐞𝐫𝐞.`;
+ let text = `👥 Friend request pending...\n\n@${mention.split('@')[0]}, do you want to accept @${m.sender.split('@')[0]}'s friend request?\n\n> ⏳ You have 60 seconds to decide.`;
 
 const buttons = [
-  { buttonId: 'accetta', buttonText: { displayText: '✅ 𝐀𝐜𝐜𝐞𝐭𝐭𝐚' }, type: 1 },
-  { buttonId: 'rifiuta', buttonText: { displayText: '❌ 𝐑𝐢𝐟𝐢𝐮𝐭𝐚' }, type: 1 },
-  { buttonId: 'rimuoviamico', buttonText: { displayText: '🚫 𝐑𝐢𝐦𝐮𝐨𝐯𝐢 𝐚𝐦𝐢𝐜𝐨' }, type: 1 }
+  { buttonId: 'accept', buttonText: { displayText: '✅ Accept' }, type: 1 },
+  { buttonId: 'reject', buttonText: { displayText: '❌ Reject' }, type: 1 },
+  { buttonId: 'removefriend', buttonText: { displayText: '🚫 Remove friend' }, type: 1 }
 ];
 
 await conn.sendMessage(m.chat, {
-  text: testo,
+  text: text,
   buttons,
   mentions: [mention, m.sender],
   headerType: 1
@@ -52,8 +53,8 @@ await conn.sendMessage(m.chat, {
 
     let timeoutCallback = () => {
         if (friendRequests[mention]) {
-            let annullamento = `⏳ 𝐑𝐢𝐜𝐡𝐢𝐞𝐬𝐭𝐚 𝐝𝐢 𝐚𝐦𝐢𝐜𝐢𝐳𝐢𝐚 𝐚𝐧𝐧𝐮𝐥𝐥𝐚𝐭𝐚\n> @${m.sender.split('@')[0]} 𝐞 @${mention.split('@')[0]} 𝐧𝐨𝐧 𝐡𝐚𝐧𝐧𝐨 𝐫𝐢𝐬𝐩𝐨𝐬𝐭𝐨 𝐞𝐧𝐭𝐫𝐨 𝐢𝐥 𝐭𝐞𝐦𝐩𝐨 𝐥𝐢𝐦𝐢𝐭𝐞.`;
-            conn.sendMessage(m.chat, { text: annullamento, mentions: [m.sender, mention] });
+            let cancellation = `⏳ Friend request cancelled\n> @${m.sender.split('@')[0]} and @${mention.split('@')[0]} didn't respond in time.`;
+            conn.sendMessage(m.chat, { text: cancellation, mentions: [m.sender, mention] });
             delete friendRequests[mention];
             delete friendRequests[m.sender];
         }
@@ -75,28 +76,28 @@ let sender = m.sender;
 
     clearTimeout(user.timeout);
 
-    if (response === 'rifiuta') {
+    if (response === 'reject') {
         let fromUser = friendRequests[m.sender].from || m.sender;
         delete friendRequests[fromUser];
         delete friendRequests[m.sender];
-        return m.reply(`❌ 𝐑𝐢𝐜𝐡𝐢𝐞𝐬𝐭𝐚 𝐝𝐢 𝐚𝐦𝐢𝐜𝐢𝐳𝐢𝐚 𝐫𝐢𝐟𝐢𝐮𝐭𝐚𝐭𝐚.`, null, { mentions: [fromUser] });
+        return m.reply(`❌ Friend request rejected.`, null, { mentions: [fromUser] });
     }
 
-    if (response === 'accetta') {
+    if (response === 'accept') {
         let fromUser = friendRequests[m.sender].from;
         let toUser = m.sender;
 
         let senderUser = global.db.data.users[fromUser];
         let receiverUser = global.db.data.users[toUser];
 
-        if (!Array.isArray(senderUser.amici)) senderUser.amici = [];
-        if (!Array.isArray(receiverUser.amici)) receiverUser.amici = [];
+        if (!Array.isArray(senderUser.friends)) senderUser.friends = [];
+        if (!Array.isArray(receiverUser.friends)) receiverUser.friends = [];
 
-        senderUser.amici.push(toUser);
-        receiverUser.amici.push(fromUser);
+        senderUser.friends.push(toUser);
+        receiverUser.friends.push(fromUser);
         
-         let testo = `👥 𝐎𝐫𝐚 𝐭𝐮 𝐞 @${fromUser.split('@')[0]} 𝐬𝐢𝐞𝐭𝐞 𝐚𝐦𝐢𝐜𝐢!`;
-        m.reply(testo, null, { mentions: [fromUser] });
+         let text = `👥 You and @${fromUser.split('@')[0]} are now friends!`;
+        m.reply(text, null, { mentions: [fromUser] });
 
         delete friendRequests[fromUser];
         delete friendRequests[toUser];
@@ -105,20 +106,20 @@ let sender = m.sender;
 
 const handleRemoveFriend = (m, user, users) => {
     let mention = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : null;
-    if (!mention) throw '⚠️ 𝐓𝐚𝐠𝐠𝐚 𝐥𝐚 𝐩𝐞𝐫𝐬𝐨𝐧𝐚 𝐜𝐡𝐞 𝐯𝐮𝐨𝐢 𝐫𝐢𝐦𝐨𝐯𝐞𝐫𝐞 𝐝𝐚𝐠𝐥𝐢 𝐚𝐦𝐢𝐜𝐢.';
+    if (!mention) throw '⚠️ Tag the person you want to remove from your friends.';
 
-    if (!user.amici || !user.amici.includes(mention)) throw `🚫 @${mention.split('@')[0]} 𝐧𝐨𝐧 𝐞̀ 𝐭𝐫𝐚 𝐢 𝐭𝐮𝐨𝐢 𝐚𝐦𝐢𝐜𝐢.`;
+    if (!user.friends || !user.friends.includes(mention)) throw `🚫 @${mention.split('@')[0]} is not in your friends list.`;
 
-    user.amici = user.amici.filter(friend => friend !== mention);
+    user.friends = user.friends.filter(friend => friend !== mention);
     let friend = users[mention];
     if (friend) {
-        friend.amici = friend.amici.filter(friend => friend !== m.sender);
+        friend.friends = friend.friends.filter(friend => friend !== m.sender);
     }
 
-    let testo = `🚫 𝐓𝐮 𝐞 @${mention.split('@')[0]} 𝐧𝐨𝐧 𝐬𝐢𝐞𝐭𝐞 𝐩𝐢𝐮̀ 𝐚𝐦𝐢𝐜𝐢.`;
-    m.reply(testo, null, { mentions: [mention] });
+    let text = `🚫 You and @${mention.split('@')[0]} are no longer friends.`;
+    m.reply(text, null, { mentions: [mention] });
 };
 
-handler.command = ['amicizia', 'rimuoviamico'];
+handler.command = ['friend', 'removefriend'];
 
 export default handler;
