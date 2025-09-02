@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 async function handler(m, { conn, args }) {
-  if (!args[0]) return m.reply('❗ Inserisci il nome di una città. Uso: .meteo [nome città]');
+  if (!args[0]) return m.reply('❗ Please enter a city name. Usage: .weather [city name]');
 
   try {
     const city = args.join(' ');
@@ -12,16 +12,16 @@ async function handler(m, { conn, args }) {
     const data = res.data;
 
     const weather = `
-> 🌍 Info Meteo per ${data.name}, ${data.sys.country} 🌍
-> 🌡 Temperatura: ${data.main.temp}°C
-> 🌡 Percepita: ${data.main.feels_like}°C
-> 🌡 Minima: ${data.main.temp_min}°C
-> 🌡 Massima: ${data.main.temp_max}°C
-> 💧 Umidità: ${data.main.humidity}%
-> ☁ Meteo: ${data.weather[0].main}
-> 🌫 Descrizione: ${data.weather[0].description}
-> 💨 Vento: ${data.wind.speed} m/s
-> 🔽 Pressione: ${data.main.pressure} hPa
+> 🌍 Weather Info for ${data.name}, ${data.sys.country} 🌍
+> 🌡 Temperature: ${data.main.temp}°C
+> 🌡 Feels Like: ${data.main.feels_like}°C
+> 🌡 Min: ${data.main.temp_min}°C
+> 🌡 Max: ${data.main.temp_max}°C
+> 💧 Humidity: ${data.main.humidity}%
+> ☁ Weather: ${data.weather[0].main}
+> 🌫 Description: ${data.weather[0].description}
+> 💨 Wind: ${data.wind.speed} m/s
+> 🔽 Pressure: ${data.main.pressure} hPa
 
 > © Powered By CRISS AI
     `.trim();
@@ -30,17 +30,17 @@ async function handler(m, { conn, args }) {
   } catch (e) {
     console.error(e);
     if (e.response && e.response.status === 404) {
-      m.reply('🚫 Città non trovata. Controlla la scrittura e riprova.');
+      m.reply('🚫 City not found. Check the spelling and try again.');
     } else {
-      m.reply('⚠ Si è verificato un errore durante il recupero delle informazioni meteo. Riprova più tardi.');
+      m.reply('⚠ An error occurred while fetching weather information. Please try again later.');
     }
   }
 }
 
-handler.command = /^(meteo)$/i;
-handler.help = ['meteo <città>'];
+handler.command = /^(weather|meteo)$/i;
+handler.help = ['weather <city>'];
 handler.tags = ['other'];
-handler.description = 'Ottieni informazioni meteo per una località';
+handler.description = 'Get weather information for a location';
 handler.react = '🌤';
 handler.limit = true;
 handler.exp = 5;
