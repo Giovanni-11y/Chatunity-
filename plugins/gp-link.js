@@ -6,7 +6,7 @@ const handler = async (m, { conn, args }) => {
         {
             name: "cta_copy",
             buttonParamsJson: JSON.stringify({
-                display_text: "Copia",
+                display_text: "Copy",
                 id: 'https://chat.whatsapp.com/' + await conn.groupInviteCode(m.chat),
                 copy_code: 'https://chat.whatsapp.com/' + await conn.groupInviteCode(m.chat)
             })
@@ -14,16 +14,16 @@ const handler = async (m, { conn, args }) => {
         {
             name: "quick_reply",
             buttonParamsJson: JSON.stringify({
-                display_text: "Reimposta",
-                id: `/reimpostagruppo ${m.chat}`,
+                display_text: "Reset",
+                id: `/resetgroup ${m.chat}`,
             })
         }
     ];
 
     const interactiveMessage = {
         text: `*${groupName}*`,
-        title: "Eccoti il link del gruppo:",
-        footer: "Scegli una delle seguenti opzioni:",
+        title: "Here is the group link:",
+        footer: "Choose one of the following options:",
         interactiveButtons
     };
 
