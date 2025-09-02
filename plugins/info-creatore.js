@@ -11,15 +11,15 @@ END:VCARD`.replace(/\n/g, '\r\n');
 
     await conn.sendMessage(m.chat, { 
         contacts: { 
-            displayName: 'Creatore', 
+            displayName: 'Creator', 
             contacts: [
-                { vcard: createVCard('Creatore', '393515533859', 'Founder') }
+                { vcard: createVCard('Creator', '393515533859', 'Founder') }
             ]
         }
     }, { quoted: m });
 };
 
-handler.help = ['creatore'];
+handler.help = ['creator'];
 handler.tags = ['info'];
-handler.command = ['creatore', 'proprietario', ]; // ✅ Qui la correzione
+handler.command = ['creator', 'founder', ]; 
 export default handler;
