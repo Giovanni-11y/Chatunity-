@@ -1,6 +1,6 @@
 let handler = async (m, { conn, args, usedPrefix, command }) => {
     // Get bot name from database or use default
-    let nomeDelBot = global.db.data.nomedelbot || `𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲`
+    let botName = global.db.data.botname || `ChatUnity`
   
     let setting = {
       '': 'announcement'
@@ -12,22 +12,22 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     
     // Send message with newsletter forwarding
     await conn.sendMessage(m.chat, {
-      text: '𝐂𝐡𝐚𝐭 𝐩𝐞𝐫 𝐬𝐨𝐥𝐢 𝐚𝐝𝐦𝐢𝐧',
+      text: 'Chat for admins only',
       contextInfo: {
         forwardingScore: 99,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterJid: '120363259442839354@newsletter',
           serverMessageId: '',
-          newsletterName: `${nomeDelBot}`
+          newsletterName: `${botName}`
         }
       }
     }, { quoted: m })
   }
   
-  handler.help = ['group open / close', 'gruppo aperto / chiuso']
+  handler.help = ['group open / close', 'group open / closed']
   handler.tags = ['group']
-  handler.command = /^(chiuso)$/i
+  handler.command = /^(closed)$/i
   handler.admin = true
   handler.botAdmin = true
   
