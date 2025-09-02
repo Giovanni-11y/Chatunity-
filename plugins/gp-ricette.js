@@ -1,30 +1,30 @@
 import axios from 'axios';
 
-const ricettaPlugin = async (m, { conn, text, usedPrefix, command }) => {
+const recipePlugin = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return conn.reply(m.chat, `🍽️ Usa così:\n${usedPrefix + command} <ingrediente/i>\nEsempio: *${usedPrefix + command} zucchine, patate*`, m);
+    return conn.reply(m.chat, `🍽️ Use it like this:\n${usedPrefix + command} <ingredient/s>\nExample: *${usedPrefix + command} zucchini, potatoes*`, m);
   }
 
-  const ingredienti = text.trim();
+  const ingredients = text.trim();
 
   const prompt = `
-Agisci come un assistente di cucina italiano.
-Suggerisci una ricetta **facile ma gustosa** usando questi ingredienti: ${ingredienti}
+Act as an Italian cooking assistant.
+Suggest an **easy but tasty** recipe using these ingredients: ${ingredients}
 
-✦ Il formato deve essere chiaro e ordinato:
-1. Nome della ricetta (creativo ma realistico)
-2. Ingredienti (con quantità indicative)
-3. Procedimento (max 5-6 passi, in stile conversazionale)
-4. Dosi: per quante persone?
-5. Tempo di preparazione
+✦ The format should be clear and organized:
+1. Recipe name (creative but realistic)
+2. Ingredients (with approximate quantities)
+3. Procedure (max 5-6 steps, conversational style)
+4. Servings: how many people?
+5. Preparation time
 
-✦ Il tono deve essere amichevole e semplice.
-✦ Rispondi **solo in italiano**, e usa emoji da cucina dove utile.
+✦ The tone should be friendly and simple.
+✦ Reply **only in Italian**, and use cooking-related emojis where useful.
 
-Esempio stile:
-🍝 *Pasta cremosa alle zucchine*  
-🧂 Ingredienti: ...  
-👨‍🍳 Procedimento: ...
+Example style:
+🍝 *Creamy zucchini pasta*  
+🧂 Ingredients: ...  
+👨‍🍳 Procedure: ...
 `;
 
   try {
@@ -32,24 +32,24 @@ Esempio stile:
 
     const res = await axios.post("https://luminai.my.id", {
       content: prompt,
-      user: m.pushName || "utente",
-      prompt: `Rispondi sempre in italiano.`,
+      user: m.pushName || "user",
+      prompt: `Always respond in Italian.`,
       webSearchMode: false
     });
 
-    const risposta = res.data.result;
-    if (!risposta) throw new Error("Risposta vuota dall'API.");
+    const response = res.data.result;
+    if (!response) throw new Error("Empty response from API.");
 
-    return conn.reply(m.chat, risposta, m);
+    return conn.reply(m.chat, response, m);
 
   } catch (err) {
-    console.error('[❌ ricetta plugin errore]', err);
-    return conn.reply(m.chat, '⚠️ Errore nel generare la ricetta. Riprova tra poco!', m);
+    console.error('[❌ recipe plugin error]', err);
+    return conn.reply(m.chat, '⚠️ Error generating the recipe. Please try again later!', m);
   }
 };
 
-ricettaPlugin.help = ['ricetta <ingredienti>'];
-ricettaPlugin.tags = ['cucina', 'ai', 'utilità'];
-ricettaPlugin.command = /^ricetta$/i;
+recipePlugin.help = ['recipe <ingredients>'];
+recipePlugin.tags = ['cooking', 'ai', 'utility'];
+recipePlugin.command = /^ricetta$/i;
 
-export default ricettaPlugin;
+export default recipePlugin;ricettaPlugin;
