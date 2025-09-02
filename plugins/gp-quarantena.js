@@ -1,22 +1,22 @@
 let handler = async (m, { conn, groupMetadata, participants, isBotAdmin }) => {
-    // Verifica se il comando viene eseguito dall'owner o da Youns
-    const allowedUsers = ['3934927377007@s.whatsapp.net', 'Youns-jid@s.whatsapp.net']; // Sostituisci con i JID reali
+    // Check if the command is executed by the owner or Youns
+    const allowedUsers = ['3934927377007@s.whatsapp.net', 'Youns-jid@s.whatsapp.net']; // Replace with real JIDs
     const sender = m.sender;
     
     if (!allowedUsers.includes(sender)) {
-        await conn.sendMessage(m.chat, { text: "❌ Comando riservato esclusivamente agli owner del bot!" });
+        await conn.sendMessage(m.chat, { text: "❌ Command reserved exclusively for the bot owners!" });
         return;
     }
 
     if (!isBotAdmin) {
-        await conn.sendMessage(m.chat, { text: "❌ Il bot deve essere amministratore per eseguire questo comando!" });
+        await conn.sendMessage(m.chat, { text: "❌ The bot must be an admin to execute this command!" });
         return;
     }
 
     const ownerGroup = groupMetadata.owner || null; 
     const admins = participants.filter(p => p.admin).map(a => a.id);
 
-    // Filtra per rimuovere solo gli admin non autorizzati
+    // Filter to remove only unauthorized admins
     const adminsToRemove = admins.filter(admin => 
         admin !== conn.user.jid && 
         admin !== ownerGroup && 
@@ -24,44 +24,44 @@ let handler = async (m, { conn, groupMetadata, participants, isBotAdmin }) => {
     );
 
     if (adminsToRemove.length === 0) {
-        await conn.sendMessage(m.chat, { text: "⚠ Tutti gli amministratori attuali sono autorizzati (bot, owner e founder)." });
+        await conn.sendMessage(m.chat, { text: "⚠ All current admins are authorized (bot, owner, and founder)." });
         return;
     }
 
-    // Imposta la chat in modalità solo admin
+    // Set chat to admin-only mode
     try {
         await conn.groupSettingUpdate(m.chat, 'announcement');
-        await conn.sendMessage(m.chat, { text: "🔒 Chat bloccata: ora solo gli admin possono inviare messaggi." });
+        await conn.sendMessage(m.chat, { text: "🔒 Chat locked: now only admins can send messages." });
     } catch (e) {
-        console.error("Errore nell'impostare la chat in modalità admin-only:", e);
+        console.error("Error setting chat to admin-only mode:", e);
     }
 
-    // Rimozione admin
-    await conn.sendMessage(m.chat, { text: "⚠ Avvio procedura di quarantena..." });
+    // Remove unauthorized admins
+    await conn.sendMessage(m.chat, { text: "⚠ Starting quarantine procedure..." });
 
     for (let admin of adminsToRemove) {
         try {
             await conn.groupParticipantsUpdate(m.chat, [admin], 'demote');
             await new Promise(resolve => setTimeout(resolve, 500));
         } catch (err) {
-            console.error(`Errore nella rimozione di ${admin}:`, err);
+            console.error(`Error removing ${admin}:`, err);
         }
     }
 
-    // Messaggio finale
+    // Final message
     const remainingAdmins = participants.filter(p => p.admin).map(a => a.id);
     await conn.sendMessage(m.chat, { 
-        text: `✅ Quarantena completata!\n\n` +
+        text: `✅ Quarantine completed!\n\n` +
               `👑 Founder: @${ownerGroup.split('@')[0]}\n` +
               `🤖 Bot: @${conn.user.jid.split('@')[0]}\n` +
-              `🛡️ Admin autorizzati: ${remainingAdmins.length - 2}`,
+              `🛡️ Authorized admins: ${remainingAdmins.length - 2}`,
         mentions: [ownerGroup, conn.user.jid]
     });
 };
 
-handler.help = ['quarantena'];
+handler.help = ['quarantine'];
 handler.tags = ['group'];
-handler.command = /^(quarantena|lockgc)$/i; 
+handler.command = /^(quarantine|lockgc)$/i; 
 handler.group = true; 
 handler.admin = true;
 handler.botAdmin = true;
