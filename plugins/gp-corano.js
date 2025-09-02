@@ -1,45 +1,45 @@
 import axios from 'axios';
 
-const coranoPlugin = async (m, { conn, text, usedPrefix, command }) => {
+const quranPlugin = async (m, { conn, text, usedPrefix, command }) => {
   const prompt = text
-    ? `Riporta il versetto del Corano richiesto: "${text}".  
-Formato di output richiesto:
+    ? `Report the requested Quran verse: "${text}".  
+Required output format:
 
-Sura <capitolo>:<verso> - <arabo originale> (<traslitterazione>)
+Surah <chapter>:<verse> - <original Arabic> (<transliteration>)
 
-<testo del versetto in italiano>
+<verse text in English>
 
-Rispondi solo con questo testo, senza altro.`
-    : `Riporta un versetto casuale del Corano nel seguente formato:
+Respond only with this text, nothing else.`
+    : `Report a random Quran verse in the following format:
 
-Sura <capitolo>:<verso> - <arabo originale> (<traslitterazione>)
+Surah <chapter>:<verse> - <original Arabic> (<transliteration>)
 
-<testo del versetto in italiano>
+<verse text in English>
 
-Rispondi solo con questo testo, senza altro.`;
+Respond only with this text, nothing else.`;
 
   try {
     await conn.sendPresenceUpdate('composing', m.chat);
 
     const res = await axios.post('https://luminai.my.id', {
       content: prompt,
-      user: m.pushName || "utente",
-      prompt: 'Rispondi sempre in italiano.',
+      user: m.pushName || "user",
+      prompt: 'Always respond in English.',
       webSearchMode: false
     });
 
-    const verso = res.data.result;
-    if (!verso) throw new Error("Nessuna risposta ricevuta.");
+    const verse = res.data.result;
+    if (!verse) throw new Error("No response received.");
 
-    return await conn.reply(m.chat, verso, m);
+    return await conn.reply(m.chat, verse, m);
   } catch (err) {
-    console.error('[❌ coranoPlugin]', err);
-    return conn.reply(m.chat, '⚠️ Errore nel recupero del versetto. Usa un riferimento valido tipo 2:255', m);
+    console.error('[❌ quranPlugin]', err);
+    return conn.reply(m.chat, '⚠️ Error retrieving the verse. Use a valid reference like 2:255', m);
   }
 };
 
-coranoPlugin.help = ['corano [riferimento]'];
-coranoPlugin.tags = ['religione', 'corano'];
-coranoPlugin.command = /^corano$/i;
+quranPlugin.help = ['quran [reference]'];
+quranPlugin.tags = ['religion', 'quran'];
+quranPlugin.command = /^quran$/i;
 
-export default coranoPlugin;
+export default quranPlugin;
