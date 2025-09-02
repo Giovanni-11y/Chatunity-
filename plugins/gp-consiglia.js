@@ -1,38 +1,38 @@
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-    // Verifica del messaggio di report
-    if (!text) return conn.reply(m.chat, '⚠️ *Inserisci il comando che vuoi proporre. es: .consiglia (comando) (spiegazione)*', m)
-    if (text.length < 10) return conn.reply(m.chat, '⚠️ *Descrivi meglio il comando (minimo 10 caratteri).*', m)
-    if (text.length > 1000) return conn.reply(m.chat, '⚠️ *Lunghezza massima consentita: 1000 caratteri.*', m)
+    // Command suggestion verification
+    if (!text) return conn.reply(m.chat, '⚠️ *Enter the command you want to suggest. Example: .suggest (command) (explanation)*', m)
+    if (text.length < 10) return conn.reply(m.chat, '⚠️ *Please describe the command better (minimum 10 characters).*', m)
+    if (text.length > 1000) return conn.reply(m.chat, '⚠️ *Maximum length allowed: 1000 characters.*', m)
     
-    // Formattazione del report
-    const reportText = `* \`P R O P O S T A\` *
+    // Formatting the suggestion
+    const suggestionText = `* \`S U G G E S T I O N\` *
 
-📱 Numero:
+📱 Number:
 • Wa.me/${m.sender.split`@`[0]}
 
-👤 Utente: 
-• ${m.pushName || 'Anonimo'}
+👤 User: 
+• ${m.pushName || 'Anonymous'}
 
-📝 Messaggio:
+📝 Message:
 • ${text}`
 
     try {
-        // Invia al proprietario
+        // Send to owner
         await conn.reply(global.owner[0][0] + '@s.whatsapp.net', 
-            m.quoted ? reportText + '\n\n📎 Citazione:\n' + m.quoted.text : reportText, 
+            m.quoted ? suggestionText + '\n\n📎 Quote:\n' + m.quoted.text : suggestionText, 
             m, 
-            { mentions: conn.parseMention(reportText) }
+            { mentions: conn.parseMention(suggestionText) }
         )
 
-        // Invia al canale
+        // Send to channel
         await conn.sendMessage(global.channelid, { 
-            text: m.quoted ? reportText + '\n\n📎 Citazione:\n' + m.quoted.text : reportText, 
+            text: m.quoted ? suggestionText + '\n\n📎 Quote:\n' + m.quoted.text : suggestionText, 
             contextInfo: {
                 externalAdReply: {
-                    title: "⚠️ proposta comando ⚠️",
-                    body: 'Nuova proposta ricevuta',
-                    thumbnailUrl: fotoperfil,
-                    sourceUrl: redes,
+                    title: "⚠️ command suggestion ⚠️",
+                    body: 'New suggestion received',
+                    thumbnailUrl: profilepic,
+                    sourceUrl: socials,
                     mediaType: 1,
                     showAdAttribution: false,
                     renderLargerThumbnail: false
@@ -40,17 +40,17 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
             }
         }, { quoted: null })
 
-        // Conferma all'utente
-        await m.reply('✅ *La tua proposta è stata inviata allo sviluppatore.*\n_⚠ Comandi illeciti possono comportare restrizioni._')
+        // Confirm to user
+        await m.reply('✅ *Your suggestion has been sent to the developer.*\n_⚠ Illegal commands may result in restrictions._')
         
     } catch (error) {
-        console.error('Errore nella proposta:', error)
-        await m.reply('✅ *La tua proposta è stata inviata allo sviluppatore.*\n_⚠ Comandi illeciti possono comportare restrizioni._')
+        console.error('Error in suggestion:', error)
+        await m.reply('✅ *Your suggestion has been sent to the developer.*\n_⚠ Illegal commands may result in restrictions._')
     }
 }
 
-handler.help = ['consiglia']
+handler.help = ['suggest']
 handler.tags = ['gp']
-handler.command = ['consiglia',]
+handler.command = ['suggest']
 
 export default handler
