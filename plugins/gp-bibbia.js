@@ -1,46 +1,46 @@
 import axios from 'axios';
 
-const bibbiaPlugin = async (m, { conn, text, usedPrefix, command }) => {
-  // Se non c’è testo, chiediamo a GPT un versetto casuale
+const biblePlugin = async (m, { conn, text, usedPrefix, command }) => {
+  // If no text, ask GPT for a random verse
   const prompt = text
-    ? `Riporta il versetto biblico richiesto: "${text}".  
-Formato di output richiesto:
+    ? `Provide the requested Bible verse: "${text}".  
+Required output format:
 
-<Libro> <Capitolo> - <Verso> - <Riferimento greco in maiuscolo> (traslitterazione)
+<Book> <Chapter> - <Verse> - <Greek reference in uppercase> (transliteration)
 
-<testo del versetto biblico in italiano>
+<text of the Bible verse in English>
 
-Rispondi solo con questo testo, senza altro.`
-    : `Riporta un versetto biblico casuale in questo formato:
+Respond only with this text, nothing else.`
+    : `Provide a random Bible verse in this format:
 
-<Libro> <Capitolo> - <Verso> - <Riferimento greco in maiuscolo> (traslitterazione)
+<Book> <Chapter> - <Verse> - <Greek reference in uppercase> (transliteration)
 
-<testo del versetto biblico in italiano>
+<text of the Bible verse in English>
 
-Rispondi solo con questo testo, senza altro.`;
+Respond only with this text, nothing else.`;
 
   try {
     await conn.sendPresenceUpdate('composing', m.chat);
 
     const res = await axios.post('https://luminai.my.id', {
       content: prompt,
-      user: m.pushName || "utente",
-      prompt: 'Rispondi sempre in italiano.',
+      user: m.pushName || "user",
+      prompt: 'Always respond in English.',
       webSearchMode: false
     });
 
-    const verso = res.data.result;
-    if (!verso) throw new Error("Nessuna risposta ricevuta.");
+    const verse = res.data.result;
+    if (!verse) throw new Error("No response received.");
 
-    return await conn.reply(m.chat, verso, m);
+    return await conn.reply(m.chat, verse, m);
   } catch (err) {
-    console.error('[❌ bibbiaPlugin]', err);
-    return conn.reply(m.chat, '⚠️ Errore nel recupero del versetto. Usa un riferimento valido tipo Giovanni 3:16', m);
+    console.error('[❌ biblePlugin]', err);
+    return conn.reply(m.chat, '⚠️ Error retrieving the verse. Use a valid reference like John 3:16', m);
   }
 };
 
-bibbiaPlugin.help = ['bibbia [riferimento]'];
-bibbiaPlugin.tags = ['fede', 'bibbia'];
-bibbiaPlugin.command = /^bibbia$/i;
+biblePlugin.help = ['bible [reference]'];
+biblePlugin.tags = ['faith', 'bible'];
+biblePlugin.command = /^bible$/i;
 
-export default bibbiaPlugin;
+export default biblePlugin;
