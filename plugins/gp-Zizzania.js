@@ -3,8 +3,8 @@ let handler = async (m, {
   }) => {
   if (!m.isGroup)
   throw ''
-  let gruppi = global.db.data.chats[m.chat]
-  if (gruppi.spacobot === false)
+  let groups = global.db.data.chats[m.chat]
+  if (groups.spacobot === false)
   throw ''
   let toM = a => '@' + a.split('@')[0]
   let ps = groupMetadata.participants.map(v => v.id)
@@ -12,10 +12,31 @@ let handler = async (m, {
   let b
   do b = ps.getRandom()
   while (b === a)
-  conn.reply(m.chat, `${toM(a)} ${pickRandom(['vorrebbe leccare i capezzoli di','adora annussare le scoreggie di','vorrebbe disperatamente ballare nudx con','sta notte ha sognato di fare sesso con','fa sesso di nascosto con il cane di','è follemente innamorato della nonna di','ha messo incinta la madre di','passa la notte ad osservare dormire','durante le lezioni scolastiche ha fantasie sessuali su','è la crush di','è la puttana personale di','succhia di nascosto il cazzo di','lecca di notte le orecchie di','piace masturbarsi sulle foto di','ha scopato 9 mesi prima che nascesse con la madre di'])} ${toM(b)}`, null, {
+  conn.reply(m.chat, `${toM(a)} ${pickRandom([
+    'would love to play video games with',
+    'secretly admires the fashion sense of',
+    'wants to start a business with',
+    'had a dream about going on adventures with',
+    'thinks has the best memes in the group',
+    'is secretly the biggest fan of',
+    'would trust with their Netflix password',
+    'believes has the best taste in music',
+    'wants to go on a road trip with',
+    'thinks has the funniest jokes in the group',
+    'would choose as their zombie apocalypse partner',
+    'secretly wants to be best friends with',
+    'thinks has the most interesting stories',
+    'would trust to choose their pizza toppings',
+    'believes has the best dance moves in the group',
+    'wants to learn the secrets of being cool from',
+    'thinks has the most contagious laugh',
+    'would want on their trivia team',
+    'secretly wishes they could swap lives with',
+    'believes has the best social media posts'
+  ])} ${toM(b)}`, null, {
   mentions: [a, b]
   })}
-  handler.customPrefix = /^\.zizzania$/i
+  handler.customPrefix = /^\.chaos$/i
   handler.command = new RegExp
   export default handler
   function pickRandom(list) {
