@@ -11,7 +11,7 @@ END:VCARD`.replace(/\n/g, '\r\n');
 
     await conn.sendMessage(m.chat, { 
         contacts: { 
-            displayName: 'Creatore', 
+            displayName: 'Creator Bot', 
             contacts: [
                 { vcard: createVCard('Creatore', '393515533859', 'Founder') }
             ]
@@ -19,7 +19,7 @@ END:VCARD`.replace(/\n/g, '\r\n');
     }, { quoted: m });
 };
 
-handler.help = ['creatore'];
+handler.help = ['creator'];
 handler.tags = ['info'];
-handler.command = ['creatore', 'proprietario', 'owner']; // ✅ Qui la correzione
+handler.command = ['creator', 'founder', 'owner']; // ✅ Qui la correzione
 export default handler;
