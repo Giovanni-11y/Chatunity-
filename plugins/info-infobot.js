@@ -1,4 +1,4 @@
-import { cpus as _cpus, totalmem, freemem, platform, hostname, version, release, arch } from 'os'
+import { cpus as _cpus, totalmem, freemem, platform } from 'os'
 import speed from 'performance-now'
 import { performance } from 'perf_hooks'
 import { sizeFormatter } from 'human-readable'
@@ -32,7 +32,7 @@ let handler = async (m, { conn, usedPrefix }) => {
    let totalf = Object.values(global.plugins).filter(
     (v) => v.help && v.tags
   ).length
-   const groupsIn = chats.filter(([id]) => id.endsWith('@g.us')) //groups.filter(v => !v.read_only)
+   const groupsIn = chats.filter(([id]) => id.endsWith('@g.us'))
    const used = process.memoryUsage()
    const cpus = _cpus().map(cpu => {
       cpu.total = Object.keys(cpu.times).reduce((last, type) => last + cpu.times[type], 0)
@@ -68,38 +68,38 @@ let handler = async (m, { conn, usedPrefix }) => {
     }
     let muptime = clockString(_muptime)
    let timestamp = speed()
-   let latensi = speed() - timestamp
+   let latency = speed() - timestamp
 
-   let textbot = 'Usa il comnando .faq per visualizzare la nostra politica'; // Define textbot with a default value
+   let botText = 'Use the command .faq to see our policy'
 
    let txt = '`*⭒─ׄ─ׅ─ׄ─⭒ 𝐈𝐍𝐅𝐎-𝐁𝐎𝐓 ⭒─ׄ─ׅ─ׄ─⭒*`\n\n'
        txt += `╭── ︿︿︿︿︿ *⭒   ⭒   ⭒   ⭒   ⭒   ⭒*\n`
-       txt += `┊ ‹‹ *Stato Di* :: *𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲 ดาว⁩*\n`
-       txt += `┊•*⁀➷ °⭒⭒⭒ *【 ✯ 𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲-𝐁𝐨𝐭 ✰ 】*\n`
+       txt += `┊ ‹‹ *Status of* :: *𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲 ดาว⁩*\n`
+       txt += `┊•*⁀➷ °⭒⭒⭒ *【 ✯ 𝐂𝐡𝐚𝐭𝐔𝐧𝐢𝐭𝐲-Bot ✰ 】*\n`
        txt += `╰─── ︶︶︶︶ ✰⃕  ⌇ *⭒ ⭒ ⭒*   ˚̩̥̩̥*̩̩͙✩\n`
-       txt += `┊🪴 [ *Moneta* :: *Unitycoins 💶*\n`
-       txt += `┊🍟 [ *Prefisso* :: *【  ${usedPrefix}  】*\n`
-       txt += `┊✨ [ *Plugin* :: *${totalf}*\n`
-       txt += `┊☁️ [ *Sub-Bot* :: *${totalUsers || '0'}*\n`
-       txt += `┊🍟 [ *Piattaforma* :: *${platform()}*\n`
-       txt += `┊🍁 [ *RAM* :: *${format(totalmem() - freemem())} / ${format(totalmem())}*\n`
-       txt += `┊🌸 [ *RAM Libera* :: *${format(freemem())}*\n`
-       txt += `┊🍄 [ *Velocità* :: *${latensi.toFixed(4)} ms*\n`
-       txt += `┊💐 [ *Comandi Eseguiti* :: *${formatNumber(totalStats)}*\n`
-       txt += `┊🌴 [ *Gruppi Registrati* :: *${formatNumber(totalchats)}*\n`
+       txt += `┊🪴 [ *Currency* :: *Unitycoins 💶*\n`
+       txt += `┊🍟 [ *Prefix* :: *【  ${usedPrefix}  】*\n`
+       txt += `┊✨ [ *Plugins* :: *${totalf}*\n`
+       txt += `┊☁️ [ *Sub-Bots* :: *${totalUsers || '0'}*\n`
+       txt += `┊🍟 [ *Platform* :: *${platform()}*\n`
+       txt += `┊🍁 [ *RAM Used* :: *${format(totalmem() - freemem())} / ${format(totalmem())}*\n`
+       txt += `┊🌸 [ *Free RAM* :: *${format(freemem())}*\n`
+       txt += `┊🍄 [ *Latency* :: *${latency.toFixed(4)} ms*\n`
+       txt += `┊💐 [ *Commands Executed* :: *${formatNumber(totalStats)}*\n`
+       txt += `┊🌴 [ *Registered Groups* :: *${formatNumber(totalchats)}*\n`
        txt += `╰─────────\n\n`
-       txt += `> 🚩 ${textbot}`
+       txt += `> 🚩 ${botText}`
 
-let rcanal = {}; // Define rcanal with an appropriate value (e.g., an empty object or the required value)
+   let rcanal = {}
+   let img = './menu/chatunitybot.mp4'
 
-let img = './menu/chatunitybot.mp4'; // Ensure this file path is valid and points to an existing image
+   if (!fs.existsSync(img)) {
+     img = null
+   }
 
-if (!fs.existsSync(img)) {
-  img = null; // Fallback to null if the file does not exist
+   await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
 }
 
-await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-}
 handler.help = ['info']
 handler.tags = ['main']
 handler.command = ['infobot']
@@ -115,5 +115,5 @@ function clockString(ms) {
   let h = isNaN(ms) ? '--' : Math.floor(ms / 3600000) % 24
   let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
   let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
-  return [d, ' G ', h, ' O ', m, ' M ', s, ' S'].map(v => v.toString().padStart(2, 0)).join('')
+  return [d, ' D ', h, ' H ', m, ' M ', s, ' S'].map(v => v.toString().padStart(2, 0)).join('')
 }
