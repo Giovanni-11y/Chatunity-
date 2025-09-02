@@ -1,4 +1,4 @@
-//comando creatore da sam github.com/realvare
+//creator command by sam github.com/realvare
 import axios from 'axios'
 import fs from 'fs'
 import path from 'path'
@@ -20,8 +20,8 @@ async function getRandomItalianTrackFromItunes(artist) {
        "Lazza", "Melons", "Sayf", "Sfera Ebbasta", "Ghali","Baby Gang", "Shiva", "Drake", "Tony Boy", "Kid Yugi", "21 savage", "Marracash", "Capo Plaza", "Guè Pequeno", "Melons", "King Von", "Chief Keef", "Lil Durk",  "Tha Supreme", "Gemitaiz", "Fabri Fibra", "Marracash", "Simba La Rue", "Il tre", "Rondo Da Sosa", "Drefgold", "Noyz Narcos", "Salmo", "Clementino", "Noyz Narcos", "Rocco Hunt", "Luchè",
     ]
     let found = null
-    let tentativi = 0
-    while (!found && tentativi < 5) {
+    let attempts = 0
+    while (!found && attempts < 5) {
         const randomKeyword = artist ? artist : keywords[Math.floor(Math.random() * keywords.length)]
         const response = await axios.get('https://itunes.apple.com/search', {
             params: {
@@ -33,9 +33,9 @@ async function getRandomItalianTrackFromItunes(artist) {
         })
         const valid = response.data.results.filter(b => b.previewUrl && b.trackName && b.artistName)
         if (valid.length) found = valid[Math.floor(Math.random() * valid.length)]
-        tentativi++
+        attempts++
     }
-    if (!found) throw new Error(`${global.errore}`)
+    if (!found) throw new Error(`${global.error}`)
     return {
         title: found.trackName,
         artist: found.artistName,
@@ -49,63 +49,63 @@ const pendingArtistChoice = new Map()
 let handler = async (m, { conn, args }) => {
     const chat = m.chat
 
-    // Se l'utente deve ancora rispondere con il nome del cantante
+    // If user still needs to respond with artist name
     if (pendingArtistChoice.has(chat) && !m.text.startsWith('.ic')) {
         const artist = m.text.trim()
         pendingArtistChoice.delete(chat)
         return startGame(m, conn, chat, artist)
     }
 
-    // Se c'è già una partita attiva
+    // If there's already an active game
     if (activeGames.has(chat)) {
-        return m.reply('『 ⚠️ 』- \`C\'è già una partita in corso in questo gruppo!\` ')
+        return m.reply('『 ⚠️ 』- \`There is already a game in progress in this group!\` ')
     }
 
-    // Primo livello: scelta modalità
+    // First level: mode selection
     if (!args[0]) {
         await conn.sendMessage(m.chat, {
-            text: "Vuoi giocare con un cantante specifico o in generale?",
-            footer: "Scegli una modalità:",
+            text: "Do you want to play with a specific artist or in general?",
+            footer: "Choose a mode:",
             buttons: [
-                { buttonId: '.ic generale', buttonText: { displayText: "🎲 Generale" }, type: 1 },
-                { buttonId: '.ic specifico', buttonText: { displayText: "🎤 Specifico" }, type: 1 }
+                { buttonId: '.ic generale', buttonText: { displayText: "🎲 General" }, type: 1 },
+                { buttonId: '.ic specifico', buttonText: { displayText: "🎤 Specific" }, type: 1 }
             ],
             headerType: 1
         }, { quoted: m })
         return
     }
 
-    // Secondo livello: scelta tra casuale o cantante specifico
+    // Second level: choice between random or specific artist
     if (args[0] === 'specifico' && !args[1]) {
         await conn.sendMessage(m.chat, {
-            text: "Vuoi un cantante casuale o vuoi sceglierlo tu?",
-            footer: "Scegli una modalità:",
+            text: "Do you want a random artist or do you want to choose one?",
+            footer: "Choose a mode:",
             buttons: [
-                { buttonId: '.ic specifico casuale', buttonText: { displayText: "🎲 Casuale tra i famosi" }, type: 1 },
-                { buttonId: '.ic specifico scegli', buttonText: { displayText: "📝 Scegli cantante" }, type: 1 }
+                { buttonId: '.ic specifico casuale', buttonText: { displayText: "🎲 Random among famous" }, type: 1 },
+                { buttonId: '.ic specifico scegli', buttonText: { displayText: "📝 Choose artist" }, type: 1 }
             ],
             headerType: 1
         }, { quoted: m })
         return
     }
 
-    // Se si sceglie casuale tra i famosi
+    // If choosing random among famous
     if (args[0] === 'specifico' && args[1] === 'casuale') {
         return startGame(m, conn, chat)
     }
 
-    // Se si sceglie di inserire un cantante
+    // If choosing to enter an artist
     if (args[0] === 'specifico' && args[1] === 'scegli') {
         pendingArtistChoice.set(chat, true)
         await conn.sendMessage(m.chat, {
-            text: "Scrivi ora il nome del cantante con cui vuoi giocare.",
-            footer: "Esempio: Sfera Ebbasta",
+            text: "Now write the name of the artist you want to play with.",
+            footer: "Example: Sfera Ebbasta",
             headerType: 1
         }, { quoted: m })
         return
     }
 
-    // Se si sceglie generale
+    // If choosing general mode
     if (args[0] === 'generale') {
         return startGame(m, conn, chat)
     }
@@ -130,11 +130,11 @@ async function startGame(m, conn, chat, artist = null) {
         }, { quoted: m })
         fs.unlinkSync(audioPath)
         const formatGameMessage = (timeLeft) => `
- ⋆｡˚『 ╭ \`INDOVINA CANZONE\` ╯ 』˚｡⋆\n╭\n│
-┃ 『 ⏱️ 』 \`Tempo:\` *${timeLeft} secondi* 
-┃ 『 👤 』 \`Artista:\` *${track.artist}* 
+ ⋆｡˚『 ╭ \`GUESS THE SONG\` ╯ 』˚｡⋆\n╭\n│
+┃ 『 ⏱️ 』 \`Time:\` *${timeLeft} seconds* 
+┃ 『 👤 』 \`Artist:\` *${track.artist}* 
 ┃
-┃ \`Scrivi il titolo della canzone!\`
+┃ \`Write the song title!\`
 ┃ \`vare ✧ bot\`
 ╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒`
         let gameMessage = await conn.reply(m.chat, formatGameMessage(30), m)
@@ -156,17 +156,17 @@ async function startGame(m, conn, chat, artist = null) {
                     }).catch(() => {})
                     await conn.sendMessage(m.chat, {
                         text: `
-ㅤㅤ⋆｡˚『 ╭ \`TEMPO SCADUTO\` ╯ 』˚｡⋆\n╭\n│
-│ ➤ \`Nessuno ha indovinato!\`
-┃ 『  』🎵 \`Titolo:\` *${track.title}*
-┃ 『  』👤 \`Artista:\` *${track.artist}*
+ㅤㅤ⋆｡˚『 ╭ \`TIME\'S UP\` ╯ 』˚｡⋆\n╭\n│
+│ ➤ \`No one guessed it!\`
+┃ 『  』🎵 \`Title:\` *${track.title}*
+┃ 『  』👤 \`Artist:\` *${track.artist}*
 ┃
 ╰⭒─ׄ─ׅ─ׄ─⭒`,
                         buttons: [
                             {
                                 buttonId: '.ic',
                                 buttonText: {
-                                    displayText: '『 🎵 』 Rigioca'
+                                    displayText: '『 🎵 』 Play Again'
                                 },
                                 type: 1
                             }
@@ -179,17 +179,17 @@ async function startGame(m, conn, chat, artist = null) {
                     await conn.sendMessage(m.chat, {
                         text: formatGameMessage(game.timeLeft),
                         edit: gameMessage.key
-                    }).catch(() => {}) // moriro leggenda quando verrà l'ora!!!!
+                    }).catch(() => {}) // I'll die a legend when the time comes!!!!
                 }
             } catch (e) {
-                console.error('Errore nel countdown:', e)
+                console.error('Error in countdown:', e)
             }
-        }, 5000) //timer ogni 5 secondi per colpa di ratelimit czz
+        }, 5000) //timer every 5 seconds because of ratelimit czz
         activeGames.set(chat, game)
 
     } catch (e) {
-        console.error('Errore in indovina canzone:', e)
-        m.reply(`${global.errore}`)
+        console.error('Error in guess the song:', e)
+        m.reply(`${global.error}`)
         activeGames.delete(chat)
     }
 }
@@ -241,22 +241,22 @@ handler.before = async (m, { conn }) => {
         }).catch(() => {})
         await conn.sendMessage(m.chat, {
             text: `
-ㅤㅤ⋆｡˚『 ╭ \`CORRETTA\` ╯ 』˚｡⋆\n╭\n│
-│ ➤ \`Risposta Corretta!\`
-┃ 『  』🎵 \`Titolo:\` *${game.track.title}*
-┃ 『  』👤 \`Artista:\` *${game.track.artist}*
+ㅤㅤ⋆｡˚『 ╭ \`CORRECT\` ╯ 』˚｡⋆\n╭\n│
+│ ➤ \`Correct Answer!\`
+┃ 『  』🎵 \`Title:\` *${game.track.title}*
+┃ 『  』👤 \`Artist:\` *${game.track.artist}*
 ┃
-┃ 『 🎁 』 \`Vincite:\`
+┃ 『 🎁 』 \`Winnings:\`
 │ ➤  \`${reward}\` *UnityCoins*
 │ ➤  \`${exp}\` *exp*
 ┃
-┃ 💰 *Saldo attuale:* ${global.db.data.users[m.sender].limit} UnityCoins
+┃ 💰 *Current balance:* ${global.db.data.users[m.sender].limit} UnityCoins
 ╰⭒─ׄ─ׅ─ׄ─⭒`,
             buttons: [
                 {
                     buttonId: '.ic',
                     buttonText: {
-                        displayText: '『 🎵 』 Rigioca'
+                        displayText: '『 🎵 』 Play Again'
                     },
                     type: 1
                 }
@@ -264,7 +264,7 @@ handler.before = async (m, { conn }) => {
             headerType: 1
         }, { quoted: m }).catch(() => {})
         
-        console.log('Debug risposta:', {
+        console.log('Debug answer:', {
             userAnswer,
             correctAnswer,
             similarity: similarity(userAnswer, correctAnswer)
@@ -272,17 +272,17 @@ handler.before = async (m, { conn }) => {
     } else if (similarityScore >= 0.3) {
         await conn.sendMessage(m.chat, {
             react: {
-                text: '❌', //solo per nomi simili
+                text: '❌', //only for similar names
                 key: m.key
             }
         }).catch(() => {})
-        await conn.reply(m.chat, '👀 *Ci sei quasi!* Riprova...', m)
+        await conn.reply(m.chat, '👀 *You\'re close!* Try again...', m)
     }
 }
 
 handler.help = ['indovinacanzone']
-handler.tags = ['giochi']
-handler.command = ['indovinacanzone', 'ic']
+handler.tags = ['games']
+handler.command = ['guessong', 'gs']
 handler.register = true
 
 export default handler
