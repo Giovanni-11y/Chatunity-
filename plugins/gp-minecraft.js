@@ -1,40 +1,40 @@
 let handler = async (m, { conn }) => {
     try {
-        // Messaggio principale senza pulsanti
+        // Main message without buttons
         await conn.sendMessage(m.chat, {
-            text: `🎮 *GIOCO MINECRAFT GRATIS E SICURO!* 🎮\n\n` +
-                  `Scopri *Eaglercraft*, la versione browser di Minecraft che puoi giocare OVUNQUE!\n\n` +
-                  `🔗 *Link diretto:* https://eaglercraft.com/\n` +
-                  `✅ Gratuito al 100%\n` +
-                  `🔒 Sicuro e senza download\n` +
-                  `🌐 Gioca direttamente dal browser\n\n` +
-                  `Apri il link sopra per giocare!`,
-            footer: '© BixByBot - Divertiti!',
+            text: `🎮 *FREE & SAFE MINECRAFT GAME!* 🎮\n\n` +
+                  `Discover *Eaglercraft*, the browser version of Minecraft you can play ANYWHERE!\n\n` +
+                  `🔗 *Direct Link:* https://eaglercraft.com/\n` +
+                  `✅ 100% Free\n` +
+                  `🔒 Safe and no download needed\n` +
+                  `🌐 Play directly from your browser\n\n` +
+                  `Click the link above to start playing!`,
+            footer: '© BixByBot - Have fun!',
             mentions: [m.sender]
         }, { quoted: m });
 
-        // Invia un messaggio con immagine dopo 1 secondo
+        // Send an image message after 1 second
         setTimeout(async () => {
             await conn.sendMessage(m.chat, {
                 image: { 
                     url: 'https://i.imgur.com/JlxJmZQ.png'
                 },
-                caption: 'Ecco come appare Eaglercraft! 👆',
+                caption: 'Here’s what Eaglercraft looks like! 👆',
                 mentions: [m.sender]
             }, { quoted: m });
         }, 1000);
 
     } catch (error) {
-        console.error('Errore:', error);
+        console.error('Error:', error);
         await conn.sendMessage(m.chat, { 
-            text: '❌ Errore nel mostrare il link. Riprova più tardi.'
+            text: '❌ Error displaying the link. Please try again later.'
         }, { quoted: m });
     }
 }
 
 handler.help = ['minecraft'];
 handler.tags = ['games'];
-handler.command = ['minecraft', 'mc', 'eglercraft'];
+handler.command = ['minecraft', 'mc', 'eaglercraft'];
 handler.premium = false;
 
 export default handler;
