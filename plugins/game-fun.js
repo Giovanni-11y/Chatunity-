@@ -2,20 +2,20 @@ const gameSessions = {};
 let cooldowns = {};
 
 let handler = async (m, { conn, text, command, usedPrefix }) => {
-    const tempoAttesa = 5; // secondi
+    const waitTime = 5; // seconds
 
     // Cooldown
-    if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < tempoAttesa * 1000) {
-        let tempoRimanente = secondiAHMS(Math.ceil((cooldowns[m.sender] + tempoAttesa * 1000 - Date.now()) / 1000));
-        return m.reply(`⏳ Hai già giocato di recente. Aspetta *${tempoRimanente}* prima di riprovare.`);
+    if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < waitTime * 1000) {
+        let timeRemaining = secondsToHMS(Math.ceil((cooldowns[m.sender] + waitTime * 1000 - Date.now()) / 1000));
+        return m.reply(`⏳ You already played recently. Wait *${timeRemaining}* before trying again.`);
     }
 
-    if (!text || ['testa', 'croce'].includes(text.toLowerCase())) {
+    if (!text || ['heads', 'tails'].includes(text.toLowerCase())) {
         if (!gameSessions[m.chat]) {
             if (!text) {
                 return conn.sendMessage(m.chat, {
-                    text: `🎮 *Testa o Croce*\n\n🧑 Giocatore 1: @${m.sender.split('@')[0]}\n🕹️ In attesa del secondo giocatore...\n\nScrivi "testa" o "croce" per iniziare.`,
-                    footer: 'Fai la tua scelta',
+                    text: `🎮 *Heads or Tails*\n\n🧑 Player 1: @${m.sender.split('@')[0]}\n🕹️ Waiting for second player...\n\nType "heads" or "tails" to start.`,
+                    footer: 'Make your choice',
                     mentions: [m.sender],
                     headerType: 1
                 }, { quoted: m });
@@ -30,8 +30,8 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
             };
 
             return conn.sendMessage(m.chat, {
-                text: `🎮 *Testa o Croce*\n\n🧑 Giocatore 1: @${m.sender.split('@')[0]} ha scelto *${text.toLowerCase()}*\n🎯 In attesa di un altro giocatore...\n\nTocca a te! Scrivi "testa" o "croce".`,
-                footer: 'Partecipa ora',
+                text: `🎮 *Heads or Tails*\n\n🧑 Player 1: @${m.sender.split('@')[0]} chose *${text.toLowerCase()}*\n🎯 Waiting for another player...\n\nYour turn! Type "heads" or "tails".`,
+                footer: 'Join now',
                 mentions: [m.sender],
                 headerType: 1
             }, { quoted: m });
@@ -39,10 +39,10 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
             let session = gameSessions[m.chat];
 
             if (session.status === 'waiting' && m.sender !== session.player1) {
-                if (!['testa', 'croce'].includes(text.toLowerCase())) {
+                if (!['heads', 'tails'].includes(text.toLowerCase())) {
                     return conn.sendMessage(m.chat, {
-                        text: `⚠️ Devi scegliere tra *testa* o *croce*! Scrivi la tua scelta.`,
-                        footer: 'Seleziona testa o croce',
+                        text: `⚠️ You must choose between *heads* or *tails*! Type your choice.`,
+                        footer: 'Select heads or tails',
                         headerType: 1
                     }, { quoted: m });
                 }
@@ -51,32 +51,32 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
                 session.choice2 = text.toLowerCase();
                 session.status = 'ready';
 
-                const risultato = Math.random() < 0.5 ? 'testa' : 'croce';
-                const vincitore1 = session.choice1 === risultato;
-                const vincitore2 = session.choice2 === risultato;
+                const result = Math.random() < 0.5 ? 'heads' : 'tails';
+                const winner1 = session.choice1 === result;
+                const winner2 = session.choice2 === result;
 
-                let messaggio = `🪙 *RISULTATO: ${risultato.toUpperCase()}*\n\n`;
+                let message = `🪙 *RESULT: ${result.toUpperCase()}*\n\n`;
 
-                if (vincitore1) {
+                if (winner1) {
                     global.db.data.users[session.player1].limit += 500;
-                    messaggio += `✅ @${session.player1.split('@')[0]} ha vinto 500 💶\n`;
+                    message += `✅ @${session.player1.split('@')[0]} won 500 💶\n`;
                 } else {
                     global.db.data.users[session.player1].limit -= 250;
-                    messaggio += `❌ @${session.player1.split('@')[0]} ha perso 250 💶\n`;
+                    message += `❌ @${session.player1.split('@')[0]} lost 250 💶\n`;
                 }
 
-                if (vincitore2) {
+                if (winner2) {
                     global.db.data.users[session.player2].limit += 500;
-                    messaggio += `✅ @${session.player2.split('@')[0]} ha vinto 500 💶\n`;
+                    message += `✅ @${session.player2.split('@')[0]} won 500 💶\n`;
                 } else {
                     global.db.data.users[session.player2].limit -= 250;
-                    messaggio += `❌ @${session.player2.split('@')[0]} ha perso 250 💶\n`;
+                    message += `❌ @${session.player2.split('@')[0]} lost 250 💶\n`;
                 }
 
                 conn.sendMessage(m.chat, {
-                    text: messaggio + `\n\nPer giocare di nuovo scrivi il comando ${usedPrefix + command}`,
+                    text: message + `\n\nTo play again type the command ${usedPrefix + command}`,
                     mentions: [session.player1, session.player2],
-                    footer: 'Gioca di nuovo',
+                    footer: 'Play again',
                     headerType: 1
                 }, { quoted: m });
 
@@ -87,31 +87,31 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
             }
 
             if (session.status === 'waiting' && m.sender === session.player1) {
-                return m.reply(`Hai già scelto *${session.choice1}*. In attesa di un altro giocatore...`);
+                return m.reply(`You already chose *${session.choice1}*. Waiting for another player...`);
             }
 
             return conn.sendMessage(m.chat, {
-                text: '❌ Partita non disponibile o comando non valido.\n\nPer iniziare una nuova partita scrivi il comando ' + usedPrefix + command,
-                footer: 'Avvia una nuova partita',
+                text: '❌ Game not available or invalid command.\n\nTo start a new game type the command ' + usedPrefix + command,
+                footer: 'Start a new game',
                 headerType: 1
             }, { quoted: m });
         }
     }
 
     return conn.sendMessage(m.chat, {
-        text: '❌ Comando non valido. Scrivi "' + usedPrefix + command + '" o scegli "testa" o "croce".',
-        footer: 'Avvia una nuova partita',
+        text: '❌ Invalid command. Type "' + usedPrefix + command + '" or choose "heads" or "tails".',
+        footer: 'Start a new game',
         headerType: 1
     }, { quoted: m });
 };
 
-function secondiAHMS(secondi) {
-    return `${secondi % 60} secondi`;
+function secondsToHMS(seconds) {
+    return `${seconds % 60} seconds`;
 }
 
-handler.help = ['moneta'];
+handler.help = ['coinflip'];
 handler.tags = ['game'];
-handler.command = ['cf', 'flip', 'moneta'];
+handler.command = ['cf', 'flip', 'coin'];
 handler.register = true;
 
 export default handler;
