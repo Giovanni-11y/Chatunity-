@@ -3,15 +3,15 @@ const handler = async (m, { conn, usedPrefix }) => {
   const userData = global.db.data.users[sender];
 
   if (!userData) {
-    return conn.reply(m.chat, 'Errore: Utente specificato non trovato.', m);
+    return conn.reply(m.chat, 'Error: Specified user not found.', m);
   }
 
-  // Comando per eliminare Instagram
-  if (/^(\D|_)?eliminaig/i.test(m.text)) {
+  // Command to delete Instagram
+  if (/^(\D|_)?deleteig/i.test(m.text)) {
     if (!userData.instagram) {
       return conn.reply(
         m.chat,
-        `ⓘ Assicurati di configurare il tuo nome utente Instagram con ${usedPrefix}setig prima di continuare.`,
+        `ⓘ Make sure to set your Instagram username with ${usedPrefix}setig before continuing.`,
         null,
         { quoted: m }
       );
@@ -20,13 +20,13 @@ const handler = async (m, { conn, usedPrefix }) => {
     userData.instagram = undefined;
     return conn.reply(
       m.chat,
-      'ⓘ Nome Instagram eliminato con successo dal tuo profilo utente.',
+      'ⓘ Instagram username successfully removed from your user profile.',
       null,
       { quoted: m }
     );
   }
 
-  // Comando per impostare Instagram
+  // Command to set Instagram
   if (/^(\D|_)?setig/i.test(m.text)) {
     const parts = m.text.trim().split(' ');
     const instaName = parts[1];
@@ -34,7 +34,7 @@ const handler = async (m, { conn, usedPrefix }) => {
     if (!instaName) {
       return conn.reply(
         m.chat,
-        'ⓘ Usa .setig <nomeutente> per impostare Instagram oppure .eliminaig per rimuoverlo.',
+        'ⓘ Use .setig <username> to set Instagram or .deleteig to remove it.',
         null,
         { quoted: m }
       );
@@ -43,12 +43,12 @@ const handler = async (m, { conn, usedPrefix }) => {
     userData.instagram = instaName.toLowerCase();
     return conn.reply(
       m.chat,
-      `ⓘ Hai impostato con successo il tuo nome Instagram come *${userData.instagram}*`,
+      `ⓘ You have successfully set your Instagram username as *${userData.instagram}*`,
       null,
       { quoted: m }
     );
   }
 };
 
-handler.command = /^(setig|eliminaig)$/i;
+handler.command = /^(setig|deleteig)$/i;
 export default handler;
