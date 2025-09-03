@@ -1,66 +1,28 @@
-let tradeRequests = {}
+if (command === 'accept') {
+    let trade = tradeRequests[sender]
+    if (!trade) return m.reply('❌ No trade request found.')
+    
+    let senderData = users[trade.from]
+    let targetData = users[sender]
+    if (!senderData || !targetData) return m.reply('❌ User data not found.')
 
-let handler = async (m, { conn, args, command }) => {
-    global.db.data.users = global.db.data.users || {}
-    let sender = m.sender
-    let users = global.db.data.users
-    let username = `@${sender.split('@')[0]}`
+    let myPokemons = senderData.pokemons || []
+    let theirPokemons = targetData.pokemons || []
 
-    if (command === 'trade') {
-        let target = m.mentionedJid?.[0]
-        if (!target) return m.reply(`📌 Use:\n.trade @user <your_number> <their_number>`)
-        
-        let myIndex = parseInt(args[1]) - 1
-        let theirIndex = parseInt(args[2]) - 1
-        let myPokemons = users[sender]?.pokemons || []
-        let theirPokemons = users[target]?.pokemons || []
+    if (!myPokemons[trade.myIndex]) return m.reply(`❌ Your Pokémon no. ${trade.myIndex + 1} does not exist.`)
+    if (!theirPokemons[trade.theirIndex]) return m.reply(`❌ The other user's Pokémon no. ${trade.theirIndex + 1} does not exist.`)
 
-        if (!myPokemons[myIndex]) return m.reply(`❌ Your Pokémon no. ${args[1]} does not exist.`)
-        if (!theirPokemons[theirIndex]) return m.reply(`❌ @${target.split('@')[0]}'s Pokémon no. ${args[2]} does not exist.`, null, { mentions: [target] })
+    // Swap the Pokémon
+    let temp = myPokemons[trade.myIndex]
+    myPokemons[trade.myIndex] = theirPokemons[trade.theirIndex]
+    theirPokemons[trade.theirIndex] = temp
 
-        tradeRequests[target] = {
-            from: sender,
-            myIndex,
-            theirIndex
-        }
+    // Save the updated pokemons
+    users[trade.from].pokemons = myPokemons
+    users[sender].pokemons = theirPokemons
 
-        let myPoke = myPokemons[myIndex]
-        let theirPoke = theirPokemons[theirIndex]
+    // Remove the trade request
+    delete tradeRequests[sender]
 
-        let txt = `🔁 *Trade Request*\n\n${username} wants to trade:\n📤 *${myPoke.name}* (Lv. ${myPoke.level})\nfor\n📥 *${theirPoke.name}* (Lv. ${theirPoke.level}) from @${target.split('@')[0]}\n\n✅ @${target.split('@')[0]}, respond with *.accept* to confirm.`
-        return conn.reply(m.chat, txt, m, { mentions: [target, sender] })
-    }
-
-    if (command === 'accept') {
-        let trade = tradeRequests[sender]
-        if (!trade) return m.reply('❌ No trade request found.')
-
-        let { from, myIndex, theirIndex } = trade
-        let myPokemons = users[sender]?.pokemons || []
-        let theirPokemons = users[from]?.pokemons || []
-
-        let myPoke = myPokemons[myIndex]
-        let theirPoke = theirPokemons[theirIndex]
-
-        if (!myPoke || !theirPoke) {
-            delete tradeRequests[sender]
-            return m.reply('❌ One of the Pokémon is no longer available.')
-        }
-
-        // Perform the trade
-        users[sender].pokemons[myIndex] = theirPoke
-        users[from].pokemons[theirIndex] = myPoke
-
-        delete tradeRequests[sender]
-
-        return m.reply(`✅ Trade completed between @${from.split('@')[0]} and @${sender.split('@')[0]}!\n\n🎁 ${theirPoke.name} ⇄ ${myPoke.name}`, null, {
-            mentions: [from, sender]
-        })
-    }
+    return conn.reply(m.chat, `✅ Trade completed successfully! You exchanged your Pokémon with @${trade.from.split('@')[0]}.`, m, { mentions: [trade.from] })
 }
-
-handler.help = ['trade @user <your_number> <their_number>', 'accept']
-handler.tags = ['pokemon']
-handler.command = /^trade|accept$/i
-
-export default handler
