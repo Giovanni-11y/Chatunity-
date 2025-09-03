@@ -1,37 +1,37 @@
 import MessageType from '@whiskeysockets/baileys'
 
-let tassa = 0.02 // 2% di tassa sulle transazioni
+let tax = 0.02 // 2% tax on transactions
 
 let handler = async (m, { conn, text }) => {
   let who
-  if (m.isGroup) who = m.mentionedJid[0] // Se in gruppo, prende l'utente menzionato
-  else who = m.chat // Se in privato, usa l'utente corrente
+  if (m.isGroup) who = m.mentionedJid[0] // If in group, take the mentioned user
+  else who = m.chat // If in private, use current user
   
-  if (!who) throw '🚩 𝐝𝐞𝐯𝐢 𝐦𝐞𝐧𝐳𝐢𝐨𝐧𝐚𝐫𝐞 𝐮𝐧 𝐠𝐚𝐲 𝐜𝐨𝐧 @user*'
+  if (!who) throw '🚩 𝐲𝐨𝐮 𝐦𝐮𝐬𝐭 𝐦𝐞𝐧𝐭𝐢𝐨𝐧 𝐚 𝐮𝐬𝐞𝐫 𝐰𝐢𝐭𝐡 @user*'
   
   let txt = text.replace('@' + who.split`@`[0], '').trim()
-  if (!txt) throw '🚩 𝐢𝐧𝐬𝐞𝐫𝐢𝐫𝐞 𝐥𝐚 𝐪𝐮𝐚𝐧𝐭𝐢𝐭𝐚̀ 𝐝𝐢 💫 𝐗𝐏 𝐝𝐚 𝐭𝐫𝐚𝐬𝐟𝐞𝐫𝐢𝐫𝐞'
-  if (isNaN(txt)) throw '🚩 𝐢𝐧𝐬𝐞𝐫𝐢𝐬𝐜𝐢 𝐬𝐨𝐥𝐨 𝐧𝐮𝐦𝐞𝐫𝐢 𝐜𝐨𝐠𝐥𝐢𝐨𝐧𝐞'
+  if (!txt) throw '🚩 𝐞𝐧𝐭𝐞𝐫 𝐭𝐡𝐞 𝐚𝐦𝐨𝐮𝐧𝐭 𝐨𝐟 💫 𝐗𝐏 𝐭𝐨 𝐭𝐫𝐚𝐧𝐬𝐟𝐞𝐫'
+  if (isNaN(txt)) throw '🚩 𝐞𝐧𝐭𝐞𝐫 𝐨𝐧𝐥𝐲 𝐧𝐮𝐦𝐛𝐞𝐫𝐬 𝐢𝐝𝐢𝐨𝐭'
   
   let xp = parseInt(txt)
   let exp = xp
-  let tassaImporto = Math.ceil(xp * tassa) // Calcola la tassa del 2%
-  exp += tassaImporto
+  let taxAmount = Math.ceil(xp * tax) // Calculate 2% tax
+  exp += taxAmount
   
-  if (exp < 1) throw '🚩 𝐢𝐥 𝐦𝐢𝐧𝐢𝐦𝐨 𝐝𝐚 𝐭𝐫𝐚𝐬𝐟𝐞𝐫𝐢𝐫𝐞 𝐞 1 💫 𝐗𝐏'
+  if (exp < 1) throw '🚩 𝐦𝐢𝐧𝐢𝐦𝐮𝐦 𝐭𝐨 𝐭𝐫𝐚𝐧𝐬𝐟𝐞𝐫 𝐢𝐬 1 💫 𝐗𝐏'
   
   let users = global.db.data.users
-  if (exp > users[m.sender].exp) throw '🚩 𝐧𝐨𝐧 𝐡𝐚𝐢 𝐚𝐛𝐛𝐚𝐬𝐭𝐚𝐧𝐳𝐚 💫 𝐗𝐏 𝐝𝐨𝐰𝐧 𝐝𝐞𝐯𝐢 𝐚𝐯𝐞𝐫𝐞 𝐩𝐢𝐮 𝐞𝐬𝐩𝐞𝐫𝐢𝐞𝐧𝐳𝐚'
+  if (exp > users[m.sender].exp) throw '🚩 𝐲𝐨𝐮 𝐝𝐨𝐧\'𝐭 𝐡𝐚𝐯𝐞 𝐞𝐧𝐨𝐮𝐠𝐡 💫 𝐗𝐏 𝐛𝐫𝐨, 𝐲𝐨𝐮 𝐧𝐞𝐞𝐝 𝐦𝐨𝐫𝐞 𝐞𝐱𝐩𝐞𝐫𝐢𝐞𝐧𝐜𝐞'
   
-  // Esegui la transazione
+  // Execute the transaction
   users[m.sender].exp -= exp
   users[who].exp += xp
 
-  // Messaggio di conferma
-  let confirmationMessage = `📊 *𝐫𝐞𝐬𝐨𝐜𝐨𝐧𝐭𝐨 𝐭𝐫𝐚𝐧𝐬𝐢𝐳𝐢𝐨𝐧𝐞 *\n\n` +
-                            `▸ 𝐗𝐏 𝐭𝐫𝐚𝐬𝐟𝐞𝐫𝐢𝐭𝐢: *-${xp} 💫*\n` +
-                            `▸ 𝐭𝐚𝐬𝐬𝐚 (2%): *-${tassaImporto} 💫*\n` +
-                            `▸ 𝐭𝐨𝐭𝐚𝐥𝐞 𝐚𝐝𝐝𝐞𝐛𝐢𝐭𝐚𝐭𝐨: *-${exp} 💫*`;
+  // Confirmation message
+  let confirmationMessage = `📊 *𝐭𝐫𝐚𝐧𝐬𝐚𝐜𝐭𝐢𝐨𝐧 𝐫𝐞𝐩𝐨𝐫𝐭*\n\n` +
+                            `▸ 𝐗𝐏 𝐭𝐫𝐚𝐧𝐬𝐟𝐞𝐫𝐫𝐞𝐝: *-${xp} 💫*\n` +
+                            `▸ 𝐭𝐚𝐱 (2%): *-${taxAmount} 💫*\n` +
+                            `▸ 𝐭𝐨𝐭𝐚𝐥 𝐝𝐞𝐝𝐮𝐜𝐭𝐞𝐝: *-${exp} 💫*`;
   await conn.sendMessage(m.chat, { 
       text: confirmationMessage,
       contextInfo: {
@@ -45,8 +45,8 @@ let handler = async (m, { conn, text }) => {
       }
   }, { quoted: m });
 
-  // Notifica al ricevente
-  let recipientMessage = `📩 𝐡𝐚𝐢 𝐫𝐢𝐜𝐞𝐯𝐮𝐭𝐨 +${xp} 💫 𝐗𝐏!`;
+  // Notify recipient
+  let recipientMessage = `📩 𝐲𝐨𝐮 𝐫𝐞𝐜𝐞𝐢𝐯𝐞𝐝 +${xp} 💫 𝐗𝐏!`;
   await conn.sendMessage(m.chat, { 
       text: recipientMessage,
       contextInfo: {
@@ -61,9 +61,9 @@ let handler = async (m, { conn, text }) => {
   }, { quoted: m, mentions: [who] });
 }
 
-handler.help = ['darxp *@user <quantità>*']
+handler.help = ['givexp *@user <amount>*']
 handler.tags = ['rpg']
-handler.command = ['daixp', 'daiexp', 'donaxp'] 
+handler.command = ['givexp', 'giveexp', 'transferxp'] 
 handler.register = true 
 
 export default handler
