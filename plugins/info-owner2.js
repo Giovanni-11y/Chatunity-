@@ -1,12 +1,10 @@
-
-
 function handler(message) {
     // Create a mock message object with owner contact information
     let contactMessage = {
         key: {
             participants: '0@s.whatsapp.net',
             fromMe: false,
-            id: 'Halo'
+            id: 'Hello'
         },
         message: {
             extendedTextMessage: {
@@ -19,7 +17,7 @@ ORG:Unlimited
 TITLE:
 item1.TEL;waid=19709001746:+1 (970) 900-1746
 item1.X-ABLabel:Unlimited
-X-WA-BIZ-DESCRIPTION:ofc
+X-WA-BIZ-DESCRIPTION:official
 X-WA-BIZ-NAME:Unlimited
 END:VCARD`
             }
@@ -30,23 +28,14 @@ END:VCARD`
     // Filter and get active chat sessions from global.db
     const activeSessions = global.db.filter(([sessionId, sessionData]) => sessionId && sessionData);
     
-   
+    // Send contact information to active sessions
     this.sendContact(
         message.chat,
         activeSessions.map(([sessionId, sessionData]) => [sessionId, sessionData]),
-        contactMessage
+        contactMessage,
+        { 
+            quoted: message,
+            mentions: activeSessions.map(([sessionId]) => sessionId)
+        }
     );
 }
-
-
-handler.help = ['owner'];           
-handler.tags = ['main'];           
-handler.command = [               
-    'owner',
-    'creator', 
-    'admin',
-    'fgowner'
-];
-
-
-export default handler;
