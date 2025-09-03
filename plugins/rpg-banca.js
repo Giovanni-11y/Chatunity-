@@ -2,18 +2,17 @@ let handler = async (m, { conn, usedPrefix }) => {
     let who = m.mentionedJid[0] || m.quoted?.sender || m.sender;
 
     if (!(who in global.db.data.users)) {
-        return m.reply(`*L'utente non è presente nel database.*`);
+        return m.reply(`*The user is not present in the database.*`);
     }
 
     let user = global.db.data.users[who];
     
-    // Inizializzazione sicura
+    // Safe initialization
     user.bank = Number(user.bank) || 0;
 
     let message = `${who === m.sender 
-        ? `💰 𝐡𝐚𝐢 *${user.bank} 💶 𝐮𝐧𝐢𝐭𝐲𝐜𝐨𝐢𝐧* 𝐢𝐧 𝐛𝐚𝐧𝐜𝐚🏛️.` 
-        : `💰 𝐢𝐥 𝐛𝐫𝐨 @${who.split('@')[0]} 𝐚
-   𝐡𝐚 *${user.bank} 💶 𝐮𝐧𝐢𝐭𝐲𝐜𝐨𝐢𝐧* 𝐢𝐧 𝐛𝐚𝐧𝐜𝐚🏛️.`}`;
+        ? `💰 𝐲𝐨𝐮 𝐡𝐚𝐯𝐞 *${user.bank} 💶 𝐮𝐧𝐢𝐭𝐲𝐜𝐨𝐢𝐧* 𝐢𝐧 𝐛𝐚𝐧𝐤🏛️.` 
+        : `💰 𝐛𝐫𝐨 @${who.split('@')[0]} 𝐡𝐚𝐬 *${user.bank} 💶 𝐮𝐧𝐢𝐭𝐲𝐜𝐨𝐢𝐧* 𝐢𝐧 𝐛𝐚𝐧𝐤🏛️.`}`;
 
     await conn.sendMessage(m.chat, { 
         text: message,
