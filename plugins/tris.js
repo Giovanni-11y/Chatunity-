@@ -5,20 +5,20 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
 
   // Check if the user is already playing
   if (Object.values(conn.game).find(room => room.id.startsWith('tictactoe') && [room.game.playerX, room.game.playerO].includes(m.sender))) {
-    throw '*[❗] _YOU ARE ALREADY PLAYING WITH SOMEONE_*';
+    throw '*[❗] YOU ARE ALREADY IN A GAME WITH SOMEONE*';
   }
 
   // Ensure the user provides a room name
   if (!text) {
-    throw `*[❗] _YOU NEED TO PROVIDE A ROOM NAME_*\n\n*—◉ _EXAMPLE_*\n*◉ ${usedPrefix + command} room 1*`;
+    throw `*[❗] YOU NEED TO PROVIDE A ROOM NAME*\n\n*—◉ EXAMPLE:*\n*◉ ${usedPrefix + command} room1*\n*◉ ${usedPrefix + command} myroom*`;
   }
 
   // Find a room that is waiting for players
   let room = Object.values(conn.game).find(room => room.state === 'WAITING' && (text ? room.name === text : true));
 
   if (room) {
-    // Start the game
-    await m.reply('[🕹️] 𝐓𝐇𝐄 𝐆𝐀𝐌𝐄 𝐈𝐒 𝐒𝐓𝐀𝐑𝐓𝐈𝐍𝐆, 𝐀 𝐏𝐋𝐀𝐘𝐄𝐑 𝐇𝐀𝐒 𝐉𝐎𝐈𝐍𝐄𝐃');
+    // Join existing room and start the game
+    await m.reply('[🎮] **GAME IS STARTING!** A PLAYER HAS JOINED THE ROOM');
     room.o = m.chat;
     room.game.playerO = m.sender;
     room.state = 'PLAYING';
@@ -26,7 +26,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
     // Map the game board to emojis
     let arr = room.game.render().map(v => {
       return {
-        X: '❎',
+        X: '❌',
         O: '⭕',
         1: '1️⃣',
         2: '2️⃣',
@@ -37,63 +37,61 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
         7: '7️⃣',
         8: '8️⃣',
         9: '9️⃣',
-      }[v];
+      }[v] || v;
     });
 
-    let str = `
-❎ = @${room.game.playerX.split('@')[0]}
-⭕ = @${room.game.playerO.split('@')[0]}
+    // Create the game board message
+    let str = `*🎯 TIC TAC TOE GAME*\n\n`;
+    str += `*Room:* ${room.name}\n`;
+    str += `*Players:*\n`;
+    str += `❌ Player X: @${room.game.playerX.split('@')[0]}\n`;
+    str += `⭕ Player O: @${room.game.playerO.split('@')[0]}\n\n`;
+    str += `*Current turn:* @${room.game.currentTurn.split('@')[0]}\n\n`;
+    str += `*Game Board:*\n`;
+    str += `     ${arr.slice(0, 3).join(' ')}\n`;
+    str += `     ${arr.slice(3, 6).join(' ')}\n`;
+    str += `     ${arr.slice(6, 9).join(' ')}\n\n`;
+    str += `*Instructions:*\n`;
+    str += `• Type the number (1-9) to place your mark\n`;
+    str += `• Wait for your turn\n`;
+    str += `• First to get 3 in a row wins!\n\n`;
+    str += `*To quit the game, type:* quit`;
 
-        ${arr.slice(0, 3).join('')}
-        ${arr.slice(3, 6).join('')}
-        ${arr.slice(6).join('')}
-
-𝐓𝐮𝐫𝐧𝐨 𝐝𝐢 @${room.game.currentTurn.split('@')[0]}
-`.trim();
-
-    // Send the game board to both players
-    if (room.x !== room.o) await conn.sendMessage(room.x, { text: str, mentions: this.parseMention(str) }, { quoted: m });
-    await conn.sendMessage(room.o, { text: str, mentions: conn.parseMention(str) }, { quoted: m });
+    // Send to both players
+    if (room.x !== room.o) {
+      await conn.sendMessage(room.x, { 
+        text: str, 
+        mentions: [room.game.playerX, room.game.playerO] 
+      });
+    }
+    
+    await conn.sendMessage(room.o, { 
+      text: str, 
+      mentions: [room.game.playerX, room.game.playerO] 
+    });
 
   } else {
-    // Create a new room
+    // Create new room
     room = {
       id: 'tictactoe-' + (+new Date),
+      name: text,
       x: m.chat,
       o: '',
       game: new TicTacToe(m.sender, 'o'),
       state: 'WAITING'
     };
-
+    
     if (text) room.name = text;
-
-    // Prepare a message with the room details
-    let prova = {
-      "key": { "participants": "0@s.whatsapp.net", "remoteJid": "status@broadcast", "fromMe": false, "id": "Halo" },
-      "message": {
-        "groupInviteMessage": {
-          caption: 'ROOM CREATED ✓',
-          "vcard": `BEGIN:VCARD\nVERSION:5.0\nN:;Unlimited;;;\nFN:Unlimited\nORG:Unlimited\nTITLE:\nitem1.TEL;waid=19709001746:+1 (970) 900-1746\nitem1.X-ABLabel:Unlimited\nX-WA-BIZ-DESCRIPTION:ofc\nX-WA-BIZ-NAME:Unlimited\nEND:VCARD`
-        }
-      },
-      "participant": "0@s.whatsapp.net"
-    };
-
-    // Send invitation and room details to join the game
-    conn.reply(m.chat, `══════ •⊰✧⊱• ══════
-*WAITING FOR PLAYERS ...*
-══════════════
-🕹️ 𝐓𝐨 𝐣𝐨𝐢𝐧 𝐝𝐢𝐠𝐢𝐭
-.gioca ${text}
-══════════════
-⛔ 𝐓𝐨 𝐥𝐞𝐚𝐯𝐞 𝐚 𝐠𝐚𝐦𝐞
-𝐢𝐧 𝐩𝐫𝐨𝐠𝐫𝐞𝐬𝐬 𝐝𝐢𝐠𝐢𝐭 .𝐞𝐬𝐜𝐢
-══════ •⊰✧⊱• ══════`, prova, m);
-
-    // Store the room in the game object
     conn.game[room.id] = room;
+    
+    await m.reply(`*[🎮] ROOM CREATED SUCCESSFULLY*\n\n*Room Name:* ${text}\n*Creator:* @${m.sender.split('@')[0]}\n*Status:* Waiting for opponent...\n\n*Share this room name with someone to start playing:*\n\`${usedPrefix + command} ${text}\``, null, {
+      mentions: [m.sender]
+    });
   }
 };
 
-handler.command = /^(gioca|tris|ttt|xo)$/i;
+handler.help = ['tictactoe', 'ttt', 'xo'];
+handler.tags = ['games'];
+handler.command = /^(tictactoe|ttt|xo)$/i;
+
 export default handler;
