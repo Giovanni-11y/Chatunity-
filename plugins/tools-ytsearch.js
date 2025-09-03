@@ -21,7 +21,7 @@ const handler = async (_0x4f7a6d, {
 }) => {
     const _0x298076 = _0x3f94, _0x33e893 = {
             'CHroz': _0x298076(0x1ef),
-            'hJRja': '❗ To use this command, use the chatunity base',
+            'hJRja': '❗ Use the chatunity base',
             'SMdFm': _0x298076(0x1df),
             'tiDnQ': function (_0x4e6f7b, _0x4f74c8) {
                 return _0x4e6f7b(_0x4f74c8);
@@ -80,7 +80,7 @@ function _0x3f94(_0x37d826, _0x37571b) {
 function _0x41c4() {
     const _0x566b6e = [
         'timestamp',
-        '🔎 YouTube Search',
+        '🔎 YouTube search',
         '🎬 Here are the results of your search:',
         'views',
         '78558sriOEE',
@@ -95,7 +95,7 @@ function _0x41c4() {
         '590ISpuzh',
         '673788XTOeoC',
         'downloader',
-        '❌ No results found.',
+        'No results found.',
         'tags',
         'chat',
         '2172488swvWbr',
@@ -108,18 +108,18 @@ function _0x41c4() {
         '30RlePAa',
         '12pmHxgO',
         'chatunity✦ Downloader',
-        '🎬 YouTube Search Result',
+        '🎬 YouTube Search result',
         'SMdFm',
         '.ytformat ',
         './plugins/OWNER_file.js',
         'help',
-        '🔢 Select a video from the results above to choose the format to download:',
+        '🔢 Select a video and choose the format or download  :',
         'BBzdp',
         'videos',
         'sendMessage',
         'find',
         '5788504hvTNln',
-        '📌 Enter the name of the video to search for.\nExample: .ytsearch mai una gioia compilation',
+        '📌 Enter the name of the video .\nExample: .ytsearch mai una gioia compilation',
         'map',
         '\n👤 *Channel:* ',
         './termini.jpeg',
