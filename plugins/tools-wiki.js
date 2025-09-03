@@ -4,25 +4,25 @@ import cheerio from "cheerio"
 
 async function wikipedia(query) {
   try {
-    const link = await axios.get(`https://it.wikipedia.org/wiki/${query}`)
+    const link = await axios.get(`https://en.wikipedia.org/wiki/${query}`)
     const $ = cheerio.load(link.data)
     
-    // Estrai il titolo della pagina Wikipedia
+    // Extract the page title from Wikipedia
     let title = $('#firstHeading').text().trim()
     
-    // Estrai l'immagine di anteprima (o usa un'immagine di errore se non trovata)
+    // Extract the thumbnail image (or use an error image if not found)
     let thumbnail = $('#mw-content-text')
       .find('div.mw-parser-output > div:nth-child(1) > table > tbody > tr:nth-child(2) > td > a > img')
       .attr('src') || `//i.ibb.co/nzqPBpC/http-error-404-not-found.png`
     
-    // Estrai i paragrafi di testo dalla pagina
+    // Extract the paragraphs of text from the page
     let content = []
     $('#mw-content-text > div.mw-parser-output').each(function (index, element) {
       let explanation = $(element).find('p').text().trim()
       content.push(explanation)
     })
 
-    // Restituisci il risultato come oggetto
+    // Return the result as an object
     for (let i of content) {
       const data = {
         status: link.status,
@@ -35,7 +35,7 @@ async function wikipedia(query) {
       return data
     }
   } catch (err) {
-    var notFound = {
+    const notFound = {
       status: 404,
       message: 'Error fetching Wikipedia data'
     }
