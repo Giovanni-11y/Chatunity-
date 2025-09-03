@@ -7,7 +7,7 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const defaultLang = 'es';
+const defaultLang = 'en'; // Changed to English as default
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   let lang = args[0] || defaultLang;
@@ -16,46 +16,63 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   // Check if the language code is correct (two letters)
   if (lang.length !== 2) {
     lang = defaultLang;
+    text = args.join(' '); // If first arg isn't a language code, treat it as text
   }
   
   // If no text, use quoted text (if available)
   if (!text && m.quoted?.text) text = m.quoted.text;
   
   if (!text) {
-    throw `Please enter text to convert to speech!`;
+    throw `Please enter text to convert to speech!\n\n*Usage:*\n${usedPrefix + command} <language_code> <text>\n${usedPrefix + command} en Hello world\n${usedPrefix + command} es Hola mundo\n${usedPrefix + command} fr Bonjour le monde`;
   }
 
   let res;
   try {
     res = await tts(text, lang);
   } catch (e) {
-    m.reply(`Error: ${e.message}`);
-    res = await tts(text, defaultLang);
+    m.reply(`Error with language '${lang}': ${e.message}\nTrying with default language (${defaultLang})...`);
+    try {
+      res = await tts(text, defaultLang);
+    } catch (e2) {
+      throw `Failed to generate speech: ${e2.message}`;
+    }
   } finally {
     if (res) {
-      conn.sendFile(m.chat, res, 'tts.opus', null, m, true);  
+      await conn.sendFile(m.chat, res, 'tts.opus', null, m, true);
     }
   }
 };
 
-handler.help = ['tts <lang> <text>'];
-handler.tags = ['tools'];
-handler.command = /^g?tts$/i;
-
-export default handler;
-
-function tts(text, lang = 'es') {
+// Text-to-Speech function
+async function tts(text, lang = defaultLang) {
   return new Promise((resolve, reject) => {
     try {
-      let tts = gtts(lang);
-      let filePath = join(__dirname, '../tmp', `${Date.now()}.opus`);
+      const tts = gtts(lang);
+      const filePath = join(__dirname, '../tmp', `${Date.now()}_tts.wav`);
       
-      tts.save(filePath, text, () => {
-        resolve(readFileSync(filePath));
-        unlinkSync(filePath);
+      tts.save(filePath, text, (err) => {
+        if (err) {
+          reject(new Error(`TTS generation failed: ${err.message}`));
+          return;
+        }
+        
+        try {
+          const buffer = readFileSync(filePath);
+          unlinkSync(filePath); // Clean up temporary file
+          resolve(buffer);
+        } catch (readErr) {
+          reject(new Error(`File read error: ${readErr.message}`));
+        }
       });
-    } catch (e) {
-      reject(e);
+    } catch (err) {
+      reject(new Error(`TTS initialization failed: ${err.message}`));
     }
   });
 }
+
+// Handler configuration
+handler.help = ['tts', 'texttospeech', 'speak'];
+handler.tags = ['tools', 'media'];
+handler.command = /^(tts|texttospeech|speak|say)$/i;
+
+export default handler;
