@@ -406,8 +406,8 @@ function _0x5061() {
     ];
     _0x5061 = function () {
         return _0x465c9a;
-    };
+    }
     return _0x5061();
 }
-handler[_0x249066(0x1aa)] = [_0x249066(0x1e5)];
+handler[_0x249066(0x1aa)] = [_0x239066(0x1e5)];
 export default handler;
