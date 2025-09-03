@@ -1,15 +1,15 @@
-const gratuito = 500
+const free = 500
 const premium = 1000
 const cooldowns = {}
 
 let handler = async (m, { conn, isPrems }) => {
   let user = global.db.data.users[m.sender]
-  const tempoAttesa = 24 * 60 * 60 // 24 ore in secondi
+  const waitTime = 24 * 60 * 60 // 24 hours in seconds
   
-  // Controllo cooldown
-  if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < tempoAttesa * 1000) {
-    const tempoRimanente = formattaTempo(Math.ceil((cooldowns[m.sender] + tempoAttesa * 1000 - Date.now()) / 1000))
-    let message = `🚩 𝐡𝐚𝐢 𝐠𝐢𝐚̀ 𝐫𝐢𝐭𝐢𝐫𝐚𝐭𝐨 𝐢 𝐭𝐮𝐨𝐢 𝐬𝐨𝐥𝐝𝐢 𝐝𝐢 𝐨𝐠𝐠𝐢.\n𝐩𝐮𝐨𝐢 𝐩𝐫𝐞𝐧𝐝𝐞𝐫𝐥𝐞 𝐬𝐨𝐥𝐨 1 𝐨𝐠𝐧𝐢 24𝐡.\n\n𝐩𝐫𝐨𝐬𝐬𝐢𝐦𝐚 𝐫𝐢𝐜𝐨𝐦𝐩𝐞𝐧𝐬𝐚 : +${isPrems ? premium : gratuito} 💶 𝐔𝐂\n 𝐭𝐫𝐚: ⏱ ${tempoRimanente}`;
+  // Cooldown check
+  if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < waitTime * 1000) {
+    const timeRemaining = formatTime(Math.ceil((cooldowns[m.sender] + waitTime * 1000 - Date.now()) / 1000))
+    let message = `🚩 𝐲𝐨𝐮 𝐡𝐚𝐯𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐜𝐨𝐥𝐥𝐞𝐜𝐭𝐞𝐝 𝐲𝐨𝐮𝐫 𝐝𝐚𝐢𝐥𝐲 𝐫𝐞𝐰𝐚𝐫𝐝.\n𝐲𝐨𝐮 𝐜𝐚𝐧 𝐨𝐧𝐥𝐲 𝐜𝐥𝐚𝐢𝐦 𝐢𝐭 𝐨𝐧𝐜𝐞 𝐞𝐯𝐞𝐫𝐲 𝟐𝟒𝐡.\n\n𝐧𝐞𝐱𝐭 𝐫𝐞𝐰𝐚𝐫𝐝: +${isPrems ? premium : free} 💶 𝐔𝐂\n 𝐢𝐧: ⏱ ${timeRemaining}`;
     await conn.sendMessage(m.chat, { 
         text: message,
         contextInfo: {
@@ -25,10 +25,13 @@ let handler = async (m, { conn, isPrems }) => {
     return;
   }
 
-  // Assegna le Unitycoins al saldo (limit)
-  user.limit += isPrems ? premium : gratuito
-  let message = `🚩 𝐜𝐨𝐧𝐠𝐫𝐚𝐭𝐮𝐥𝐚𝐳𝐢𝐨𝐧𝐢 𝐝𝐨𝐰𝐧 🎉, 𝐡𝐚𝐢 𝐨𝐭𝐭𝐞𝐧𝐮𝐭𝐨 *+${isPrems ? premium : gratuito} 💶 𝐔𝐂!\n\n` +
-                `𝐨𝐫𝐚 𝐡𝐚𝐢: *${user.limit} 💶 𝐔𝐂* 𝐧𝐞𝐥 𝐭𝐮𝐨 𝐬𝐚𝐥𝐝𝐨`;
+  // Assign Unitycoins to balance (limit)
+  user.limit += isPrems ? premium : free
+  cooldowns[m.sender] = Date.now(); // Set cooldown
+  
+  let message = `🚩 𝐜𝐨𝐧𝐠𝐫𝐚𝐭𝐮𝐥𝐚𝐭𝐢𝐨𝐧𝐬! 🎉, 𝐲𝐨𝐮 𝐡𝐚𝐯𝐞 𝐫𝐞𝐜𝐞𝐢𝐯𝐞𝐝 *+${isPrems ? premium : free} 💶 𝐔𝐂!\n\n` +
+                `𝐲𝐨𝐮 𝐧𝐨𝐰 𝐡𝐚𝐯𝐞: *${user.limit} 💶 𝐔𝐂* 𝐢𝐧 𝐲𝐨𝐮𝐫 𝐛𝐚𝐥𝐚𝐧𝐜𝐞`;
+  
   await conn.sendMessage(m.chat, { 
       text: message,
       contextInfo: {
@@ -41,22 +44,25 @@ let handler = async (m, { conn, isPrems }) => {
           }
       }
   }, { quoted: m, detectLink: true });
-
-  // Imposta il cooldown
-  cooldowns[m.sender] = Date.now()
-  global.db.write() // Salva i dati
 }
 
-handler.help = ['daily']
-handler.tags = ['rpg']
-handler.command = [ 'giornaliero', 'claim']
-handler.register = true
+handler.help = ['daily'];
+handler.tags = ['rpg'];
+handler.command = ['daily', 'claim'];
+handler.register = true;
 
-function formattaTempo(secondi) {
-  const ore = Math.floor(secondi / 3600)
-  const minuti = Math.floor((secondi % 3600) / 60)
-  const secondiRimanenti = secondi % 60
-  return `${ore} 𝐨𝐫𝐞, ${minuti} 𝐦𝐢𝐧𝐮𝐭𝐢 𝐞 ${secondiRimanenti} 𝐩𝐨𝐜𝐡𝐢 𝐬𝐞𝐜𝐨𝐧𝐝𝐢`
+function formatTime(seconds) {
+  let hours = Math.floor(seconds / 3600);
+  let minutes = Math.floor((seconds % 3600) / 60);
+  let remainingSeconds = Math.floor(seconds % 60);
+  
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
+  } else if (minutes > 0) {
+    return `${minutes}m ${remainingSeconds}s`;
+  } else {
+    return `${remainingSeconds}s`;
+  }
 }
 
-export default handler
+export default handler;
