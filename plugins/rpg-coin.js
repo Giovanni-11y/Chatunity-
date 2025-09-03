@@ -1,10 +1,10 @@
 import fetch from 'node-fetch'
 
 const rarityCosts = {
-  'Comune': 100,
-  'Non Comune': 1000,
-  'Raro': 10000,
-  'Leggendario': 100000
+  'Common': 100,
+  'Uncommon': 1000,
+  'Rare': 10000,
+  'Legendary': 100000
 }
 
 function sleep(ms) {
@@ -37,7 +37,7 @@ async function getEvolution(name) {
     const nextEvo = findNextEvolution(evoData.chain)
     return nextEvo
   } catch (err) {
-    console.error('Errore durante il recupero dell\'evoluzione:', err)
+    console.error('Error retrieving evolution:', err)
     return null
   }
 }
@@ -47,30 +47,30 @@ let handler = async (m, { conn, args }) => {
   global.db.data.users[user] = global.db.data.users[user] || {}
   const data = global.db.data.users[user]
 
-  data.limit = data.limit || 0 // Unitycoins invece di mattecash
+  data.limit = data.limit || 0 // Unitycoins instead of mattecash
   data.pokemons = data.pokemons || []
 
   const name = args.join(' ')
-  if (!name) return m.reply('📛 Specifica il nome del Pokémon da evolvere.\nEsempio: *.evolvi Charmander*')
+  if (!name) return m.reply('📛 Specify the name of the Pokémon to evolve.\nExample: *.evolve Charmander*')
 
   const baseCard = data.pokemons.find(p => p.name.toLowerCase() === name.toLowerCase())
-  if (!baseCard) return m.reply(`❌ Non possiedi *${name}*`)
+  if (!baseCard) return m.reply(`❌ You don't own *${name}*`)
 
   const cost = rarityCosts[baseCard.rarity]
-  if (data.limit < cost) { // Controlla i limit (unitycoins) invece di mattecash
-    return m.reply(`⛔ Non hai abbastanza Unitycoins!\n💰 Hai: *${data.limit} UC*\n💸 Richiesti: *${cost} UC*`)
+  if (data.limit < cost) { // Check limits (unitycoins) instead of mattecash
+    return m.reply(`⛔ You don't have enough Unitycoins!\n💰 You have: *${data.limit} UC*\n💸 Required: *${cost} UC*`)
   }
 
   const nextForm = await getEvolution(baseCard.name)
-  if (!nextForm) return m.reply(`⛔ *${baseCard.name}* non può evolversi ulteriormente.`)
+  if (!nextForm) return m.reply(`⛔ *${baseCard.name}* cannot evolve further.`)
 
-  data.limit -= cost // Sottrae dalle unitycoins
+  data.limit -= cost // Subtract from unitycoins
 
-  await conn.sendMessage(m.chat, { text: `✨ *${baseCard.name}* sta evolvendo...`, mentions: [user] }, { quoted: m })
+  await conn.sendMessage(m.chat, { text: `✨ *${baseCard.name}* is evolving...`, mentions: [user] }, { quoted: m })
   await sleep(1000)
-  await conn.sendMessage(m.chat, { text: '🔄 Evoluzione in corso...', mentions: [user] }, { quoted: m })
+  await conn.sendMessage(m.chat, { text: '🔄 Evolution in progress...', mentions: [user] }, { quoted: m })
   await sleep(1000)
-  await conn.sendMessage(m.chat, { text: `🎉 *${baseCard.name}* si è evoluto in *${nextForm}*!`, mentions: [user] }, { quoted: m })
+  await conn.sendMessage(m.chat, { text: `🎉 *${baseCard.name}* evolved into *${nextForm}*!`, mentions: [user] }, { quoted: m })
 
   const index = data.pokemons.indexOf(baseCard)
   if (index > -1) {
@@ -83,11 +83,11 @@ let handler = async (m, { conn, args }) => {
     type: baseCard.type
   })
 
-  return m.reply(`✅ Evoluzione completata!\n💰 Unitycoins rimasti: *${data.limit} UC*`)
+  return m.reply(`✅ Evolution completed!\n💰 Unitycoins remaining: *${data.limit} UC*`)
 }
 
-handler.help = ['evolvi <nome>']
+handler.help = ['evolve <name>']
 handler.tags = ['pokemon']
-handler.command = /^evolvi$/i
+handler.command = /^evolve$/i
 
 export default handler
